@@ -5,6 +5,5 @@ export const useStyles = makeStyles({
     width: "100%",
     height: "70%",
     backgroundColor: "blue",
-    overflowY: "scroll",
   },
 })
