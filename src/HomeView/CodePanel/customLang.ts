@@ -1,4 +1,6 @@
-// This config defines the editor's view.
+import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
+
+// This config defines the editor"s view.
 export const options = {
   minimap: {
     enabled: false
@@ -8,7 +10,7 @@ export const options = {
 }
 
 // This config defines how the language is displayed in the editor.
-export const languageDef = {
+export const languageDef: monaco.languages.IMonarchLanguage = {
   ignoreCase: true,
   defaultToken: "",
   number: /\d+(\.\d+)?/,
@@ -20,7 +22,7 @@ export const languageDef = {
       { include: "@numbers" },
       { include: "@strings" },
       { include: "@tags" },
-      [/[A-Za-z][\w\$]*/, 'type.identifier' ], 
+      [/[A-Za-z][\w\\$]*/, "type.identifier" ], 
       [/^@\w+/, { cases: { "@keywords": "keyword" } }],
     ],
     whitespace: [
@@ -41,12 +43,10 @@ export const languageDef = {
   },
 }
 
-// This config defines the editor's behavior.
+// This config defines the editor"s behavior.
 export const configuration = {
   comments: {
     lineComment: "#",
   },
-  brackets: [
-    ["{", "}"], ["[", "]"], ["(", ")"],
-  ],
+  brackets: [],
 }

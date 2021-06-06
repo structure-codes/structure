@@ -34,7 +34,10 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "quotes": [1, "double"]
+    }
   },
   "browserslist": {
     "production": [

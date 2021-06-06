@@ -4,6 +4,6 @@ export const useStyles = makeStyles({
   codeContainer: {
     width: "100%",
     height: "70%",
-    backgroundColor: "blue",
+    backgroundColor: "#212121",
   },
 })
