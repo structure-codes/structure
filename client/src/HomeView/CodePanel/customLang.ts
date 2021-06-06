@@ -14,8 +14,7 @@ export const languageDef: monaco.languages.IMonarchLanguage = {
   ignoreCase: true,
   defaultToken: "",
   number: /\d+(\.\d+)?/,
-  keywords: [
-  ],
+  keywords: ["├", "─", "|", "└"],
   tokenizer: {
     root: [
       { include: "@whitespace" },
@@ -23,7 +22,7 @@ export const languageDef: monaco.languages.IMonarchLanguage = {
       { include: "@strings" },
       { include: "@tags" },
       [/[A-Za-z][\w\\$]*/, "type.identifier" ], 
-      [/^@\w+/, { cases: { "@keywords": "keyword" } }],
+      [/\w/, { cases: { "@keywords": "keyword" } }],
     ],
     whitespace: [
       // [comment, "comment"],
