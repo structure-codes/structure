@@ -3,6 +3,8 @@ export const options = {
   minimap: {
     enabled: false
   },
+  tabSize: 2,
+  insertSpaces: false,
 }
 
 // This config defines how the language is displayed in the editor.
