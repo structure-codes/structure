@@ -1,27 +1,28 @@
-/* eslint-disable quotes */
-
 // This config defines the editor's view.
 export const options = {
-  lineNumbers: false,
-  scrollBeyondLastLine: false,
-  readOnly: false,
-  fontSize: 12,
+  minimap: {
+    enabled: false
+  },
 }
 
 // This config defines how the language is displayed in the editor.
-export const languageDef: any = {
+export const languageDef = {
+  ignoreCase: true,
   defaultToken: "",
   number: /\d+(\.\d+)?/,
-  keywords: ["index.tsx"],
+  keywords: [
+  ],
   tokenizer: {
     root: [
       { include: "@whitespace" },
       { include: "@numbers" },
       { include: "@strings" },
       { include: "@tags" },
+      [/[A-Za-z][\w\$]*/, 'type.identifier' ], 
       [/^@\w+/, { cases: { "@keywords": "keyword" } }],
     ],
     whitespace: [
+      // [comment, "comment"],
       [/\s+/, "white"],
     ],
     numbers: [
@@ -32,18 +33,18 @@ export const languageDef: any = {
       // TODO: implement invalid strings
     ],
     tags: [
-      [/^%[a-zA-Z]\w*/, "tag"],
+      [/\w*\//, "tag"],
       [/#[a-zA-Z]\w*/, "tag"],
     ],
   },
 }
 
 // This config defines the editor's behavior.
-export const configuration: any = {
+export const configuration = {
   comments: {
     lineComment: "#",
   },
   brackets: [
-   
+    ["{", "}"], ["[", "]"], ["(", ")"],
   ],
 }
