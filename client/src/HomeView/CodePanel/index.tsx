@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { useStyles } from "./style";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
-import { options, languageDef, configuration } from "./customLang";
+import { options, languageDef, themeDef, configuration } from "./customLang";
 
 type Monaco = typeof monaco;
 
@@ -12,7 +12,9 @@ export const CodePanel = () => {
   const editorRef = useRef(defaultRef);
   const [code, setCode] = useState("├── src/");
   const rootPrefix = "├── ";
-  const branchPrefix = "|\t└── ";
+  const getBranchPrefix = (numTabs: number) => {
+    return "|" + "\t".repeat(numTabs) + "└── ";
+  }
 
   const onMount = (
     editor: monaco.editor.IStandaloneCodeEditor,
@@ -20,7 +22,7 @@ export const CodePanel = () => {
   ) => {
     editor.setPosition({
       lineNumber: 1,
-      column: rootPrefix.length + 1,
+      column: code.length + 1,
     });
     // Register a new language
     monaco.languages.register({ id: "tree" });
@@ -28,16 +30,13 @@ export const CodePanel = () => {
     monaco.languages.setMonarchTokensProvider("tree", languageDef);
     // Set the editing configuration for the language
     monaco.languages.setLanguageConfiguration("tree", configuration);
-    
+    monaco.editor.defineTheme("treeTheme", themeDef);
+    monaco.editor.setTheme("treeTheme");
     editor.focus();
     // editor.setPosition({ lineNumber: 1, column: 5 });
     editor.onDidChangeModelContent((e) => handleEditorChange(e, editor));
     
     editor.onDidChangeCursorPosition((e) => {
-      // editor.setPosition({
-      //   lineNumber: 1,
-      //   column: 5,
-      // });
       console.log("cursorPosition changed: ", JSON.stringify(e.position));
       const value = editor.getModel()?.getValue() || "";
       const currentLine = value.split(/\r\n|\r|\n/)[e.position.lineNumber - 1]
@@ -57,30 +56,43 @@ export const CodePanel = () => {
 
   const handleEditorChange = (e: monaco.editor.IModelContentChangedEvent, editor: monaco.editor.IStandaloneCodeEditor) => {
     console.log("modelContent changed");
-    // IDK BRUH
-    if(!e.changes[0].text) {
-      return;
-    }
 
     const value = editor.getModel()?.getValue();
-    // const isBackspace =
-    //   e.changes[0].text === "" &&
-    //   e.changes[0].range.startColumn < e.changes[0].range.endColumn;
-    let prevLine: string = "";
-    let prevPrefix = prevLine.split(" ");
+    const isBackspace =
+      e.changes[0].text === "" &&
+      e.changes[0].range.startColumn < e.changes[0].range.endColumn;
+
+    let prevPrefix = rootPrefix;
+    let currPrefix: any = null;
 
     const lines = value?.split(/\r\n|\r|\n/).map((line) => {
-      if (line.length < 4) return rootPrefix;
-      if (line.startsWith(rootPrefix + "\t")) return line.replace(rootPrefix + "\t", branchPrefix);  
-      if (line.startsWith(branchPrefix)) return line;
-      if (line.startsWith(rootPrefix + "\t")) return line.replace(rootPrefix + "\t", branchPrefix)
-      if (!line.startsWith(rootPrefix)) {
-        // Maybe you tried to backspace and delete the header
-        if (line.startsWith("├")) return line + " ";
-        // Or else it's a brand new line so add the whole prefix
-        else return rootPrefix + line;
+      prevPrefix = currPrefix;
+      currPrefix = line.split(" ")[0] + " ";
+      const lineContent = line.substr(currPrefix.length);
+      if (line.length < rootPrefix.length) return prevPrefix;
+      if (line.length < currPrefix.length) {
+        if (isBackspace) {
+          const numTabs = (line.match(/\t/g) || []).length;
+          return numTabs > 1 ? getBranchPrefix(numTabs - 1) : rootPrefix;
+        }
+        return currPrefix
+      };
+      if (line.startsWith(rootPrefix + "\t")) return getBranchPrefix(1) + lineContent;  
+      if (line.match(/^\|\t+└── \t/)) {
+        const numTabs = (line.match(/\t/g) || []).length;
+        console.log("found tabs:", numTabs)
+        return getBranchPrefix(numTabs) + lineContent.replace("\t", "");
       }
-      return line;
+      // else if (!line.startsWith(rootPrefix)) {
+      //   // Maybe you tried to backspace and delete the header
+      //   if (line.startsWith("├")) return line + " ";
+      //   // Or else it's a brand new line so add the whole prefix
+      //   else return rootPrefix + line;
+      // }
+      else {
+        console.log("Didnt find any other matches");
+        return line;
+      };
     });
 
     const newValue = lines?.join("\n") || rootPrefix;

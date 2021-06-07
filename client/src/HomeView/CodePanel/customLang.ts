@@ -3,11 +3,22 @@ import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 // This config defines the editor"s view.
 export const options = {
   minimap: {
-    enabled: false
+    enabled: false,
   },
   tabSize: 2,
   insertSpaces: false,
-}
+};
+
+export const themeDef: monaco.editor.IStandaloneThemeData = {
+  base: "vs-dark", // can also be vs-dark or hc-black
+  inherit: true, // can also be false to completely replace the builtin rules
+  rules: [
+    { token: "folder", foreground: "002BFF" },
+    { token: "file", foreground: "33FF42" },
+    { token: "tree", foreground: "FF3333" }, // will inherit fontStyle from `comment` above
+  ],
+  colors: {}
+};
 
 // This config defines how the language is displayed in the editor.
 export const languageDef: monaco.languages.IMonarchLanguage = {
@@ -21,26 +32,24 @@ export const languageDef: monaco.languages.IMonarchLanguage = {
       { include: "@numbers" },
       { include: "@strings" },
       { include: "@tags" },
-      [/[A-Za-z][\w\\$]*/, "type.identifier" ], 
-      [/\w/, { cases: { "@keywords": "keyword" } }],
+      [/[A-Za-z][\w\\$]*/, "file"],
+      [/├|─|\||└/, "tree"],
     ],
     whitespace: [
       // [comment, "comment"],
       [/\s+/, "white"],
     ],
-    numbers: [
-      [/@number/, "number"],
-    ],
+    numbers: [[/@number/, "number"]],
     strings: [
       [/[=|][ @number]*$/, "string.escape"],
       // TODO: implement invalid strings
     ],
     tags: [
-      [/\w*\//, "tag"],
-      [/#[a-zA-Z]\w*/, "tag"],
+      [/\w*\//, "folder"],
+      [/#[a-zA-Z]\w*/, "folder"],
     ],
   },
-}
+};
 
 // This config defines the editor"s behavior.
 export const configuration = {
@@ -48,4 +57,4 @@ export const configuration = {
     lineComment: "#",
   },
   brackets: [],
-}
+};
