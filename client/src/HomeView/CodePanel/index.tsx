@@ -2,9 +2,18 @@ import { useRef, useState } from "react";
 import { useStyles } from "./style";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
-import { options, languageDef, themeDef, configuration } from "./customLang";
+import { languageDef, themeDef, configuration } from "./customLang";
 
 type Monaco = typeof monaco;
+
+// This config defines the editors view
+export const options = {
+  minimap: {
+    enabled: false,
+  },
+  tabSize: 2,
+  insertSpaces: false,
+};
 
 export const CodePanel = () => {
   const defaultRef: any = null;

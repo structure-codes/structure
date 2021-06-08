@@ -10,12 +10,18 @@ export const useStyles = makeStyles({
 
   "@global .react-flow__node-input": {
     background: "#1c1c1c",
+    borderColor: "#000",
     color: "#fff",
     fontSize: 20
   },
-  "@global .react-flow__node-default": {
+  "@global .react-flow__node": {
     background: "#1c1c1c",
+    borderColor: "#000",
     color: "#fff",
-    fontSize: 20
+    fontSize: 20,
+    boxShadow: "none",    
+  },
+  "@global .react-flow__node.selected": {    
+    borderColor: "#fff",
   }
 })

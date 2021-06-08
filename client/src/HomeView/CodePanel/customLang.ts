@@ -1,21 +1,12 @@
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 
-// This config defines the editor"s view.
-export const options = {
-  minimap: {
-    enabled: false,
-  },
-  tabSize: 2,
-  insertSpaces: false,
-};
-
 export const themeDef: monaco.editor.IStandaloneThemeData = {
   base: "vs-dark", // can also be vs-dark or hc-black
   inherit: true, // can also be false to completely replace the builtin rules
   rules: [
-    { token: "folder", foreground: "002BFF" },
+    { token: "folder", foreground: "b6edbd" },
     { token: "file", foreground: "33FF42" },
-    { token: "tree", foreground: "FF3333" }, // will inherit fontStyle from `comment` above
+    { token: "tree", foreground: "C1C1C1" }, // will inherit fontStyle from `comment` above
   ],
   colors: {}
 };
