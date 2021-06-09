@@ -1,8 +1,10 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useStyles } from "./style";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { languageDef, themeDef, configuration } from "./customLang";
+import { useRecoilState } from "recoil";
+import { treeAtom } from "../../store";
 
 type Monaco = typeof monaco;
 
@@ -15,23 +17,42 @@ export const options = {
   insertSpaces: false,
 };
 
+const rootPrefix = "├── ";
+const treeToJson = (tree: string) => {
+  return tree;
+}
+
+const jsonToTree = (tree: Object, depth: number) => {
+  let treeString = "";
+  const branches = Object.entries(tree);
+  branches.forEach(branch => {
+    const [key, values] = branch;
+    treeString += "\t".repeat(depth) + key + "\n";
+    if (values.length === 0) return;
+    jsonToTree(values, depth + 1);
+  })
+  return treeString;
+}
+
 export const CodePanel = () => {
   const defaultRef: any = null;
   const classes = useStyles();
   const editorRef = useRef(defaultRef);
-  const [code, setCode] = useState("├── src/");
-  const rootPrefix = "├── ";
+  const defaultTree = "├── src/";
+  const [treeState, setTreeState] = useRecoilState(treeAtom);
   const getBranchPrefix = (numTabs: number) => {
-    return "|" + "\t".repeat(numTabs) + "└── ";
-  }
+    return "\t".repeat(numTabs) + "└── ";
+  };
 
-  const onMount = (
-    editor: monaco.editor.IStandaloneCodeEditor,
-    monaco: Monaco,
-  ) => {
+  useEffect(() => {
+    if (!treeState) return;
+    console.log("treeState is: \n", jsonToTree(treeState, 0));
+  }, [treeState]);
+
+  const onMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
     editor.setPosition({
       lineNumber: 1,
-      column: code.length + 1,
+      column: defaultTree.length + 1,
     });
     // Register a new language
     monaco.languages.register({ id: "tree" });
@@ -43,15 +64,12 @@ export const CodePanel = () => {
     monaco.editor.setTheme("treeTheme");
     editor.focus();
     // editor.setPosition({ lineNumber: 1, column: 5 });
-    editor.onDidChangeModelContent((e) => handleEditorChange(e, editor));
-    
-    editor.onDidChangeCursorPosition((e) => {
-      console.log("cursorPosition changed: ", JSON.stringify(e.position));
+    editor.onDidChangeModelContent(e => handleEditorChange(e, editor));
+
+    editor.onDidChangeCursorPosition(e => {
       const value = editor.getModel()?.getValue() || "";
-      const currentLine = value.split(/\r\n|\r|\n/)[e.position.lineNumber - 1]
+      const currentLine = value.split(/\r\n|\r|\n/)[e.position.lineNumber - 1];
       const currentPrefix = currentLine.split(" ")[0];
-      console.log("currentPrefix length: ", currentPrefix.length)
-      console.log("position.column: ", e.position.column)
       if (e.position.column < currentPrefix.length + 2) {
         editor.setPosition({
           lineNumber: e.position.lineNumber,
@@ -63,53 +81,52 @@ export const CodePanel = () => {
     editorRef.current = editor;
   };
 
-  const handleEditorChange = (e: monaco.editor.IModelContentChangedEvent, editor: monaco.editor.IStandaloneCodeEditor) => {
-    console.log("modelContent changed");
-
+  const handleEditorChange = (
+    e: monaco.editor.IModelContentChangedEvent,
+    editor: monaco.editor.IStandaloneCodeEditor
+  ) => {
     const value = editor.getModel()?.getValue();
-    const isBackspace =
-      e.changes[0].text === "" &&
-      e.changes[0].range.startColumn < e.changes[0].range.endColumn;
+    if (!value) return;
+    const changes = e.changes[0];
+    const isBackspace = changes.text === "" && changes.range.startColumn < changes.range.endColumn;
 
     let prevPrefix = rootPrefix;
-    let currPrefix: any = null;
+    let currPrefix = prevPrefix;
 
-    const lines = value?.split(/\r\n|\r|\n/).map((line) => {
+    const lines = value.split(/\r\n|\r|\n/).map(line => {
       prevPrefix = currPrefix;
       currPrefix = line.split(" ")[0] + " ";
       const lineContent = line.substr(currPrefix.length);
-      if (line.length < rootPrefix.length) return prevPrefix;
-      if (line.length < currPrefix.length) {
-        if (isBackspace) {
+      // Handle shift+tab at root
+      if (line.match(/^└──*/)) return rootPrefix + lineContent;
+      if (isBackspace) {
+        // Handle backspace at root
+        if (line === "├──") return null;
+        // Handle backspace at branch
+        if (line.match(/^\t+└──$/)) {
           const numTabs = (line.match(/\t/g) || []).length;
           return numTabs > 1 ? getBranchPrefix(numTabs - 1) : rootPrefix;
         }
-        return currPrefix
-      };
-      if (line.startsWith(rootPrefix + "\t")) return getBranchPrefix(1) + lineContent;  
-      if (line.match(/^\|\t+└── \t/)) {
-        const numTabs = (line.match(/\t/g) || []).length;
-        console.log("found tabs:", numTabs)
-        return getBranchPrefix(numTabs) + lineContent.replace("\t", "");
       }
-      // else if (!line.startsWith(rootPrefix)) {
-      //   // Maybe you tried to backspace and delete the header
-      //   if (line.startsWith("├")) return line + " ";
-      //   // Or else it's a brand new line so add the whole prefix
-      //   else return rootPrefix + line;
-      // }
-      else {
-        console.log("Didnt find any other matches");
+      // Handle hitting enter
+      if (line.match(/^\t+$|^$/)) return prevPrefix;
+      // Handle moving tree right
+      if (line.match(/^├── \t|^\t+└── \t/)) {
+        const numTabs = (line.match(/\t/g) || []).length;
+        return getBranchPrefix(numTabs) + lineContent.replace("\t", "");
+      } else {
         return line;
-      };
+      }
     });
-
-    const newValue = lines?.join("\n") || rootPrefix;
+    const filtered = lines.filter(line => line !== null);
+    const newValue = filtered?.join("\n") || rootPrefix;
     if (value !== newValue) {
       editor.getModel()?.setValue(newValue);
-      setCode(newValue);
     }
-  }
+    const newState = treeToJson(newValue);
+    // setTreeState(newState);
+    
+  };
 
   return (
     <div className={classes.codeContainer}>
@@ -117,7 +134,7 @@ export const CodePanel = () => {
         options={options}
         theme="vs-dark"
         defaultLanguage="tree"
-        defaultValue={code}
+        defaultValue={defaultTree}
         onMount={onMount}
       />
     </div>

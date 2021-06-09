@@ -8,7 +8,7 @@ export const themeDef: monaco.editor.IStandaloneThemeData = {
     { token: "file", foreground: "33FF42" },
     { token: "tree", foreground: "C1C1C1" }, // will inherit fontStyle from `comment` above
   ],
-  colors: {}
+  colors: {},
 };
 
 // This config defines how the language is displayed in the editor.
@@ -25,11 +25,10 @@ export const languageDef: monaco.languages.IMonarchLanguage = {
       { include: "@tags" },
       [/[A-Za-z][\w\\$]*/, "file"],
       [/├|─|\||└/, "tree"],
+      [/^├── |^\|\t+└── /, "operators"],
     ],
-    whitespace: [
-      // [comment, "comment"],
-      [/\s+/, "white"],
-    ],
+
+    whitespace: [[/\s+/, "white"]],
     numbers: [[/@number/, "number"]],
     strings: [
       [/[=|][ @number]*$/, "string.escape"],
@@ -48,4 +47,5 @@ export const configuration = {
     lineComment: "#",
   },
   brackets: [],
+  foldingStrategy: "indentation",
 };
