@@ -18,19 +18,24 @@ export const options = {
 };
 
 const rootPrefix = "├── ";
-const treeToJson = (tree: string) => {
+const treeStringToJson = (tree: string) => {
   return tree;
 }
 
-const jsonToTree = (tree: Object, depth: number) => {
+const treeJsonToString = (tree: Object) => {
   let treeString = "";
-  const branches = Object.entries(tree);
-  branches.forEach(branch => {
-    const [key, values] = branch;
-    treeString += "\t".repeat(depth) + key + "\n";
-    if (values.length === 0) return;
-    jsonToTree(values, depth + 1);
-  })
+  const parseBranches = (tree: Object, depth: number) => {
+    const branches = Object.entries(tree);
+    branches.forEach(branch => {
+      const [key, values] = branch;
+      const prefix = depth === 0 ? rootPrefix : "\t".repeat(depth) + "└── ";
+      const branchString = prefix + key + "\n";
+      treeString = treeString.concat(branchString);
+      parseBranches(values, depth + 1);
+    })
+  };
+  parseBranches(tree, 0);
+
   return treeString;
 }
 
@@ -46,7 +51,7 @@ export const CodePanel = () => {
 
   useEffect(() => {
     if (!treeState) return;
-    console.log("treeState is: \n", jsonToTree(treeState, 0));
+    console.log(`treeState is:\n${treeJsonToString(treeState)}`);
   }, [treeState]);
 
   const onMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
@@ -123,7 +128,7 @@ export const CodePanel = () => {
     if (value !== newValue) {
       editor.getModel()?.setValue(newValue);
     }
-    const newState = treeToJson(newValue);
+    const newState = treeStringToJson(newValue);
     // setTreeState(newState);
     
   };
