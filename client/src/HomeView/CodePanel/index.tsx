@@ -6,6 +6,9 @@ import { languageDef, themeDef, configuration } from "./customLang";
 import { useRecoilState } from "recoil";
 import { treeAtom } from "../../store";
 
+// @ts-ignore
+import { ROOT_PREFIX, treeJsonToString} from "shared";
+
 type Monaco = typeof monaco;
 
 // This config defines the editors view
@@ -17,34 +20,16 @@ export const options = {
   insertSpaces: false,
 };
 
-const rootPrefix = "├── ";
-const treeStringToJson = (tree: string) => {
-  return tree;
-}
-
-const treeJsonToString = (tree: Object) => {
-  let treeString = "";
-  const parseBranches = (tree: Object, depth: number) => {
-    const branches = Object.entries(tree);
-    branches.forEach(branch => {
-      const [key, values] = branch;
-      const prefix = depth === 0 ? rootPrefix : "\t".repeat(depth) + "└── ";
-      const branchString = prefix + key + "\n";
-      treeString = treeString.concat(branchString);
-      parseBranches(values, depth + 1);
-    })
-  };
-  parseBranches(tree, 0);
-
-  return treeString;
-}
 
 export const CodePanel = () => {
   const defaultRef: any = null;
   const classes = useStyles();
   const editorRef = useRef(defaultRef);
-  const defaultTree = "├── src/";
   const [treeState, setTreeState] = useRecoilState(treeAtom);
+
+  // console.log(treeState)
+  // load it up
+  const defaultTree = treeJsonToString(treeState);
   const getBranchPrefix = (numTabs: number) => {
     return "\t".repeat(numTabs) + "└── ";
   };
@@ -95,7 +80,7 @@ export const CodePanel = () => {
     const changes = e.changes[0];
     const isBackspace = changes.text === "" && changes.range.startColumn < changes.range.endColumn;
 
-    let prevPrefix = rootPrefix;
+    let prevPrefix = ROOT_PREFIX;
     let currPrefix = prevPrefix;
 
     const lines = value.split(/\r\n|\r|\n/).map(line => {
@@ -103,14 +88,14 @@ export const CodePanel = () => {
       currPrefix = line.split(" ")[0] + " ";
       const lineContent = line.substr(currPrefix.length);
       // Handle shift+tab at root
-      if (line.match(/^└──*/)) return rootPrefix + lineContent;
+      if (line.match(/^└──*/)) return ROOT_PREFIX + lineContent;
       if (isBackspace) {
         // Handle backspace at root
         if (line === "├──") return null;
         // Handle backspace at branch
         if (line.match(/^\t+└──$/)) {
           const numTabs = (line.match(/\t/g) || []).length;
-          return numTabs > 1 ? getBranchPrefix(numTabs - 1) : rootPrefix;
+          return numTabs > 1 ? getBranchPrefix(numTabs - 1) : ROOT_PREFIX;
         }
       }
       // Handle hitting enter
@@ -124,12 +109,13 @@ export const CodePanel = () => {
       }
     });
     const filtered = lines.filter(line => line !== null);
-    const newValue = filtered?.join("\n") || rootPrefix;
+    const newValue = filtered?.join("\n") || ROOT_PREFIX;
     if (value !== newValue) {
       editor.getModel()?.setValue(newValue);
     }
-    const newState = treeStringToJson(newValue);
+    // const newState = treeStringToJson(newValue);
     // setTreeState(newState);
+
     
   };
 
