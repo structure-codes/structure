@@ -34,10 +34,11 @@ export const CodePanel = () => {
     return "\t".repeat(numTabs) + "└── ";
   };
 
-  useEffect(() => {
-    if (!treeState) return;
-    console.log(`treeState is:\n${treeJsonToString(treeState)}`);
-  }, [treeState]);
+  // useEffect(() => {
+  //   if (!treeState || !editorRef.current) return;
+  //   const value = editorRef.current.getModel()?.getValue();
+  //   if (value !== treeState) editorRef.current.getModel()?.setValue(treeState);
+  // }, [treeState]);
 
   const onMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
     editor.setPosition({

@@ -3,23 +3,14 @@ export const ROOT_PREFIX = "├── ";
 // TODO: maybe make this bundle to one output file incase of more shared code
 // TODO: fix this shite as the only algo guy is @Alex not @Boult 🤯
 export const treeStringToJson = (tree: string) => {
-  const treeNodes = new Map();
-  const lines = tree.split("\n");
-  for(const [k,v] of Object.entries(lines)) {
-    const isFolder = v.endsWith("/");
-
-    if (isFolder) {
-      const strippedName = v.replaceAll(/[\t|─|└|├]/ig, "").trim();
-
-      treeNodes.set(strippedName, k);
-    }
-  }
-
-
-
-  console.log(treeNodes);
-
-  return null;
+  const elements: any = {};
+  tree.split(/\r|\r\n|\n/).forEach((line, index) => {
+    const prefix = line.split(" ")[0];
+    const content = line.substr(prefix.length);
+    elements[content] = {};
+  })
+  console.log("new elements are: ", elements)
+  return elements;
 }
 
 export const treeJsonToString = (tree: Object) => {
@@ -48,7 +39,7 @@ export const treeJsonToElements = (tree: any) => {
     branches.forEach((branch, index) => {
       const [key, values] = branch;
       elements.push({
-        id: `${key}`,
+        id: key,
         type: "default",
         data: { label: key },
         position: { x: 200 * index, y: 75 * depth },
