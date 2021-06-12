@@ -42,15 +42,18 @@ export const treeJsonToString = (tree: Object) => {
 
 export const treeJsonToElements = (tree: any) => {
   const elements: any = [];
+  const offsetX = 100;
+  const offsetY = 50;
+
   const parseBranches = (tree: Object, parent: string | null, depth: number) => {
     const branches = Object.entries(tree);
     branches.forEach((branch, index) => {
       const [key, values] = branch;
       elements.push({
         id: key,
-        type: "default",
+        type: "customNode",
         data: { label: key },
-        position: { x: 200 * index, y: 75 * depth },
+        position: { x: 250 * index + offsetX, y: 100 * depth + offsetY },
       });
       if (parent) {
         elements.push({ 

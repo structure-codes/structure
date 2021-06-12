@@ -6,12 +6,17 @@ import "react-flow-renderer/dist/theme-default.css";
 import { useRecoilState } from "recoil";
 import { treeAtom } from "../../store";
 import { Handle, Position } from "react-flow-renderer/nocss";
-import { Button, Typography } from "@material-ui/core";
+import { Button, makeStyles, Typography } from "@material-ui/core";
 import { treeJsonToElements } from "shared";
+import clsx from "clsx";
 
+// TODO: figure out how to make selected color work
 const CustomNode = ({ data }: any) => {
+  const classes = useStyles();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [value, setValue] = useState<string>(data.label);
+  const [isSelected, setIsSelected] = useState(false);
+
   const ref = useRef<any>(null);
 
   useEffect(() => {
@@ -25,8 +30,13 @@ const CustomNode = ({ data }: any) => {
     setIsEditing(!isEditing);
   };
 
+  const handleSetFocus = () => {
+    console.log("clicked on", isSelected);
+    setIsSelected(!isSelected)
+  }
+
   return (
-    <div style={{ padding: 12 }} onDoubleClick={handleHandleDoubleClick}>
+    <div className={clsx({[classes.root]: true}, {[classes.isSelected]: isSelected})} onClick={handleSetFocus} onDoubleClick={handleHandleDoubleClick}>
       <Handle type="source" position={Position.Top} />
       {isEditing ? (
         <form
@@ -48,6 +58,7 @@ const CustomNode = ({ data }: any) => {
       ) : (
         <Typography>{value}</Typography>
       )}
+      <Handle type="source" position={Position.Bottom} />
     </div>
   );
 };

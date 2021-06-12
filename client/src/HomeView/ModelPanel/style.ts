@@ -23,5 +23,12 @@ export const useStyles = makeStyles({
   },
   "@global .react-flow__node.selected": {    
     borderColor: "#fff",
+  },
+  root: {
+    border: "1px solid #000",
+    padding: "6px 12px 6px 12px",
+  },
+  isSelected: {
+    borderColor: "#fff",
   }
 })
