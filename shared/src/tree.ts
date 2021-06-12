@@ -4,10 +4,18 @@ export const ROOT_PREFIX = "├── ";
 // TODO: fix this shite as the only algo guy is @Alex not @Boult 🤯
 export const treeStringToJson = (tree: string) => {
   const elements: any = {};
+  let current: any = null;
+  let prevNode = null;
   tree.split(/\r|\r\n|\n/).forEach((line, index) => {
     const prefix = line.split(" ")[0];
+    const numTabs = (prefix.match(/\t/g) || []).length;
     const content = line.substr(prefix.length);
-    elements[content] = {};
+    if (!current?.parent) {
+      elements[content] = {
+        parent: null,
+        children: [],
+      };
+    }
   })
   console.log("new elements are: ", elements)
   return elements;
