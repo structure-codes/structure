@@ -7,7 +7,7 @@ import { useRecoilState } from "recoil";
 import { treeAtom } from "../../store";
 
 // @ts-ignore
-import { ROOT_PREFIX, treeJsonToString} from "shared";
+import { ROOT_PREFIX, treeJsonToString, treeStringToJson } from "shared";
 
 type Monaco = typeof monaco;
 
@@ -110,12 +110,11 @@ export const CodePanel = () => {
     });
     const filtered = lines.filter(line => line !== null);
     const newValue = filtered?.join("\n") || ROOT_PREFIX;
-    if (value !== newValue) {
+    if (value && value !== newValue) {
       editor.getModel()?.setValue(newValue);
+      const newState: any = treeStringToJson(newValue);
+      setTreeState(newState);
     }
-    // const newState = treeStringToJson(newValue);
-    // setTreeState(newState);
-
     
   };
 

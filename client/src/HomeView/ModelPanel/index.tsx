@@ -3,12 +3,13 @@ import { useStyles } from "./style";
 import ReactFlow, { addEdge } from "react-flow-renderer/nocss";
 import "react-flow-renderer/dist/style.css";
 import "react-flow-renderer/dist/theme-default.css";
-
+import { useRecoilState } from "recoil";
+import { treeAtom } from "../../store";
 import { Handle, Position } from "react-flow-renderer/nocss";
 import { Button, Typography } from "@material-ui/core";
+import { treeJsonToElements } from "shared";
 
 const CustomNode = ({ data }: any) => {
-
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [value, setValue] = useState<string>(data.label);
   const ref = useRef<any>(null);
@@ -19,34 +20,37 @@ const CustomNode = ({ data }: any) => {
     }
   }, [isEditing, ref]);
 
-  const handleHandleDoubleClick = () => {    
+  const handleHandleDoubleClick = () => {
     ref.current && ref.current.focus();
     setIsEditing(!isEditing);
-  }
-  
-  return <div style={{ padding: 12 }} onDoubleClick={handleHandleDoubleClick}>
-    <Handle
-      type="source"
-      position={Position.Top}
-    />
-    {isEditing ?
-      <form onSubmit={(e) => {
-        e.preventDefault();
-        setIsEditing(false);
-        setValue(value)
-      }}>
-      <input
-        ref={ref}
-        onBlur={() => {setIsEditing(false)}}
-        value={value}
-        onChange={(event: any) => setValue(event.target.value)}
-      />
-      </form>
-     :
-      <Typography>{value}</Typography>    
-    }
-  </div>
-}
+  };
+
+  return (
+    <div style={{ padding: 12 }} onDoubleClick={handleHandleDoubleClick}>
+      <Handle type="source" position={Position.Top} />
+      {isEditing ? (
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            setIsEditing(false);
+            setValue(value);
+          }}
+        >
+          <input
+            ref={ref}
+            onBlur={() => {
+              setIsEditing(false);
+            }}
+            value={value}
+            onChange={(event: any) => setValue(event.target.value)}
+          />
+        </form>
+      ) : (
+        <Typography>{value}</Typography>
+      )}
+    </div>
+  );
+};
 
 const defaultElements = [
   {
@@ -54,9 +58,9 @@ const defaultElements = [
     type: "customNode",
     data: { label: "src" },
     position: { x: 110, y: 25 },
-  },  
+  },
   {
-    id: "2",    
+    id: "2",
     data: { label: "Components" },
     position: { x: 110, y: 125 },
   },
@@ -67,6 +71,12 @@ const defaultElements = [
 export const ModelPanel = () => {
   const classes = useStyles();
   const [nodes, setNodes] = useState<any>(defaultElements);
+  const [treeState, setTreeState] = useRecoilState(treeAtom);
+
+  useEffect(() => {
+    const elements = treeJsonToElements(treeState);
+    setNodes(elements);
+  }, [treeState]);
 
   const handleInsertNode = () => {
     const nodesClone = [...nodes];
@@ -76,34 +86,31 @@ export const ModelPanel = () => {
       id: `${id}`,
       type: "default",
       data: { label: "Minecraft" },
-      position: { x: 0, y: 0 }
+      position: { x: 0, y: 0 },
     });
 
     setNodes(nodesClone);
-  }
+  };
 
   const handleDeleteNode = () => {
     const nodesClone = [...nodes];
-
-
-
-  }
+  };
 
   const onConnect = (params: any) => setNodes((els: any) => addEdge(params, els));
 
   return (
     <div className={classes.modelContainer}>
       <Button onClick={handleInsertNode}>Add Node</Button>
-      <ReactFlow 
+      <ReactFlow
         elementsSelectable
         nodesDraggable
         nodesConnectable
         nodeTypes={{
-          customNode: CustomNode
+          customNode: CustomNode,
         }}
         onConnect={onConnect}
-        elements={nodes} 
+        elements={nodes}
       />
     </div>
-  )
-}
+  );
+};
