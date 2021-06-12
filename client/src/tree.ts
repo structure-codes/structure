@@ -17,17 +17,16 @@ export const treeStringToJson = (tree: string) => {
       };
     }
   })
-  console.log("new elements are: ", elements)
   return elements;
 }
 
 export const treeJsonToString = (tree: Object) => {
-  let treeString = "";
+  let treeString: string = "";
   const parseBranches = (tree: Object, depth: number) => {
     const branches = Object.entries(tree);
     branches.forEach(branch => {
       const [key, values] = branch;
-      if (values.length === 1) return;
+      if (values && values.length === 1) return;
       const prefix = depth === 0 ? ROOT_PREFIX : "\t".repeat(depth) + "└── ";
       const branchString = prefix + key + "\n";
       treeString = treeString.concat(branchString);

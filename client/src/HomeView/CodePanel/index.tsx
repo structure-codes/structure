@@ -5,9 +5,7 @@ import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { languageDef, themeDef, configuration } from "./customLang";
 import { useRecoilState } from "recoil";
 import { treeAtom } from "../../store";
-
-// @ts-ignore
-import { ROOT_PREFIX, treeJsonToString, treeStringToJson } from "shared";
+import { ROOT_PREFIX, treeJsonToString, treeStringToJson } from "../../tree";
 
 type Monaco = typeof monaco;
 
@@ -26,10 +24,6 @@ export const CodePanel = () => {
   const classes = useStyles();
   const editorRef = useRef(defaultRef);
   const [treeState, setTreeState] = useRecoilState(treeAtom);
-
-  // console.log(treeState)
-  // load it up
-  const defaultTree = treeJsonToString(treeState);
   const getBranchPrefix = (numTabs: number) => {
     return "\t".repeat(numTabs) + "└── ";
   };
@@ -41,10 +35,6 @@ export const CodePanel = () => {
   // }, [treeState]);
 
   const onMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
-    editor.setPosition({
-      lineNumber: 1,
-      column: defaultTree.length + 1,
-    });
     // Register a new language
     monaco.languages.register({ id: "tree" });
     // Register a tokens provider for the language
@@ -68,7 +58,7 @@ export const CodePanel = () => {
         });
       }
     });
-
+    editor.getModel()?.setValue(treeJsonToString(treeState));
     editorRef.current = editor;
   };
 
@@ -125,7 +115,7 @@ export const CodePanel = () => {
         options={options}
         theme="vs-dark"
         defaultLanguage="tree"
-        defaultValue={defaultTree}
+        // defaultValue={treeJsonToString(treeState)}
         onMount={onMount}
       />
     </div>

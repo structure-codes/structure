@@ -7,7 +7,7 @@ import { useRecoilState } from "recoil";
 import { treeAtom } from "../../store";
 import { Handle, Position } from "react-flow-renderer/nocss";
 import { Button, makeStyles, Typography } from "@material-ui/core";
-import { treeJsonToElements } from "shared";
+import { treeJsonToElements } from "../../tree";
 import clsx from "clsx";
 
 // TODO: figure out how to make selected color work
@@ -87,7 +87,7 @@ export const ModelPanel = () => {
   useEffect(() => {
     const elements = treeJsonToElements(treeState);
     setNodes(elements);
-  }, [treeState]);
+  }, []);
 
   const handleInsertNode = () => {
     const nodesClone = [...nodes];

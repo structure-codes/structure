@@ -23,7 +23,6 @@
     "react-monaco-editor": "^0.43.0",
     "react-scripts": "4.0.3",
     "recoil": "^0.3.1",
-    "shared": "file:../shared",
     "typescript": "^4.1.2",
     "web-vitals": "^1.0.1"
   },
