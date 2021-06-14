@@ -87,7 +87,7 @@ export const ModelPanel = () => {
   useEffect(() => {
     const elements = treeJsonToElements(treeState);
     setNodes(elements);
-  }, []);
+  }, [treeState]);
 
   const handleInsertNode = () => {
     const nodesClone = [...nodes];

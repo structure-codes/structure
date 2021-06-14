@@ -104,6 +104,7 @@ export const CodePanel = () => {
     if (value && value !== newValue) {
       editor.getModel()?.setValue(newValue);
       const newState: any = treeStringToJson(newValue);
+      console.log(newState)
       setTreeState(newState);
     }
     

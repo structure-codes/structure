@@ -1,21 +1,26 @@
 export const ROOT_PREFIX = "├── ";
 
-// TODO: maybe make this bundle to one output file incase of more shared code
-// TODO: fix this shite as the only algo guy is @Alex not @Boult 🤯
 export const treeStringToJson = (tree: string) => {
   const elements: any = {};
-  let current: any = null;
-  let prevNode = null;
+  let prevLine: string | null = null;
+  const path: any = [];
   tree.split(/\r|\r\n|\n/).forEach((line, index) => {
+    const prevPrefix = prevLine ? prevLine.split(" ")[0] : null;
+    const prevNumTabs = prevPrefix ? (prevPrefix.match(/\t/g) || []).length : null;
     const prefix = line.split(" ")[0];
     const numTabs = (prefix.match(/\t/g) || []).length;
-    const content = line.substr(prefix.length);
-    if (!current?.parent) {
-      elements[content] = {
-        parent: null,
-        children: [],
-      };
-    }
+    const filename: string = line.substr(prefix.length).trim();
+    if (!filename) return;
+    // Weird edge case at root
+    if (prevNumTabs === 0 && numTabs === 0) path.pop();
+    // If less than or equal to previous depth, pop once
+    if (prevNumTabs && numTabs <= prevNumTabs) path.pop();
+    // If less than previous depth, pop again
+    if (prevNumTabs && numTabs < prevNumTabs) path.pop();
+    const current = path.reduce((o: [], i: number) => o[i], elements);
+    current[filename] = {};
+    prevLine = line;
+    path.push(filename);
   })
   return elements;
 }
