@@ -1,9 +1,14 @@
-export const ROOT_PREFIX = "├── ";
+// TODO: use these everywhere
+export const ROOT_PREFIX = "│  ";
+export const BRANCH_PREFIX = "├── ";
+export const BRANCH_PREFIX_END = "└── ";
 
 export const treeStringToJson = (tree: string) => {
   const elements: any = {};
   let prevLine: string | null = null;
-  const path: any = [];
+  const path: Array<string> = [];
+
+  // look for line breaks that works on all platforms
   tree.split(/\r|\r\n|\n/).forEach((line, index) => {
     const prevPrefix = prevLine ? prevLine.split(" ")[0] : null;
     const prevNumTabs = prevPrefix ? (prevPrefix.match(/\t/g) || []).length : null;
@@ -17,32 +22,35 @@ export const treeStringToJson = (tree: string) => {
     if (prevNumTabs && numTabs <= prevNumTabs) path.pop();
     // If less than previous depth, pop again
     if (prevNumTabs && numTabs < prevNumTabs) path.pop();
-    const current = path.reduce((o: [], i: number) => o[i], elements);
+
+    // recusion
+    const current: any = path.reduce((obj: [], i: string) => obj[parseInt(i)], elements);
+    console.log(current);
     current[filename] = {};
     prevLine = line;
     path.push(filename);
-  })
+  });
   return elements;
-}
+};
 
 export const treeJsonToString = (tree: Object) => {
   let treeString: string = "";
   const parseBranches = (tree: Object, depth: number) => {
     const branches = Object.entries(tree);
-    branches.forEach(branch => {
-      const [key, values] = branch;
+    for (const [key, values] of branches) {
       if (values && values.length === 1) return;
-      const prefix = depth === 0 ? ROOT_PREFIX : "\t".repeat(depth) + "└── ";
+      const prefix = depth === 0 ? ROOT_PREFIX : "\t".repeat(depth) + BRANCH_PREFIX;
       const branchString = prefix + key + "\n";
       treeString = treeString.concat(branchString);
       parseBranches(values, depth + 1);
-    })
+    };
   };
   parseBranches(tree, 0);
   treeString = treeString.replace(/\n$/, "");
+  console.log("test", treeString)
 
   return treeString;
-}
+};
 
 export const treeJsonToElements = (tree: any) => {
   const elements: any = [];
@@ -60,11 +68,11 @@ export const treeJsonToElements = (tree: any) => {
         position: { x: 250 * index + offsetX, y: 100 * depth + offsetY },
       });
       if (parent) {
-        elements.push({ 
-          id: `${parent}-${key}`, 
-          source: parent, 
-          target: key, 
-          animated: false 
+        elements.push({
+          id: `${parent}-${key}`,
+          source: parent,
+          target: key,
+          animated: false,
         });
       }
       parseBranches(values, key, depth + 1);

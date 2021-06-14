@@ -5,7 +5,7 @@ import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { languageDef, themeDef, configuration } from "./customLang";
 import { useRecoilState } from "recoil";
 import { treeAtom } from "../../store";
-import { ROOT_PREFIX, treeJsonToString, treeStringToJson } from "../../tree";
+import { BRANCH_PREFIX, ROOT_PREFIX, treeJsonToString, treeStringToJson } from "../../tree";
 
 type Monaco = typeof monaco;
 
@@ -25,7 +25,7 @@ export const CodePanel = () => {
   const editorRef = useRef(defaultRef);
   const [treeState, setTreeState] = useRecoilState(treeAtom);
   const getBranchPrefix = (numTabs: number) => {
-    return "\t".repeat(numTabs) + "└── ";
+    return "\t".repeat(numTabs) + BRANCH_PREFIX;
   };
 
   // useEffect(() => {
@@ -62,6 +62,7 @@ export const CodePanel = () => {
     editorRef.current = editor;
   };
 
+  // TODO: use contants in the rules parsing
   const handleEditorChange = (
     e: monaco.editor.IModelContentChangedEvent,
     editor: monaco.editor.IStandaloneCodeEditor
@@ -78,6 +79,7 @@ export const CodePanel = () => {
       prevPrefix = currPrefix;
       currPrefix = line.split(" ")[0] + " ";
       const lineContent = line.substr(currPrefix.length);
+
       // Handle shift+tab at root
       if (line.match(/^└──*/)) return ROOT_PREFIX + lineContent;
       if (isBackspace) {
@@ -89,8 +91,10 @@ export const CodePanel = () => {
           return numTabs > 1 ? getBranchPrefix(numTabs - 1) : ROOT_PREFIX;
         }
       }
+
       // Handle hitting enter
       if (line.match(/^\t+$|^$/)) return prevPrefix;
+
       // Handle moving tree right
       if (line.match(/^├── \t|^\t+└── \t/)) {
         const numTabs = (line.match(/\t/g) || []).length;
@@ -98,6 +102,7 @@ export const CodePanel = () => {
       } else {
         return line;
       }
+      
     });
     const filtered = lines.filter(line => line !== null);
     const newValue = filtered?.join("\n") || ROOT_PREFIX;
@@ -116,7 +121,6 @@ export const CodePanel = () => {
         options={options}
         theme="vs-dark"
         defaultLanguage="tree"
-        // defaultValue={treeJsonToString(treeState)}
         onMount={onMount}
       />
     </div>
