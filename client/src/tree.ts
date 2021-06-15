@@ -1,7 +1,12 @@
 // TODO: use these everywhere
-export const ROOT_PREFIX = "│  ";
-export const BRANCH_PREFIX = "├── ";
-export const BRANCH_PREFIX_END = "└── ";
+export const TRUNK = "│";
+export const BRANCH = "├── ";
+export const LAST_BRANCH = "└── ";
+export const getBranchPrefix = (depth: number, isLastBranch: boolean) => {
+  const base = `${TRUNK}\t`.repeat(depth);
+  if (isLastBranch) return base + LAST_BRANCH
+  else return base + BRANCH;
+}
 
 export const treeStringToJson = (tree: string) => {
   const elements: any = {};
@@ -37,13 +42,13 @@ export const treeJsonToString = (tree: Object) => {
   let treeString: string = "";
   const parseBranches = (tree: Object, depth: number) => {
     const branches = Object.entries(tree);
-    for (const [key, values] of branches) {
-      if (values && values.length === 1) return;
-      const prefix = depth === 0 ? ROOT_PREFIX : "\t".repeat(depth) + BRANCH_PREFIX;
+    branches.forEach(([key, values], index) => {
+      const isLastBranch = index === branches.length - 1;
+      const prefix = getBranchPrefix(depth, isLastBranch);
       const branchString = prefix + key + "\n";
       treeString = treeString.concat(branchString);
       parseBranches(values, depth + 1);
-    };
+    });
   };
   parseBranches(tree, 0);
   treeString = treeString.replace(/\n$/, "");

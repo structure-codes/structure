@@ -1,5 +1,5 @@
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
-import { BRANCH_PREFIX, ROOT_PREFIX } from "../../tree";
+import { BRANCH, TRUNK } from "../../tree";
 
 export const themeDef: monaco.editor.IStandaloneThemeData = {
   base: "vs-dark", // can also be vs-dark or hc-black
@@ -14,7 +14,7 @@ export const themeDef: monaco.editor.IStandaloneThemeData = {
 
 // This config defines how the language is displayed in the editor.
 
-const operatorRegex = new RegExp(`^${ROOT_PREFIX} |^\\|\\t+${BRANCH_PREFIX}` ,"g");
+const operatorRegex = new RegExp(`^${TRUNK} |^\\|\\t+${BRANCH}` ,"g");
 export const languageDef: monaco.languages.IMonarchLanguage = {
   ignoreCase: true,
   defaultToken: "",

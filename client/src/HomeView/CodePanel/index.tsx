@@ -5,7 +5,7 @@ import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { languageDef, themeDef, configuration } from "./customLang";
 import { useRecoilState } from "recoil";
 import { treeAtom } from "../../store";
-import { BRANCH_PREFIX, ROOT_PREFIX, treeJsonToString, treeStringToJson } from "../../tree";
+import { BRANCH, LAST_BRANCH, TRUNK, treeJsonToString, treeStringToJson, getBranchPrefix } from "../../tree";
 
 type Monaco = typeof monaco;
 
@@ -24,9 +24,6 @@ export const CodePanel = () => {
   const classes = useStyles();
   const editorRef = useRef(defaultRef);
   const [treeState, setTreeState] = useRecoilState(treeAtom);
-  const getBranchPrefix = (numTabs: number) => {
-    return "\t".repeat(numTabs) + BRANCH_PREFIX;
-  };
 
   // useEffect(() => {
   //   if (!treeState || !editorRef.current) return;
@@ -67,47 +64,53 @@ export const CodePanel = () => {
     e: monaco.editor.IModelContentChangedEvent,
     editor: monaco.editor.IStandaloneCodeEditor
   ) => {
-    const value = editor.getModel()?.getValue();
+    const model = editor.getModel();
+    if (!model) return;
+    const value = model.getValue();
     if (!value) return;
     const changes = e.changes[0];
     const isBackspace = changes.text === "" && changes.range.startColumn < changes.range.endColumn;
 
-    let prevPrefix = ROOT_PREFIX;
+    let prevPrefix = TRUNK;
     let currPrefix = prevPrefix;
+    const branchPrefixRegex = new RegExp(`^(${TRUNK}\t)+${BRANCH}|^(${TRUNK}\t)+${LAST_BRANCH}|^${LAST_BRANCH}|^${BRANCH}`)
 
     const lines = value.split(/\r\n|\r|\n/).map(line => {
       prevPrefix = currPrefix;
       currPrefix = line.split(" ")[0] + " ";
       const lineContent = line.substr(currPrefix.length);
 
+      if (!line.match(branchPrefixRegex)) {
+        console.log("this line sucks yo:\n ", line.match(branchPrefixRegex))
+      }
       // Handle shift+tab at root
-      if (line.match(/^└──*/)) return ROOT_PREFIX + lineContent;
+      // if (line.match(/^└──*/)) return TRUNK + lineContent;
       if (isBackspace) {
-        // Handle backspace at root
-        if (line === "├──") return null;
-        // Handle backspace at branch
-        if (line.match(/^\t+└──$/)) {
-          const numTabs = (line.match(/\t/g) || []).length;
-          return numTabs > 1 ? getBranchPrefix(numTabs - 1) : ROOT_PREFIX;
+        console.log("isBackspace currPrefix is: ", currPrefix)
+        // Handle backspace 
+        if (!currPrefix.match(branchPrefixRegex)) {
+          console.log("handle backspace")
+          const numTabs = (currPrefix.match(/\t/g) || []).length;
+          return getBranchPrefix(numTabs - 1, false) + lineContent;
         }
       }
 
       // Handle hitting enter
       if (line.match(/^\t+$|^$/)) return prevPrefix;
 
-      // Handle moving tree right
-      if (line.match(/^├── \t|^\t+└── \t/)) {
+      // Handle moving tree right with tabs
+      if (lineContent.match(/^\t/)) {
         const numTabs = (line.match(/\t/g) || []).length;
-        return getBranchPrefix(numTabs) + lineContent.replace("\t", "");
+        return getBranchPrefix(numTabs, false) + lineContent.replace("\t", "");
       } else {
         return line;
       }
       
     });
     const filtered = lines.filter(line => line !== null);
-    const newValue = filtered?.join("\n") || ROOT_PREFIX;
-    if (value && value !== newValue) {
-      editor.getModel()?.setValue(newValue);
+    const newValue = filtered?.join("\n") || getBranchPrefix(0, true);
+    if (value !== newValue) {
+      model.setValue(newValue);
       const newState: any = treeStringToJson(newValue);
       console.log(newState)
       setTreeState(newState);
