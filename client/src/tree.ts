@@ -1,11 +1,12 @@
 // TODO: use these everywhere
 export const TRUNK = "│";
-export const BRANCH = "├── ";
-export const LAST_BRANCH = "└── ";
+export const BRANCH = "├──";
+export const LAST_BRANCH = "└──";
+
 export const getBranchPrefix = (depth: number, isLastBranch: boolean) => {
   const base = `${TRUNK}\t`.repeat(depth);
-  if (isLastBranch) return base + LAST_BRANCH
-  else return base + BRANCH;
+  if (isLastBranch) return base + LAST_BRANCH + " "
+  else return base + BRANCH + " ";
 }
 
 export const treeStringToJson = (tree: string) => {
@@ -30,10 +31,14 @@ export const treeStringToJson = (tree: string) => {
 
     // recusion
     const current: any = path.reduce((obj: [], i: string) => obj[parseInt(i)], elements);
-    console.log(current);
+    if (!current) {
+      return
+    };
+
     current[filename] = {};
     prevLine = line;
-    path.push(filename);
+    path.push(filename);    
+
   });
   return elements;
 };
@@ -52,8 +57,7 @@ export const treeJsonToString = (tree: Object) => {
   };
   parseBranches(tree, 0);
   treeString = treeString.replace(/\n$/, "");
-  console.log("test", treeString)
-
+  
   return treeString;
 };
 
@@ -87,3 +91,21 @@ export const treeJsonToElements = (tree: any) => {
 
   return elements;
 };
+
+export const getNumberOfTabs = (line: string) => {
+  return (line.match(/\t/g) || []).length
+}
+
+export const getNumberOfLeadingTabs = (line: string): number => {
+  // Get the leading part of the line which may contain tabs
+  const prefix = line.match(/^(\t)+[^\t]/g);
+  // If no leading tabs, return 0
+  console.log("prefix is: ", prefix)
+  if (!prefix) return 0;
+  return getNumberOfTabs(prefix[0]);
+}
+
+export const trimTreeLine = (str: string): string => {
+  const numTabs = getNumberOfLeadingTabs(str);
+  return "\t".repeat(numTabs) + str.trim();
+}

@@ -30,8 +30,7 @@ const CustomNode = ({ data }: any) => {
     setIsEditing(!isEditing);
   };
 
-  const handleSetFocus = () => {
-    console.log("clicked on", isSelected);
+  const handleSetFocus = () => {    
     setIsSelected(!isSelected)
   }
 

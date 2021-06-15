@@ -1,35 +1,35 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { useStyles } from "./style";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { languageDef, themeDef, configuration } from "./customLang";
 import { useRecoilState } from "recoil";
 import { treeAtom } from "../../store";
-import { BRANCH, LAST_BRANCH, TRUNK, treeJsonToString, treeStringToJson, getBranchPrefix } from "../../tree";
+import {
+  BRANCH,
+  LAST_BRANCH,
+  TRUNK,
+  treeJsonToString,
+  treeStringToJson,
+  getBranchPrefix,
+  trimTreeLine,
+  getNumberOfTabs,
+} from "../../tree";
+// import { customTreeFolding } from "./foldProvider";
 
+type IGlobalEditorOptions = monaco.editor.IGlobalEditorOptions;
 type Monaco = typeof monaco;
 
-// This config defines the editors view
-export const options = {
-  minimap: {
-    enabled: false,
-  },
+export const options: IGlobalEditorOptions = {
   tabSize: 2,
-  insertSpaces: false,
+  insertSpaces: false  
 };
-
 
 export const CodePanel = () => {
   const defaultRef: any = null;
   const classes = useStyles();
   const editorRef = useRef(defaultRef);
   const [treeState, setTreeState] = useRecoilState(treeAtom);
-
-  // useEffect(() => {
-  //   if (!treeState || !editorRef.current) return;
-  //   const value = editorRef.current.getModel()?.getValue();
-  //   if (value !== treeState) editorRef.current.getModel()?.setValue(treeState);
-  // }, [treeState]);
 
   const onMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
     // Register a new language
@@ -41,8 +41,17 @@ export const CodePanel = () => {
     monaco.editor.defineTheme("treeTheme", themeDef);
     monaco.editor.setTheme("treeTheme");
     editor.focus();
-    // editor.setPosition({ lineNumber: 1, column: 5 });
     editor.onDidChangeModelContent(e => handleEditorChange(e, editor));
+
+    // register code folder provider
+    monaco.languages.registerFoldingRangeProvider("customTreeFolding", {
+      provideFoldingRanges: function (model, context, token) {
+        const ranges: any = [];
+        // const lines = model.getLinesContent();
+        
+        return ranges;
+      },
+    });
 
     editor.onDidChangeCursorPosition(e => {
       const value = editor.getModel()?.getValue() || "";
@@ -55,6 +64,7 @@ export const CodePanel = () => {
         });
       }
     });
+
     editor.getModel()?.setValue(treeJsonToString(treeState));
     editorRef.current = editor;
   };
@@ -64,6 +74,7 @@ export const CodePanel = () => {
     e: monaco.editor.IModelContentChangedEvent,
     editor: monaco.editor.IStandaloneCodeEditor
   ) => {
+    console.log("Handling editor change")
     const model = editor.getModel();
     if (!model) return;
     const value = model.getValue();
@@ -73,59 +84,60 @@ export const CodePanel = () => {
 
     let prevPrefix = TRUNK;
     let currPrefix = prevPrefix;
-    const branchPrefixRegex = new RegExp(`^(${TRUNK}\t)+${BRANCH}|^(${TRUNK}\t)+${LAST_BRANCH}|^${LAST_BRANCH}|^${BRANCH}`)
+
+    const branchPrefixRegexWithSpaces = new RegExp(
+      `^(${TRUNK}\t)+${BRANCH} |^(${TRUNK}\t)+${LAST_BRANCH} |^${LAST_BRANCH} |^${BRANCH} `, "g"
+    );
+    
+    const branchPrefixRegex = new RegExp(
+      `^(${TRUNK}\t)+${BRANCH}|^(${TRUNK}\t)+${LAST_BRANCH}|^${LAST_BRANCH}|^${BRANCH}`, "g"
+    );
 
     const lines = value.split(/\r\n|\r|\n/).map(line => {
       prevPrefix = currPrefix;
-      currPrefix = line.split(" ")[0] + " ";
-      const lineContent = line.substr(currPrefix.length);
-
-      if (!line.match(branchPrefixRegex)) {
-        console.log("this line sucks yo:\n ", line.match(branchPrefixRegex))
-      }
-      // Handle shift+tab at root
-      // if (line.match(/^└──*/)) return TRUNK + lineContent;
-      if (isBackspace) {
-        console.log("isBackspace currPrefix is: ", currPrefix)
-        // Handle backspace 
-        if (!currPrefix.match(branchPrefixRegex)) {
-          console.log("handle backspace")
-          const numTabs = (currPrefix.match(/\t/g) || []).length;
-          return getBranchPrefix(numTabs - 1, false) + lineContent;
-        }
-      }
-
-      // Handle hitting enter
-      if (line.match(/^\t+$|^$/)) return prevPrefix;
+      const matches = line.match(branchPrefixRegex);
+      currPrefix = matches ? matches[0] : BRANCH;
+      const lineContent = trimTreeLine(line.substr(currPrefix.length));
 
       // Handle moving tree right with tabs
       if (lineContent.match(/^\t/)) {
+        console.log("NICETABS: : ", lineContent);
         const numTabs = (line.match(/\t/g) || []).length;
         return getBranchPrefix(numTabs, false) + lineContent.replace("\t", "");
-      } else {
+      }
+
+      // Exit if the line starts with an acceptable prefix
+      // EX: │   ├── 
+      if (line.match(branchPrefixRegexWithSpaces)) {
         return line;
       }
-      
+
+      // Handle shift+tab at root
+      // if (line.match(/^└──*/)) return TRUNK + lineContent;
+      if (isBackspace) {
+        console.log("isBackspace currPrefix is: ", currPrefix);
+        // Handle backspace
+        const tabCount = getNumberOfTabs(currPrefix);
+        return getBranchPrefix(tabCount > 0 ? tabCount - 1 : 0, false) + lineContent;
+      }
+
+      // Handle hitting enter
+      if (!line.match(branchPrefixRegex)) return prevPrefix + " " + line;
+      console.log("WTF JS");
+      return line;
     });
     const filtered = lines.filter(line => line !== null);
     const newValue = filtered?.join("\n") || getBranchPrefix(0, true);
     if (value !== newValue) {
       model.setValue(newValue);
-      const newState: any = treeStringToJson(newValue);
-      console.log(newState)
+      const newState: any = treeStringToJson(newValue);      
       setTreeState(newState);
     }
-    
   };
 
   return (
     <div className={classes.codeContainer}>
-      <Editor
-        options={options}
-        theme="vs-dark"
-        defaultLanguage="tree"
-        onMount={onMount}
-      />
+      <Editor options={options} theme="vs-dark" defaultLanguage="tree" onMount={onMount} />
     </div>
   );
 };
