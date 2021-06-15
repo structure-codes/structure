@@ -98,11 +98,10 @@ export const getNumberOfTabs = (line: string) => {
 
 export const getNumberOfLeadingTabs = (line: string): number => {
   // Get the leading part of the line which may contain tabs
-  const prefix = line.match(/^(\t)+[^\t]/g);
+  const leadingWhitespace = line.match(/^\s*/g);
   // If no leading tabs, return 0
-  console.log("prefix is: ", prefix)
-  if (!prefix) return 0;
-  return getNumberOfTabs(prefix[0]);
+  if (!leadingWhitespace) return 0;
+  return getNumberOfTabs(leadingWhitespace[0]);
 }
 
 export const trimTreeLine = (str: string): string => {

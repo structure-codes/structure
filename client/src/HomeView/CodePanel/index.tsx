@@ -14,6 +14,7 @@ import {
   getBranchPrefix,
   trimTreeLine,
   getNumberOfTabs,
+  getNumberOfLeadingTabs,
 } from "../../tree";
 // import { customTreeFolding } from "./foldProvider";
 
@@ -22,7 +23,7 @@ type Monaco = typeof monaco;
 
 export const options: IGlobalEditorOptions = {
   tabSize: 2,
-  insertSpaces: false  
+  insertSpaces: false,
 };
 
 export const CodePanel = () => {
@@ -48,7 +49,7 @@ export const CodePanel = () => {
       provideFoldingRanges: function (model, context, token) {
         const ranges: any = [];
         // const lines = model.getLinesContent();
-        
+
         return ranges;
       },
     });
@@ -74,11 +75,10 @@ export const CodePanel = () => {
     e: monaco.editor.IModelContentChangedEvent,
     editor: monaco.editor.IStandaloneCodeEditor
   ) => {
-    console.log("Handling editor change")
     const model = editor.getModel();
     if (!model) return;
     const value = model.getValue();
-    if (!value) return;
+    if (!value) return model.setValue(getBranchPrefix(0, true));
     const changes = e.changes[0];
     const isBackspace = changes.text === "" && changes.range.startColumn < changes.range.endColumn;
 
@@ -86,12 +86,16 @@ export const CodePanel = () => {
     let currPrefix = prevPrefix;
 
     const branchPrefixRegexWithSpaces = new RegExp(
-      `^(${TRUNK}\t)+${BRANCH} |^(${TRUNK}\t)+${LAST_BRANCH} |^${LAST_BRANCH} |^${BRANCH} `, "g"
+      `^(${TRUNK}\t)+${BRANCH} |^(${TRUNK}\t)+${LAST_BRANCH} |^${LAST_BRANCH} |^${BRANCH} `,
+      "g"
     );
-    
+
     const branchPrefixRegex = new RegExp(
-      `^(${TRUNK}\t)+${BRANCH}|^(${TRUNK}\t)+${LAST_BRANCH}|^${LAST_BRANCH}|^${BRANCH}`, "g"
+      `^(${TRUNK}\t)+${BRANCH}|^(${TRUNK}\t)+${LAST_BRANCH}|^${LAST_BRANCH}|^${BRANCH}`,
+      "g"
     );
+
+    const rootPrefixRegex = new RegExp(`^${LAST_BRANCH}|^${BRANCH}`, "g");
 
     const lines = value.split(/\r\n|\r|\n/).map(line => {
       prevPrefix = currPrefix;
@@ -101,13 +105,12 @@ export const CodePanel = () => {
 
       // Handle moving tree right with tabs
       if (lineContent.match(/^\t/)) {
-        console.log("NICETABS: : ", lineContent);
-        const numTabs = (line.match(/\t/g) || []).length;
+        const numTabs = getNumberOfTabs(currPrefix) + getNumberOfLeadingTabs(lineContent);
         return getBranchPrefix(numTabs, false) + lineContent.replace("\t", "");
       }
 
       // Exit if the line starts with an acceptable prefix
-      // EX: │   ├── 
+      // EX: │\t├──
       if (line.match(branchPrefixRegexWithSpaces)) {
         return line;
       }
@@ -115,10 +118,10 @@ export const CodePanel = () => {
       // Handle shift+tab at root
       // if (line.match(/^└──*/)) return TRUNK + lineContent;
       if (isBackspace) {
-        console.log("isBackspace currPrefix is: ", currPrefix);
         // Handle backspace
         const tabCount = getNumberOfTabs(currPrefix);
-        return getBranchPrefix(tabCount > 0 ? tabCount - 1 : 0, false) + lineContent;
+        if (tabCount === 0) return null;
+        return getBranchPrefix(tabCount - 1, false) + lineContent;
       }
 
       // Handle hitting enter
@@ -130,7 +133,7 @@ export const CodePanel = () => {
     const newValue = filtered?.join("\n") || getBranchPrefix(0, true);
     if (value !== newValue) {
       model.setValue(newValue);
-      const newState: any = treeStringToJson(newValue);      
+      const newState: any = treeStringToJson(newValue);
       setTreeState(newState);
     }
   };
