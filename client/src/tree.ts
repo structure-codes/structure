@@ -5,21 +5,22 @@ export const LAST_BRANCH = "└──";
 
 export const getBranchPrefix = (depth: number, isLastBranch: boolean) => {
   const base = `${TRUNK}\t`.repeat(depth);
-  if (isLastBranch) return base + LAST_BRANCH + " "
+  if (isLastBranch) return base + LAST_BRANCH + " ";
   else return base + BRANCH + " ";
-}
+};
 
 export const treeStringToJson = (tree: string) => {
-  const elements: any = {};
+  console.log("treeString is: ", tree);
+  const elements: {} = {};
   let prevLine: string | null = null;
   const path: Array<string> = [];
 
   // look for line breaks that works on all platforms
   tree.split(/\r|\r\n|\n/).forEach((line, index) => {
     const prevPrefix = prevLine ? prevLine.split(" ")[0] : null;
-    const prevNumTabs = prevPrefix ? (prevPrefix.match(/\t/g) || []).length : null;
+    const prevNumTabs = prevPrefix ? getNumberOfTabs(prevPrefix) : 0;
     const prefix = line.split(" ")[0];
-    const numTabs = (prefix.match(/\t/g) || []).length;
+    const numTabs = prefix ? getNumberOfTabs(prefix) : 0;
     const filename: string = line.substr(prefix.length).trim();
     if (!filename) return;
     // Weird edge case at root
@@ -29,16 +30,25 @@ export const treeStringToJson = (tree: string) => {
     // If less than previous depth, pop again
     if (prevNumTabs && numTabs < prevNumTabs) path.pop();
 
-    // recusion
-    const current: any = path.reduce((obj: [], i: string) => obj[parseInt(i)], elements);
-    if (!current) {
-      return
-    };
+    // For each element in path, return elements[pathItem]
+    // The result is the branch in elements for the current path
+    // path = [ "src/", "Home/"]
+    // elements = { 
+    //   "src/": { 
+    //     "Home/": {} 
+    //   }
+    // }
+    // iter1 = elements["src/"]
+    // iter2 = elements["src/"]["Home/"]
+    // curr = {}
+    const current: any = path.reduce(
+      (branch: { [key: string]: {} }, filename: string) => branch[filename],
+      elements
+    );
 
     current[filename] = {};
     prevLine = line;
-    path.push(filename);    
-
+    path.push(filename);
   });
   return elements;
 };
@@ -57,7 +67,7 @@ export const treeJsonToString = (tree: Object) => {
   };
   parseBranches(tree, 0);
   treeString = treeString.replace(/\n$/, "");
-  
+
   return treeString;
 };
 
@@ -93,8 +103,8 @@ export const treeJsonToElements = (tree: any) => {
 };
 
 export const getNumberOfTabs = (line: string) => {
-  return (line.match(/\t/g) || []).length
-}
+  return (line.match(/\t/g) || []).length;
+};
 
 export const getNumberOfLeadingTabs = (line: string): number => {
   // Get the leading part of the line which may contain tabs
@@ -102,9 +112,9 @@ export const getNumberOfLeadingTabs = (line: string): number => {
   // If no leading tabs, return 0
   if (!leadingWhitespace) return 0;
   return getNumberOfTabs(leadingWhitespace[0]);
-}
+};
 
 export const trimTreeLine = (str: string): string => {
   const numTabs = getNumberOfLeadingTabs(str);
   return "\t".repeat(numTabs) + str.trim();
-}
+};
