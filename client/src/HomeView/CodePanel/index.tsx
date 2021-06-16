@@ -96,40 +96,56 @@ export const CodePanel = () => {
     );
 
     const rootPrefixRegex = new RegExp(`^${LAST_BRANCH}|^${BRANCH}`, "g");
-
-    const lines = value.split(/\r\n|\r|\n/).map(line => {
-      prevPrefix = currPrefix;
-      const matches = line.match(branchPrefixRegex);
-      currPrefix = matches ? matches[0] : BRANCH;
-      const lineContent = trimTreeLine(line.substr(currPrefix.length));
-
-      // Handle moving tree right with tabs
-      if (lineContent.match(/^\t/)) {
-        const numTabs = getNumberOfTabs(currPrefix) + getNumberOfLeadingTabs(lineContent);
-        return getBranchPrefix(numTabs, false) + lineContent.replace("\t", "");
-      }
-
-      // Exit if the line starts with an acceptable prefix
-      // EX: │\t├──
-      if (line.match(branchPrefixRegexWithSpaces)) {
+    const getIsLastBranch = (line: string, nextLine: string | null) => {
+      if (!nextLine) return true;
+      const prefix = line.match(branchPrefixRegex);
+      const nextPrefix = nextLine.match(branchPrefixRegex);
+      const tabCount = prefix ? getNumberOfTabs(prefix[0]) : 0;
+      const nextTabCount = nextPrefix ? getNumberOfTabs(nextPrefix[0]) : 0;
+      return nextTabCount < tabCount;
+    }
+    const getUpdatedLines = (lines: string[]) => {
+      const updated: (string | null)[] = lines.map((line, index) => {
+        prevPrefix = currPrefix;
+        const matches = line.match(branchPrefixRegex);
+        currPrefix = matches ? matches[0] : BRANCH;
+        const lineContent = trimTreeLine(line.substr(currPrefix.length));
+  
+        // Handle moving tree right with tabs
+        if (lineContent.match(/^\t/)) {
+          const numTabs = getNumberOfTabs(currPrefix) + getNumberOfLeadingTabs(lineContent);
+          return getBranchPrefix(numTabs, false) + lineContent.replace("\t", "");
+        }
+  
+        // Exit if the line starts with an acceptable prefix
+        // EX: │\t├──
+        if (line.match(branchPrefixRegexWithSpaces)) {
+          const nextLine = lines[index + 1];
+          const numTabs = getNumberOfTabs(currPrefix);
+          const isLastBranch = getIsLastBranch(line, nextLine);
+          return getBranchPrefix(numTabs, isLastBranch) + lineContent;
+        }
+  
+        // Handle shift+tab at root
+        // if (line.match(/^└──*/)) return TRUNK + lineContent;
+        if (isBackspace) {
+          // Handle backspace
+          const tabCount = getNumberOfTabs(currPrefix);
+          if (tabCount === 0) return null;
+          return getBranchPrefix(tabCount - 1, false) + lineContent;
+        }
+  
+        // Handle hitting enter
+        if (!line.match(branchPrefixRegex)) return prevPrefix + " " + line;
+        console.log("WTF JS");
         return line;
-      }
-
-      // Handle shift+tab at root
-      // if (line.match(/^└──*/)) return TRUNK + lineContent;
-      if (isBackspace) {
-        // Handle backspace
-        const tabCount = getNumberOfTabs(currPrefix);
-        if (tabCount === 0) return null;
-        return getBranchPrefix(tabCount - 1, false) + lineContent;
-      }
-
-      // Handle hitting enter
-      if (!line.match(branchPrefixRegex)) return prevPrefix + " " + line;
-      console.log("WTF JS");
-      return line;
-    });
-    const filtered = lines.filter(line => line !== null);
+      });
+      return updated;
+    }
+    const lines: string[] = value.split(/\r\n|\r|\n/);
+    let updated: any = getUpdatedLines(lines);
+    updated = getUpdatedLines(updated)
+    const filtered = updated.filter((line: string) => line !== null);
     const newValue = filtered?.join("\n") || getBranchPrefix(0, true);
     if (value !== newValue) {
       model.setValue(newValue);

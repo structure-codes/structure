@@ -10,7 +10,6 @@ export const getBranchPrefix = (depth: number, isLastBranch: boolean) => {
 };
 
 export const treeStringToJson = (tree: string) => {
-  console.log("treeString is: ", tree);
   const elements: {} = {};
   let prevLine: string | null = null;
   const path: Array<string> = [];
