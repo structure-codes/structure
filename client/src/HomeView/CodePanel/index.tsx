@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { useStyles } from "./style";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
@@ -17,6 +17,9 @@ import {
   getNumberOfLeadingTabs,
 } from "../../tree";
 // import { customTreeFolding } from "./foldProvider";
+declare global {
+  interface Window { editor: any; }
+}
 
 type IGlobalEditorOptions = monaco.editor.IGlobalEditorOptions;
 type Monaco = typeof monaco;
@@ -31,6 +34,20 @@ export const CodePanel = () => {
   const classes = useStyles();
   const editorRef = useRef(defaultRef);
   const [treeState, setTreeState] = useRecoilState(treeAtom);
+
+  // FOR DEBUG AND DEVS
+  useEffect(() => {
+    window.editor = editorRef.current;
+  }, [editorRef]);
+
+  // useEffect(() => {
+  //   if (!editorRef.current) return;
+  //   const model = editorRef.current.getModel();
+  //   const currValue = model.getValue();
+  //   const newValue = treeJsonToString(treeState);
+  //   if (currValue !== newValue) model.setValue(newValue);
+  // }, [treeState])
+
 
   const onMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
     // Register a new language
@@ -75,11 +92,13 @@ export const CodePanel = () => {
     e: monaco.editor.IModelContentChangedEvent,
     editor: monaco.editor.IStandaloneCodeEditor
   ) => {
+    console.log("Handle editor change")
     const model = editor.getModel();
     if (!model) return;
     const value = model.getValue();
     if (!value) return model.setValue(getBranchPrefix(0, true));
     const changes = e.changes[0];
+    console.log(changes)
     const isBackspace = changes.text === "" && changes.range.startColumn < changes.range.endColumn;
 
     let prevPrefix = TRUNK;
@@ -132,7 +151,12 @@ export const CodePanel = () => {
           // Handle backspace
           const tabCount = getNumberOfTabs(currPrefix);
           if (tabCount === 0) return null;
-          return getBranchPrefix(tabCount - 1, false) + lineContent;
+          const newPrefix = getBranchPrefix(tabCount - 1, false);
+          editor.setPosition({
+            lineNumber: changes.range.endLineNumber,
+            column: 1,
+          });
+          return newPrefix + lineContent;
         }
   
         // Handle hitting enter
@@ -143,14 +167,21 @@ export const CodePanel = () => {
       return updated;
     }
     const lines: string[] = value.split(/\r\n|\r|\n/);
-    let updated: any = getUpdatedLines(lines);
+    let updated: any = getUpdatedLines(lines).filter((line: string | null) => line !== null);
     updated = getUpdatedLines(updated)
     const filtered = updated.filter((line: string) => line !== null);
     const newValue = filtered?.join("\n") || getBranchPrefix(0, true);
     if (value !== newValue) {
-      model.setValue(newValue);
+      console.log(`before conversion is: \n${newValue}`)
       const newState: any = treeStringToJson(newValue);
+      console.log(`converted is: \n${treeJsonToString(newState)}`)
+      console.log("preconversion === converted => ", newValue === treeJsonToString(newState))
       setTreeState(newState);
+      model.setValue(newValue);
+      editor.setPosition({
+        lineNumber: changes.range.endLineNumber,
+        column: 1,
+      });
     }
   };
 

@@ -4,6 +4,8 @@ export const SettingsPanel = () => {
   const classes = useStyles();
 
   return (
-    <div className={classes.settingsContainer}>settings</div>
+    <div className={classes.settingsContainer}>
+      soonTM
+    </div>
   )
 }

@@ -9,7 +9,7 @@ export const useStyles = makeStyles(theme => ({
     width: 300,
   },
   or: {
-    margin: theme.spacing(1),
+    margin: `0 10px 0 10px`,
     alignSelf: "center",
   }
 }))

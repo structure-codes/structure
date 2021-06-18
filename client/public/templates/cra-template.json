@@ -1,0 +1,11 @@
+{
+  "src/": {
+    "App/": {
+      "Header/": {},
+      "Footer/": {}
+    },
+    "state.js": {},
+    "theme.js": {}
+  },
+  "other/": {}
+}

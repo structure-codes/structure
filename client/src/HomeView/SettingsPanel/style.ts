@@ -5,5 +5,6 @@ export const useStyles = makeStyles({
     width: "100%",
     height: "30%",
     backgroundColor: "#212121",
+    padding: 12,
   },
 })

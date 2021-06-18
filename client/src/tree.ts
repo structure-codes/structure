@@ -21,7 +21,7 @@ export const treeStringToJson = (tree: string) => {
     const prefix = line.split(" ")[0];
     const numTabs = prefix ? getNumberOfTabs(prefix) : 0;
     const filename: string = line.substr(prefix.length).trim();
-    if (!filename) return;
+    // if (!filename) return;
     // Weird edge case at root
     if (prevNumTabs === 0 && numTabs === 0) path.pop();
     // If less than or equal to previous depth, pop once

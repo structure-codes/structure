@@ -8,8 +8,8 @@ export const Header = () => {
   return (
     <AppBar position="static">
       <Toolbar>
-        <Typography variant="h6" >
-          #structure
+        <Typography variant="h5" >
+          Structure
         </Typography>
       </Toolbar>
     </AppBar>
