@@ -30,24 +30,13 @@ export const options: IGlobalEditorOptions = {
 };
 
 export const CodePanel = () => {
-  const defaultRef: any = null;
   const classes = useStyles();
-  const editorRef = useRef(defaultRef);
+  const treeRef = useRef<string | null>(null);
   const [treeState, setTreeState] = useRecoilState(treeAtom);
 
-  // FOR DEBUG AND DEVS
   useEffect(() => {
-    window.editor = editorRef.current;
-  }, [editorRef]);
-
-  // useEffect(() => {
-  //   if (!editorRef.current) return;
-  //   const model = editorRef.current.getModel();
-  //   const currValue = model.getValue();
-  //   const newValue = treeJsonToString(treeState);
-  //   if (currValue !== newValue) model.setValue(newValue);
-  // }, [treeState])
-
+    treeRef.current = treeJsonToString(treeState);
+  }, [treeState]);
 
   const onMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
     // Register a new language
@@ -84,10 +73,8 @@ export const CodePanel = () => {
     });
 
     editor.getModel()?.setValue(treeJsonToString(treeState));
-    editorRef.current = editor;
   };
 
-  // TODO: use contants in the rules parsing
   const handleEditorChange = (
     e: monaco.editor.IModelContentChangedEvent,
     editor: monaco.editor.IStandaloneCodeEditor
@@ -98,7 +85,6 @@ export const CodePanel = () => {
     const value = model.getValue();
     if (!value) return model.setValue(getBranchPrefix(0, true));
     const changes = e.changes[0];
-    console.log(changes)
     const isBackspace = changes.text === "" && changes.range.startColumn < changes.range.endColumn;
 
     let prevPrefix = TRUNK;
@@ -114,7 +100,6 @@ export const CodePanel = () => {
       "g"
     );
 
-    const rootPrefixRegex = new RegExp(`^${LAST_BRANCH}|^${BRANCH}`, "g");
     const getIsLastBranch = (line: string, nextLine: string | null) => {
       if (!nextLine) return true;
       const prefix = line.match(branchPrefixRegex);
@@ -136,13 +121,10 @@ export const CodePanel = () => {
           return getBranchPrefix(numTabs, false) + lineContent.replace("\t", "");
         }
   
-        // Exit if the line starts with an acceptable prefix
+        // Return current line if the line starts with an acceptable prefix
         // EX: │\t├──
         if (line.match(branchPrefixRegexWithSpaces)) {
-          const nextLine = lines[index + 1];
-          const numTabs = getNumberOfTabs(currPrefix);
-          const isLastBranch = getIsLastBranch(line, nextLine);
-          return getBranchPrefix(numTabs, isLastBranch) + lineContent;
+          return line;
         }
   
         // Handle shift+tab at root
@@ -167,17 +149,17 @@ export const CodePanel = () => {
       return updated;
     }
     const lines: string[] = value.split(/\r\n|\r|\n/);
-    let updated: any = getUpdatedLines(lines).filter((line: string | null) => line !== null);
-    updated = getUpdatedLines(updated)
-    const filtered = updated.filter((line: string) => line !== null);
-    const newValue = filtered?.join("\n") || getBranchPrefix(0, true);
-    if (value !== newValue) {
+    const updated: any = getUpdatedLines(lines).filter((line: string | null) => line !== null);
+    const newValue = updated?.join("\n") || getBranchPrefix(0, true);
+    if (newValue !== treeRef.current) {
+      console.log(`old value is: \n${value}`)
       console.log(`before conversion is: \n${newValue}`)
       const newState: any = treeStringToJson(newValue);
+      console.log(`newState is: \n${JSON.stringify(newState)}`)
       console.log(`converted is: \n${treeJsonToString(newState)}`)
       console.log("preconversion === converted => ", newValue === treeJsonToString(newState))
       setTreeState(newState);
-      model.setValue(newValue);
+      model.setValue(treeJsonToString(newState));
       editor.setPosition({
         lineNumber: changes.range.endLineNumber,
         column: 1,

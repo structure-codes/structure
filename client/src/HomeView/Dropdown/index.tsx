@@ -12,8 +12,8 @@ const TEMPLATES = [
 
 export const Dropdown = () => {
   const classes = useStyles();
-  const [templates, setTemplates] = useState({});
-  const [selected, setSelected] = useState(null);
+  const [templates, setTemplates] = useState<{ [key: string]: string}>({});
+  const [selected, setSelected] = useState<string>("");
   const setTreeState = useSetRecoilState(treeAtom);
 
   useEffect(() => {
@@ -34,6 +34,7 @@ export const Dropdown = () => {
   }, []);
 
   useEffect(() => {   
+    if (!selected) return;
     if (templates[selected]) {
       setTreeState(templates[selected]);
     }

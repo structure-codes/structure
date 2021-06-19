@@ -16,7 +16,9 @@ export const HomeView = () => {
           <CodePanel />
           <SettingsPanel />
         </div>
-        <ModelPanel />
+        <div className={classes.rightPanel}>
+          <ModelPanel />
+        </div>
       </div>
     </div>
   )

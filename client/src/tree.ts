@@ -11,35 +11,34 @@ export const getBranchPrefix = (depth: number, isLastBranch: boolean) => {
 
 export const treeStringToJson = (tree: string) => {
   const elements: {} = {};
-  let prevLine: string | null = null;
+  let prevLine: string = "";
   const path: Array<string> = [];
 
   // look for line breaks that works on all platforms
   tree.split(/\r|\r\n|\n/).forEach((line, index) => {
-    const prevPrefix = prevLine ? prevLine.split(" ")[0] : null;
-    const prevNumTabs = prevPrefix ? getNumberOfTabs(prevPrefix) : 0;
+    const prevPrefix = prevLine.split(" ")[0];
+    const prevNumTabs = getNumberOfTabs(prevPrefix);
     const prefix = line.split(" ")[0];
-    const numTabs = prefix ? getNumberOfTabs(prefix) : 0;
+    const numTabs = getNumberOfTabs(prefix);
     const filename: string = line.substr(prefix.length).trim();
-    // if (!filename) return;
-    // Weird edge case at root
-    if (prevNumTabs === 0 && numTabs === 0) path.pop();
-    // If less than or equal to previous depth, pop once
-    if (prevNumTabs && numTabs <= prevNumTabs) path.pop();
-    // If less than previous depth, pop again
-    if (prevNumTabs && numTabs < prevNumTabs) path.pop();
+    // Pop a certain number of elements from path
+    const popCount = numTabs <= prevNumTabs ? prevNumTabs - numTabs + 1 : 0;
+    Array(popCount).fill("pop").forEach(() => path.pop());
 
-    // For each element in path, return elements[pathItem]
-    // The result is the branch in elements for the current path
-    // path = [ "src/", "Home/"]
-    // elements = { 
-    //   "src/": { 
-    //     "Home/": {} 
-    //   }
-    // }
-    // iter1 = elements["src/"]
-    // iter2 = elements["src/"]["Home/"]
-    // curr = {}
+    /* 
+      EXAMPLE OF REDUCER FUNCTION
+        For each element in path, return elements[pathItem]
+        The result is the branch in elements for the current path
+        path = [ "src/", "Home/"]
+        elements = { 
+          "src/": { 
+            "Home/": {} 
+          }
+        }
+        iter1 = elements["src/"]
+        iter2 = elements["src/"]["Home/"]
+        curr = {}
+    */
     const current: any = path.reduce(
       (branch: { [key: string]: {} }, filename: string) => branch[filename],
       elements
