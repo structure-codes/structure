@@ -91,23 +91,15 @@ export const CodePanel = () => {
     let currPrefix = prevPrefix;
 
     const branchPrefixRegexWithSpaces = new RegExp(
-      `^(${TRUNK}\t)+${BRANCH} |^(${TRUNK}\t)+${LAST_BRANCH} |^${LAST_BRANCH} |^${BRANCH} `,
+      `^(${TRUNK}?\t)+${BRANCH} |^(${TRUNK}?\t)+${LAST_BRANCH} |^${LAST_BRANCH} |^${BRANCH} `,
       "g"
     );
 
     const branchPrefixRegex = new RegExp(
-      `^(${TRUNK}\t)+${BRANCH}|^(${TRUNK}\t)+${LAST_BRANCH}|^${LAST_BRANCH}|^${BRANCH}`,
+      `^(${TRUNK}?\t)+${BRANCH}|^(${TRUNK}?\t)+${LAST_BRANCH}|^${LAST_BRANCH}|^${BRANCH}`,
       "g"
     );
 
-    const getIsLastBranch = (line: string, nextLine: string | null) => {
-      if (!nextLine) return true;
-      const prefix = line.match(branchPrefixRegex);
-      const nextPrefix = nextLine.match(branchPrefixRegex);
-      const tabCount = prefix ? getNumberOfTabs(prefix[0]) : 0;
-      const nextTabCount = nextPrefix ? getNumberOfTabs(nextPrefix[0]) : 0;
-      return nextTabCount < tabCount;
-    }
     const getUpdatedLines = (lines: string[]) => {
       const updated: (string | null)[] = lines.map((line, index) => {
         prevPrefix = currPrefix;

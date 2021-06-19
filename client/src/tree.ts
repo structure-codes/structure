@@ -3,12 +3,6 @@ export const TRUNK = "│";
 export const BRANCH = "├──";
 export const LAST_BRANCH = "└──";
 
-export const getBranchPrefix = (depth: number, isLastBranch: boolean) => {
-  const base = `${TRUNK}\t`.repeat(depth);
-  if (isLastBranch) return base + LAST_BRANCH + " ";
-  else return base + BRANCH + " ";
-};
-
 export const treeStringToJson = (tree: string) => {
   const elements: {} = {};
   let prevLine: string = "";
@@ -51,19 +45,32 @@ export const treeStringToJson = (tree: string) => {
   return elements;
 };
 
+export const getBranchPrefix = (depth: number, isLastBranch: boolean) => {
+  const base = `${TRUNK}\t`.repeat(depth);
+  if (isLastBranch) return base + LAST_BRANCH + " ";
+  else return base + BRANCH + " ";
+};
+
+export const getBranchPrefixAccurate = (depth: boolean[], isLastBranch: boolean) => {
+  let base = "";
+  depth.forEach(isLastBranch => base = base.concat(isLastBranch ? "\t" : `${TRUNK}\t`));
+  if (isLastBranch) return base + LAST_BRANCH + " ";
+  else return base + BRANCH + " ";
+};
+
 export const treeJsonToString = (tree: Object) => {
   let treeString: string = "";
-  const parseBranches = (tree: Object, depth: number) => {
+  const parseBranches = (tree: Object, depth: boolean[]) => {
     const branches = Object.entries(tree);
     branches.forEach(([key, values], index) => {
       const isLastBranch = index === branches.length - 1;
-      const prefix = getBranchPrefix(depth, isLastBranch);
+      const prefix = getBranchPrefixAccurate(depth, isLastBranch);
       const branchString = prefix + key + "\n";
       treeString = treeString.concat(branchString);
-      parseBranches(values, depth + 1);
+      parseBranches(values, [...depth, isLastBranch]);
     });
   };
-  parseBranches(tree, 0);
+  parseBranches(tree, []);
   treeString = treeString.replace(/\n$/, "");
 
   return treeString;
