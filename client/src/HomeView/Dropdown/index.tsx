@@ -7,7 +7,8 @@ import { treeAtom } from "../../store";
 
 const TEMPLATES = [
   "cra-template",
-  "cra-template-typescript"
+  "cra-template-typescript",
+  "benchmark"
 ];
 
 export const Dropdown = () => {
@@ -27,10 +28,10 @@ export const Dropdown = () => {
           [name]: res,
         };
       
-        console.log("caching", name)
         setTemplates(updatedTemp)
       })
     );
+
   }, []);
 
   useEffect(() => {   

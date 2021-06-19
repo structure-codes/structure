@@ -7,7 +7,7 @@ import { useRecoilState } from "recoil";
 import { treeAtom } from "../../store";
 import { Handle, Position } from "react-flow-renderer/nocss";
 import { Button, makeStyles, Typography } from "@material-ui/core";
-import { treeJsonToElements } from "../../tree";
+import { treeJsonToElements, treeJsonToString } from "../../tree";
 import clsx from "clsx";
 
 // TODO: figure out how to make selected color work
@@ -30,12 +30,16 @@ const CustomNode = ({ data }: any) => {
     setIsEditing(!isEditing);
   };
 
-  const handleSetFocus = () => {    
-    setIsSelected(!isSelected)
-  }
+  const handleSetFocus = () => {
+    setIsSelected(!isSelected);
+  };
 
   return (
-    <div className={clsx({[classes.root]: true}, {[classes.isSelected]: isSelected})} onClick={handleSetFocus} onDoubleClick={handleHandleDoubleClick}>
+    <div
+      className={clsx({ [classes.root]: true }, { [classes.isSelected]: isSelected })}
+      onClick={handleSetFocus}
+      onDoubleClick={handleHandleDoubleClick}
+    >
       <Handle type="source" position={Position.Top} />
       {isEditing ? (
         <form
@@ -108,9 +112,14 @@ export const ModelPanel = () => {
 
   const onConnect = (params: any) => setNodes((els: any) => addEdge(params, els));
 
+  const handleCopyToClipboard = () => {
+    navigator.clipboard.writeText(JSON.stringify(treeState));
+  };
+
   return (
     <div className={classes.modelContainer}>
       <Button onClick={handleInsertNode}>Add Node</Button>
+      <Button onClick={handleCopyToClipboard}>Copy to clip</Button>
       <ReactFlow
         elementsSelectable
         nodesDraggable
