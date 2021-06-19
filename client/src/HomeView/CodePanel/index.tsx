@@ -18,7 +18,7 @@ import {
 } from "../../tree";
 // import { customTreeFolding } from "./foldProvider";
 declare global {
-  interface Window { editor: any; }
+  interface Window { editor: any; treeStringToJson: any }
 }
 
 type IGlobalEditorOptions = monaco.editor.IGlobalEditorOptions;
