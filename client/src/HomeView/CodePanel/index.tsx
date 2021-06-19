@@ -117,7 +117,9 @@ export const CodePanel = () => {
   
         // Handle moving tree right with tabs
         if (lineContent.match(/^\t/)) {
+          const prevNumTabs = getNumberOfTabs(prevPrefix);
           const numTabs = getNumberOfTabs(currPrefix) + getNumberOfLeadingTabs(lineContent);
+          if (numTabs - prevNumTabs > 1) return getBranchPrefix(prevNumTabs + 1, false) + lineContent.replace("\t", "");
           return getBranchPrefix(numTabs, false) + lineContent.replace("\t", "");
         }
   
