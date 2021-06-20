@@ -1,4 +1,5 @@
-// TODO: use these everywhere
+import { nanoid } from "nanoid";
+
 export const TRUNK = "│";
 export const BRANCH = "├──";
 export const LAST_BRANCH = "└──";
@@ -85,21 +86,22 @@ export const treeJsonToElements = (tree: any) => {
     const branches = Object.entries(tree);
     branches.forEach((branch, index) => {
       const [key, values] = branch;
+      const id = `${key}-${nanoid()}`
       elements.push({
-        id: key,
+        id,
         type: "customNode",
         data: { label: key },
-        position: { x: 250 * index + offsetX, y: 100 * depth + offsetY },
+        position: { x: 200 * index + offsetX, y: 100 * depth + offsetY },
       });
       if (parent) {
         elements.push({
-          id: `${parent}-${key}`,
+          id: `${parent}-${id}`,
           source: parent,
-          target: key,
+          target: id,
           animated: false,
         });
       }
-      parseBranches(values, key, depth + 1);
+      parseBranches(values, id, depth + 1);
     });
   };
   parseBranches(tree, null, 0);

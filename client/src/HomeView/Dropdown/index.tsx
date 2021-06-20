@@ -4,42 +4,33 @@ import { TextField, Typography } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useSetRecoilState } from "recoil";
 import { treeAtom } from "../../store";
+import { treeStringToJson } from "../../tree";
 
 const TEMPLATES = [
-  "cra-template",
-  "cra-template-typescript",
-  "benchmark"
+  "cra-template.json",
+  "cra-template-typescript.json",
+  "benchmark.json",
+  "structure.tree",
 ];
 
 export const Dropdown = () => {
   const classes = useStyles();
-  const [templates, setTemplates] = useState<{ [key: string]: string}>({});
   const [selected, setSelected] = useState<string>("");
   const setTreeState = useSetRecoilState(treeAtom);
 
-  useEffect(() => {
-    console.log("Fetching tempaltes")
-    TEMPLATES.forEach(name =>
-      fetch(`/templates/${name}.json`).then(res =>
-        res.json()
-      ).then(res => {
-        const updatedTemp = {
-          ...templates,
-          [name]: res,
-        };
-      
-        setTemplates(updatedTemp)
-      })
-    );
-
-  }, []);
-
   useEffect(() => {   
     if (!selected) return;
-    if (templates[selected]) {
-      setTreeState(templates[selected]);
-    }
-  }, [selected]);
+    fetch(`/templates/${selected}`)
+      .then(res => {
+        if (selected.endsWith(".json")) return res.json();
+        return res.text()
+      })
+      .then(res => {
+        if (selected.endsWith(".json")) return setTreeState(res);
+        return setTreeState(treeStringToJson(res))
+        
+      });
+  }, [selected, setTreeState]);
   
   const handleTemplateChange = (e: any, value: any) => {
     setSelected(value);

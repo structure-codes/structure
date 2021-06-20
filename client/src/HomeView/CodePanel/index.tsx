@@ -32,10 +32,14 @@ export const options: IGlobalEditorOptions = {
 export const CodePanel = () => {
   const classes = useStyles();
   const treeRef = useRef<string | null>(null);
+  const editorRef = useRef<any>(null);
   const [treeState, setTreeState] = useRecoilState(treeAtom);
 
   useEffect(() => {
-    treeRef.current = treeJsonToString(treeState);
+    const newValue = treeJsonToString(treeState);
+    treeRef.current = newValue;
+    const currValue = editorRef.current?.getModel()?.getValue();
+    if (currValue !== newValue) editorRef.current?.getModel()?.setValue(newValue);
   }, [treeState]);
 
   const onMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
@@ -73,6 +77,7 @@ export const CodePanel = () => {
     });
 
     editor.getModel()?.setValue(treeJsonToString(treeState));
+    editorRef.current = editor;
   };
 
   const handleEditorChange = (
@@ -120,11 +125,9 @@ export const CodePanel = () => {
         if (line.match(branchPrefixRegexWithSpaces)) {
           return line;
         }
-  
-        // Handle shift+tab at root
-        // if (line.match(/^└──*/)) return TRUNK + lineContent;
+
+        // Handle backspace
         if (isBackspace) {
-          // Handle backspace
           const tabCount = getNumberOfTabs(currPrefix);
           if (tabCount === 0) return null;
           const newPrefix = getBranchPrefix(tabCount - 1, false);
@@ -146,18 +149,15 @@ export const CodePanel = () => {
     const updated: any = getUpdatedLines(lines).filter((line: string | null) => line !== null);
     const newValue = updated?.join("\n") || getBranchPrefix(0, true);
     if (newValue !== treeRef.current) {
-      console.log(`old value is: \n${value}`)
-      console.log(`before conversion is: \n${newValue}`)
       const newState: any = treeStringToJson(newValue);
-      console.log(`newState is: \n${JSON.stringify(newState)}`)
-      console.log(`converted is: \n${treeJsonToString(newState)}`)
-      console.log("preconversion === converted => ", newValue === treeJsonToString(newState))
+      // This logging is kinda useful to debug conversions so leave it for now maybe?
+      // console.log(`old value is: \n${value}`)
+      // console.log(`before conversion is: \n${newValue}`)
+      // console.log(`newState is: \n${JSON.stringify(newState)}`)
+      // console.log(`converted is: \n${treeJsonToString(newState)}`)
+      // console.log("preconversion === converted => ", newValue === treeJsonToString(newState))
       setTreeState(newState);
       model.setValue(treeJsonToString(newState));
-      editor.setPosition({
-        lineNumber: changes.range.endLineNumber,
-        column: 1,
-      });
     }
   };
 
