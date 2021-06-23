@@ -79,32 +79,54 @@ export const treeJsonToString = (tree: Object) => {
 
 export const treeJsonToElements = (tree: any) => {
   const elements: any = [];
-  const offsetX = 100;
-  const offsetY = 50;
+  
+  const getPosition = ({ index, depth, numChildren, parent } : any) => {
+    const offsetX = 0;
+    const offsetY = 50;
+    const childrenMultiplier = numChildren > 1 ? (numChildren + 1) / 2 : 1;
+    const parentOffset = parent 
+      ? parent.position.x + (index - (parent.numChildren - 1) / 2) * 200
+      : 0;
+    return { 
+      x: 200 * (index) * childrenMultiplier + offsetX + parentOffset, 
+      y: 100 * depth + offsetY 
+    }
+  }
 
-  const parseBranches = (tree: Object, parent: string | null, depth: number) => {
+  const parseBranches = (tree: Object, parent: { id: string, position: {x: number, y: number}, numChildren: number} | null, depth: number) => {
     const branches = Object.entries(tree);
     branches.forEach((branch, index) => {
-      const [key, values] = branch;
+      const [key, children] = branch;
+      const numChildren = Object.values(children).length;
       const id = `${key}-${nanoid()}`
+      const position = getPosition({ index, depth, numChildren, parent});
       elements.push({
         id,
         type: "customNode",
-        data: { label: key },
-        position: { x: 200 * index + offsetX, y: 100 * depth + offsetY },
+        data: { label: `${key} x: ${position.x} y: ${position.y}` },
+        position,
       });
+      // Add connector edge
       if (parent) {
         elements.push({
-          id: `${parent}-${id}`,
-          source: parent,
+          id: `${parent.id}-${id}`,
+          source: parent.id,
           target: id,
           animated: false,
         });
       }
-      parseBranches(values, id, depth + 1);
+      parseBranches(children, { id, position, numChildren }, depth + 1);
     });
   };
-  parseBranches(tree, null, 0);
+  const numRootChildren = Object.entries(tree).length;
+  const root = { id: "root", position: { x: 0, y: 0}, numChildren: numRootChildren}
+  elements.push({
+    id: root.id,
+    type: "customNode",
+    data: { label: `${root.id} x: ${root.position.x} y: ${root.position.y}` },
+    position: root.position,
+  });
+  parseBranches(tree, root, 1);
 
   return elements;
 };

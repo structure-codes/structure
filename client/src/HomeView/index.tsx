@@ -2,6 +2,7 @@ import { Dropdown } from "./Dropdown";
 import { CodePanel } from "./CodePanel";
 import { SettingsPanel } from "./SettingsPanel";
 import { ModelPanel } from "./ModelPanel";
+import { TestPanel } from "./TestPanel";
 import { useStyles } from "./style";
 
 export const HomeView = () => {
@@ -17,7 +18,7 @@ export const HomeView = () => {
           <SettingsPanel />
         </div>
         <div className={classes.rightPanel}>
-          <ModelPanel />
+          <TestPanel />
         </div>
       </div>
     </div>

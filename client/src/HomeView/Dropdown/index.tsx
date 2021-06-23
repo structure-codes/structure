@@ -15,6 +15,7 @@ const TEMPLATES = [
 
 export const Dropdown = () => {
   const classes = useStyles();
+  const [url, setUrl] = useState("");
   const [selected, setSelected] = useState<string>("");
   const setTreeState = useSetRecoilState(treeAtom);
 
@@ -31,6 +32,21 @@ export const Dropdown = () => {
         
       });
   }, [selected, setTreeState]);
+
+  useEffect(() => {
+    if (!url) return;
+    fetch("/api/github", {
+      method: "POST",
+      body: JSON.stringify({url}),
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+    .then(res => res.json())
+    .then(res => {
+      setTreeState(res);
+    })
+  }, [url, setTreeState]);
   
   const handleTemplateChange = (e: any, value: any) => {
     setSelected(value);
@@ -54,6 +70,8 @@ export const Dropdown = () => {
         className={classes.input}
         label="Link to repository"
         variant="outlined"
+        value={url}
+        onChange={(e) => setUrl(e.target.value)}
       />
     </div>
   );

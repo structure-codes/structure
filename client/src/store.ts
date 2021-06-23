@@ -1,16 +1,6 @@
 import { atom } from "recoil";
 
-const defaultTree: Object = {
-  "src/": {
-    "App/": {
-      "Header/": {
-        "Footer/": {},
-      },
-    },
-    "state.ts": {},
-    "theme.ts": {},
-  }
-};
+const defaultTree: Object = {"app/":{"Header/":{},"Footer/":{},"test":{}}};
 
 export const treeAtom = atom({
   key: "tree",
