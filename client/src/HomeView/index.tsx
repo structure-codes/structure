@@ -17,12 +17,12 @@ const Divider = ({
   onMouseUp: any;
   onMouseLeave: any;
 }) => {
-  const dividerWidth = 15;
+  const dividerSize = 15;
   return (
     <div
       style={{
-        width: direction === "horizontal" ? "100%" : dividerWidth,
-        height: direction === "horizontal" ? dividerWidth : "100%",
+        width: direction === "horizontal" ? "100%" : dividerSize,
+        height: direction === "horizontal" ? dividerSize : "100%",
         cursor: direction === "horizontal" ? "ns-resize" : "ew-resize",
         backgroundColor: "#000",
       }}

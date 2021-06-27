@@ -20,6 +20,7 @@ export const useStyles = makeStyles(theme => ({
   },
   rightPanel: {
     flex: "1 1 0px",
+    overflow: "auto",
   },
   panelContainer: {
     display: "flex",

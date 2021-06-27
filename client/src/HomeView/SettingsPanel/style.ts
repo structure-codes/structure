@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 export const useStyles = makeStyles({
   settingsContainer: {
     width: "100%",
-    height: "30%",
+    flex: "1 1 0px",
     backgroundColor: "#212121",
     padding: 12,
   },

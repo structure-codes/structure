@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useStyles } from "./style";
-import { TextField, Typography } from "@material-ui/core";
+import { Button, TextField, Typography } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useSetRecoilState } from "recoil";
 import { treeAtom } from "../../store";
@@ -17,6 +17,7 @@ export const Dropdown = () => {
   const classes = useStyles();
   const [url, setUrl] = useState("");
   const [selected, setSelected] = useState<string>("");
+  const [selectedUrl, setSelectedUrl] = useState("");
   const setTreeState = useSetRecoilState(treeAtom);
 
   useEffect(() => {   
@@ -29,15 +30,23 @@ export const Dropdown = () => {
       .then(res => {
         if (selected.endsWith(".json")) return setTreeState(res);
         return setTreeState(treeStringToJson(res))
-        
       });
   }, [selected, setTreeState]);
 
   useEffect(() => {
-    if (!url) return;
+    if (!selectedUrl) return;
+    
+    const re = /https:\/\/github.com\/(?<owner>[a-z-]+)\/(?<repo>[a-z-]+)(\/(?<branch>[a-z-]+))?/
+    const { owner, repo, branch }: any = selectedUrl.match(re)?.groups;
+    console.log("match is: ", `${owner}/${repo}`)
+
     fetch("/api/github", {
       method: "POST",
-      body: JSON.stringify({url}),
+      body: JSON.stringify({
+        owner,
+        repo,
+        branch,
+      }),
       headers: {
         "Content-Type": "application/json",
       }
@@ -46,7 +55,7 @@ export const Dropdown = () => {
     .then(res => {
       setTreeState(res);
     })
-  }, [url, setTreeState]);
+  }, [selectedUrl, setTreeState]);
   
   const handleTemplateChange = (e: any, value: any) => {
     setSelected(value);
@@ -72,7 +81,13 @@ export const Dropdown = () => {
         variant="outlined"
         value={url}
         onChange={(e) => setUrl(e.target.value)}
-      />
+        />
+      <Button 
+        variant="outlined"
+        onClick={() => setSelectedUrl(url)}
+      >
+        GO
+      </Button>
     </div>
   );
 };

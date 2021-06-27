@@ -22,11 +22,15 @@ declare global {
 }
 
 type IGlobalEditorOptions = monaco.editor.IGlobalEditorOptions;
+type IEditorOptions = monaco.editor.IEditorOptions;
 type Monaco = typeof monaco;
 
-export const options: IGlobalEditorOptions = {
+export const options: IGlobalEditorOptions | IEditorOptions = {
   tabSize: 2,
   insertSpaces: false,
+  minimap: {
+		enabled: false
+	}
 };
 
 export const CodePanel = ({ height }: { height: number }) => {

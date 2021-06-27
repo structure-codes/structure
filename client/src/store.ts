@@ -6,3 +6,10 @@ export const treeAtom = atom({
   key: "tree",
   default: defaultTree
 });
+
+export const settingsAtom = atom({
+  key: "settings",
+  default: {
+    depth: 5,
+  }
+})

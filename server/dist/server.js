@@ -29,7 +29,9 @@ const githubToTree = (data) => {
         const filename = file.path.split("/").pop().concat("/");
         // Pop a certain number of elements from path
         const popCount = depth <= prevDepth ? prevDepth - depth + 1 : 0;
-        Array(popCount).fill("pop").forEach(() => path.pop());
+        Array(popCount)
+            .fill("pop")
+            .forEach(() => path.pop());
         const current = path.reduce((branch, filename) => branch[filename], elements);
         current[filename] = {};
         prevFile = file.path;
@@ -39,9 +41,14 @@ const githubToTree = (data) => {
     return elements;
 };
 app.post("/api/github", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { url } = req.body;
-    console.log("Wassup in the : ", url);
-    const data = yield got_1.default(`https://api.github.com/repos/${url}/git/trees/main?recursive=1`).json();
+    const { owner, repo, branch } = req.body;
+    let data;
+    try {
+        data = yield got_1.default(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch || "main"}?recursive=1`).json();
+    }
+    catch (_a) {
+        data = yield got_1.default(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch || "master"}?recursive=1`).json();
+    }
     const tree = githubToTree(data.tree);
     res.send(tree);
 }));

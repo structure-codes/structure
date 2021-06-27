@@ -4,10 +4,8 @@ import { makeStyles } from "@material-ui/core/styles";
 export const useStyles = makeStyles({
   modelContainer: {
     width: "100%",
-    height: "100%",
     display: "flex",
     flexDirection: "column",
-    backgroundColor: "#212121",
   },
 
   "@global .react-flow__node-input": {
