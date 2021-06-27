@@ -5,6 +5,8 @@ export const useStyles = makeStyles({
   modelContainer: {
     width: "100%",
     height: "100%",
+    display: "flex",
+    flexDirection: "column",
     backgroundColor: "#212121",
   },
 

@@ -29,7 +29,7 @@ export const options: IGlobalEditorOptions = {
   insertSpaces: false,
 };
 
-export const CodePanel = () => {
+export const CodePanel = ({ height }: { height: number }) => {
   const classes = useStyles();
   const treeRef = useRef<string | null>(null);
   const editorRef = useRef<any>(null);
@@ -162,7 +162,7 @@ export const CodePanel = () => {
   };
 
   return (
-    <div className={classes.codeContainer}>
+    <div className={classes.codeContainer} style={{ height }}>
       <Editor options={options} theme="vs-dark" defaultLanguage="tree" onMount={onMount} />
     </div>
   );

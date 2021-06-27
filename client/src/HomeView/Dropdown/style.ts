@@ -4,6 +4,7 @@ export const useStyles = makeStyles(theme => ({
   dropdownContainer: {
     margin: theme.spacing(1),
     display: "flex",
+    justifyContent: "center",
   },
   input: {
     width: 300,

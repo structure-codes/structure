@@ -5,7 +5,6 @@ export const useStyles = makeStyles(theme => ({
     display: "flex",
     flexFlow: "column",
     flex: "1 1 0px",
-    margin: theme.spacing(2),
   },
   dropdownContainer: {
     justifyContent: "center",
@@ -18,14 +17,13 @@ export const useStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
     height: "100%",
-    width: "25%",
   },
   rightPanel: {
-    flex: "1 1 0px"
+    flex: "1 1 0px",
   },
   panelContainer: {
     display: "flex",
     height: "100%",
     width: "100%",
-  }
+  },
 }));

@@ -6,7 +6,7 @@ export const App = () => {
   useStyles();
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <HomeView />
     </>
   );
