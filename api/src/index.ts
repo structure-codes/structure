@@ -1,11 +1,10 @@
 import express from "express";
 import got from "got";
-import bodyParser from "body-parser";
-import functions from "firebase-functions";
+import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 
 const app = express();
-app.use(bodyParser());
+app.use(express.json());
 admin.initializeApp();
 
 const githubToTree = (data: any) => {
@@ -36,6 +35,11 @@ const githubToTree = (data: any) => {
   });
   return elements;
 };
+
+app.use((req, res, next) => {
+  console.log(req.path)
+  next();
+})
 
 app.post("/api/github", async (req, res) => {
   const { owner, repo, branch } = req.body;

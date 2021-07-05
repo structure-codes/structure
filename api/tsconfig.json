@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "moduleResolution": "node",
     "target": "es6",
     "module": "commonjs",
     "strict": true,
@@ -14,11 +13,14 @@
     "emitDecoratorMetadata": true,
     "declarationDir": "dist",
     "outDir": "dist",
-    "lib": [ "esnext", "dom" ],
+    "lib": [ "es2015" ],
     "typeRoots": [
       "node_modules/@types"
     ]
   },
+  "include": [
+    "src"
+  ],
   "exclude": [
     "node_modules"
   ]
