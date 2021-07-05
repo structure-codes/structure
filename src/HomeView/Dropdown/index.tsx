@@ -36,7 +36,8 @@ export const Dropdown = () => {
   useEffect(() => {
     if (!selectedUrl) return;
     
-    const re = /https:\/\/github.com\/(?<owner>[a-z-]+)\/(?<repo>[a-z-]+)(\/(?<branch>[a-z-]+))?/
+    const stringRe = "[A-Za-z-_.]+"
+    const re = new RegExp(`https://github.com/(?<owner>${stringRe})/(?<repo>${stringRe})(/(?<branch>${stringRe}))?`);
     const { owner, repo, branch }: any = selectedUrl.match(re)?.groups;
     console.log("match is: ", `${owner}/${repo}`)
 

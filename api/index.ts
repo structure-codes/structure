@@ -1,9 +1,12 @@
 import express from "express";
 import got from "got";
 import bodyParser from "body-parser";
+import functions from "firebase-functions";
+import admin from "firebase-admin";
 
 const app = express();
 app.use(bodyParser());
+admin.initializeApp();
 
 const githubToTree = (data: any) => {
   const elements: {} = {};
@@ -50,4 +53,4 @@ app.post("/api/github", async (req, res) => {
   res.send(tree);
 });
 
-app.listen(8080);
+exports.api = functions.https.onRequest(app);
