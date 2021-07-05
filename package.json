@@ -33,7 +33,7 @@
     "start": "concurrently npm:backend npm:frontend",
     "frontend": "react-scripts start",
     "backend": "cd api && npm run dev",
-    "build": "react-scripts build",
+    "build": "CI=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "postinstall": "cd api && npm install"
