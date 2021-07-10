@@ -20,6 +20,7 @@ api/dist
 .env.production.local
 .firebase
 
+**/*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
