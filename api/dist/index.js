@@ -35,36 +35,10 @@ const express_1 = __importDefault(require("express"));
 const got_1 = __importDefault(require("got"));
 const functions = __importStar(require("firebase-functions"));
 const firebase_admin_1 = __importDefault(require("firebase-admin"));
+const tree_1 = require("./tree");
 const app = express_1.default();
 app.use(express_1.default.json());
 firebase_admin_1.default.initializeApp();
-const githubToTree = (data) => {
-    const elements = {};
-    let prevFile = "";
-    let prevDepth = 0;
-    const path = [];
-    data.forEach((file, index) => {
-        if (file.type === "blob")
-            return;
-        const depth = file.path.split("/").length;
-        const filename = file.path.split("/").pop().concat("/");
-        // Pop a certain number of elements from path
-        const popCount = depth <= prevDepth ? prevDepth - depth + 1 : 0;
-        Array(popCount)
-            .fill("pop")
-            .forEach(() => path.pop());
-        const current = path.reduce((branch, filename) => branch[filename], elements);
-        current[filename] = {};
-        prevFile = file.path;
-        prevDepth = depth;
-        path.push(filename);
-    });
-    return elements;
-};
-app.use((req, res, next) => {
-    console.log(req.path);
-    next();
-});
 app.post("/api/github", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { owner, repo, branch } = req.body;
     let data;
@@ -74,7 +48,7 @@ app.post("/api/github", (req, res) => __awaiter(void 0, void 0, void 0, function
     catch (_a) {
         data = yield got_1.default(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch || "master"}?recursive=1`).json();
     }
-    const tree = githubToTree(data.tree);
+    const tree = tree_1.githubToTree(data.tree);
     res.send(tree);
 }));
 exports.api = functions.https.onRequest(app);

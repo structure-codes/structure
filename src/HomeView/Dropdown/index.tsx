@@ -6,13 +6,6 @@ import { useSetRecoilState } from "recoil";
 import { treeAtom } from "../../store";
 import { treeStringToJson } from "../../tree";
 
-const TEMPLATES = [
-  "cra-template.json",
-  "cra-template-typescript.json",
-  "benchmark.json",
-  "structure.tree",
-];
-
 export const Dropdown = () => {
   const classes = useStyles();
   const [url, setUrl] = useState("");
@@ -66,7 +59,8 @@ export const Dropdown = () => {
     <div className={classes.dropdownContainer}>
       <Autocomplete
         id="combo-box-demo"
-        options={TEMPLATES}
+        options={[]}
+        disabled
         className={classes.input}
         size="small"
         onChange={handleTemplateChange}

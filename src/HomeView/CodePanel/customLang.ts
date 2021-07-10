@@ -39,7 +39,7 @@ export const languageDef: monaco.languages.IMonarchLanguage = {
     ],
     tags: [
       [/\w*\//, "folder"],
-      [/#[a-zA-Z]\w*/, "folder"],
+      [/#[a-zA-Z-_]\w*/, "folder"],
     ],
   },
 };

@@ -16,6 +16,7 @@ import {
   getNumberOfTabs,
   getNumberOfLeadingTabs,
 } from "../../tree";
+
 // import { customTreeFolding } from "./foldProvider";
 declare global {
   interface Window { editor: any; treeStringToJson: any }

@@ -16,10 +16,12 @@
     "@types/react-dom": "^17.0.0",
     "clsx": "^1.1.1",
     "concurrently": "^6.2.0",
+    "lodash": "^4.17.21",
     "monaco-editor": "^0.25.2",
     "monaco-editor-webpack-plugin": "^3.1.0",
     "nanoid": "^3.1.23",
     "react": "^17.0.2",
+    "react-copy-to-clipboard": "^5.0.3",
     "react-dom": "^17.0.2",
     "react-flow-renderer": "^9.6.0",
     "react-monaco-editor": "^0.43.0",
@@ -63,7 +65,9 @@
     ]
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.171",
     "@types/prismjs": "^1.16.5",
+    "@types/react-copy-to-clipboard": "^5.0.1",
     "@types/react-syntax-highlighter": "^13.5.0"
   },
   "proxy": "http://127.0.0.1:5001/structure-codes/us-central1/api"

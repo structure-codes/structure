@@ -1,10 +1,27 @@
 import { atom } from "recoil";
+import { treeStringToJson } from "./tree";
 
-const defaultTree: Object = {"app/":{"Header/":{},"Footer/":{},"test":{}}};
+const defaultTree: string = `├── client
+|	├── public
+|	|	└── templates
+|	└── src
+|		├── AboutView
+|		├── App
+|		|	└── Header
+|		├── HomeView
+|		|	├── CodePanel
+|		|	├── Dropdown
+|		|	├── ModelPanel
+|		|	└── SettingsPanel
+|		└── WelcomeModal
+├── examples
+└── server
+	├── dist
+	└── src`;
 
 export const treeAtom = atom({
   key: "tree",
-  default: defaultTree
+  default: treeStringToJson(defaultTree)
 });
 
 export const settingsAtom = atom({
