@@ -1,35 +1,17 @@
-import { Tree, TreeNode } from "react-organizational-chart";
+import React from "react";
 import { useRecoilValue } from "recoil";
 import { treeAtom, settingsAtom } from "../../store";
+import { treeJsonToNodes } from "../../tree";
 import { useStyles } from "./style";
+import { Tree, TreeNode } from "react-organizational-chart";
 
-const Leaf = ({ label }: { label: string }) => {
-  return ( 
-    <div style={{ display: "flex", justifyContent: "center" }}>
-      <div style={{
-        display: "flex",
-        border: "1px solid #fff",
-        borderRadius: 4,
-        padding: 8,
-        backgroundColor: "#4f3e5c"
-      }}>{label}</div>
-    </div>
-  );
-};
-
-export const ModelPanel = () => {
+export const ModelPanel = React.memo(() => {
   const classes = useStyles();
   const treeState = useRecoilValue(treeAtom);
   const settings = useRecoilValue(settingsAtom);
 
-  const getNodes = (tree: any, depth: number): any => {
-    if (depth > settings.depth) return;
-    return Object.entries(tree).map(([key, children]) => {
-      return <TreeNode label={<Leaf label={key} />}>{getNodes(children, depth + 1)}</TreeNode>;
-    });
-  };
-
-  const nodes = getNodes(treeState, 1);
+  const nodes = treeJsonToNodes(treeState, 1, settings);
+  
   return (
     <div className={classes.modelContainer}>
       <Tree label={null} lineColor="#fff">
@@ -37,4 +19,4 @@ export const ModelPanel = () => {
       </Tree>
     </div>
   );
-};
+});

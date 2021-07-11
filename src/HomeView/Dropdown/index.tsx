@@ -30,9 +30,8 @@ export const Dropdown = () => {
     if (!selectedUrl) return;
     
     const stringRe = "[A-Za-z-_.]+"
-    const re = new RegExp(`https://github.com/(?<owner>${stringRe})/(?<repo>${stringRe})(/(?<branch>${stringRe}))?`);
+    const re = new RegExp(`https://github.com/(?<owner>${stringRe})/(?<repo>${stringRe})((/tree)?/(?<branch>${stringRe}))?`);
     const { owner, repo, branch }: any = selectedUrl.match(re)?.groups;
-    console.log("match is: ", `${owner}/${repo}`)
 
     fetch("/api/github", {
       method: "POST",

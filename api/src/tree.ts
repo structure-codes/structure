@@ -5,9 +5,10 @@ export const githubToTree = (data: any) => {
   const path: Array<string> = [];
 
   data.forEach((file, index) => {
-    if (file.type === "blob") return;
+    // if (file.type === "blob") return;
     const depth = file.path.split("/").length;
-    const filename: string = file.path.split("/").pop().concat("/");
+    const filename: string =
+      file.type === "blob" ? file.path.split("/").pop() : file.path.split("/").pop().concat("/");
     // Pop a certain number of elements from path
     const popCount = depth <= prevDepth ? prevDepth - depth + 1 : 0;
     Array(popCount)

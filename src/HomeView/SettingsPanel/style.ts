@@ -12,4 +12,7 @@ export const useStyles = makeStyles(theme => ({
       margin: theme.spacing(1)
     }
   },
+  slider: {
+    maxWidth: 300,
+  }
 }))

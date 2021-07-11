@@ -1,10 +1,10 @@
-import { useRef, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import { useStyles } from "./style";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { languageDef, themeDef, configuration } from "./customLang";
-import { useRecoilState } from "recoil";
-import { treeAtom } from "../../store";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { treeAtom, settingsAtom } from "../../store";
 import {
   BRANCH,
   LAST_BRANCH,
@@ -34,18 +34,19 @@ export const options: IGlobalEditorOptions | IEditorOptions = {
 	}
 };
 
-export const CodePanel = ({ height }: { height: number }) => {
+export const CodePanel = React.memo(({ height }: { height: number }) => {
   const classes = useStyles();
   const treeRef = useRef<string | null>(null);
   const editorRef = useRef<any>(null);
   const [treeState, setTreeState] = useRecoilState(treeAtom);
-
+  const settingsState = useRecoilValue(settingsAtom);
+  
   useEffect(() => {
-    const newValue = treeJsonToString(treeState);
+    const newValue = treeJsonToString(treeState, settingsState);
     treeRef.current = newValue;
     const currValue = editorRef.current?.getModel()?.getValue();
     if (currValue !== newValue) editorRef.current?.getModel()?.setValue(newValue);
-  }, [treeState]);
+  }, [treeState, settingsState]);
 
   const onMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
     // Register a new language
@@ -81,7 +82,7 @@ export const CodePanel = ({ height }: { height: number }) => {
       }
     });
 
-    editor.getModel()?.setValue(treeJsonToString(treeState));
+    editor.getModel()?.setValue(treeJsonToString(treeState, settingsState));
     editorRef.current = editor;
   };
 
@@ -162,7 +163,7 @@ export const CodePanel = ({ height }: { height: number }) => {
       // console.log(`converted is: \n${treeJsonToString(newState)}`)
       // console.log("preconversion === converted => ", newValue === treeJsonToString(newState))
       setTreeState(newState);
-      model.setValue(treeJsonToString(newState));
+      model.setValue(treeJsonToString(newState, settingsState));
     }
   };
 
@@ -171,4 +172,4 @@ export const CodePanel = ({ height }: { height: number }) => {
       <Editor options={options} theme="vs-dark" defaultLanguage="tree" onMount={onMount} />
     </div>
   );
-};
+});

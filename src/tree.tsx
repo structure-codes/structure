@@ -1,4 +1,5 @@
-import { nanoid } from "nanoid";
+import { ISettings } from "./store";
+import { TreeNode } from "react-organizational-chart";
 
 export const TRUNK = "│";
 export const BRANCH = "├──";
@@ -18,7 +19,9 @@ export const treeStringToJson = (tree: string) => {
     const filename: string = line.substr(prefix.length).trim();
     // Pop a certain number of elements from path
     const popCount = numTabs <= prevNumTabs ? prevNumTabs - numTabs + 1 : 0;
-    Array(popCount).fill("pop").forEach(() => path.pop());
+    Array(popCount)
+      .fill("pop")
+      .forEach(() => path.pop());
 
     /* 
       EXAMPLE OF REDUCER FUNCTION
@@ -54,15 +57,15 @@ export const getBranchPrefix = (depth: number, isLastBranch: boolean) => {
 
 export const getBranchPrefixAccurate = (depth: boolean[], isLastBranch: boolean) => {
   let base = "";
-  depth.forEach(isLastBranch => base = base.concat(isLastBranch ? "\t" : `${TRUNK}\t`));
+  depth.forEach(isLastBranch => (base = base.concat(isLastBranch ? "\t" : `${TRUNK}\t`)));
   if (isLastBranch) return base + LAST_BRANCH + " ";
   else return base + BRANCH + " ";
 };
 
-export const treeJsonToString = (tree: Object) => {
+export const treeJsonToString = (tree: Object, settings: ISettings) => {
   let treeString: string = "";
-  const parseBranches = (tree: Object, depth: boolean[]) => {
-    const branches = Object.entries(tree);
+  const parseBranches = (tree: any, depth: boolean[]) => {
+    const branches = filterBranches(tree, settings);
     branches.forEach(([key, values], index) => {
       const isLastBranch = index === branches.length - 1;
       const prefix = getBranchPrefixAccurate(depth, isLastBranch);
@@ -77,59 +80,46 @@ export const treeJsonToString = (tree: Object) => {
   return treeString;
 };
 
-export const treeJsonToElements = (tree: any) => {
-  const elements: any = [];
-  
-  const getPosition = ({ index, depth, numChildren, parent } : any) => {
-    const offsetX = 0;
-    const offsetY = 50;
-    const childrenMultiplier = numChildren > 1 ? (numChildren + 1) / 2 : 1;
-    const parentOffset = parent 
-      ? parent.position.x + (index - (parent.numChildren - 1) / 2) * 200
-      : 0;
-    return { 
-      x: 200 * (index) * childrenMultiplier + offsetX + parentOffset, 
-      y: 100 * depth + offsetY 
-    }
-  }
-
-  const parseBranches = (tree: Object, parent: { id: string, position: {x: number, y: number}, numChildren: number} | null, depth: number) => {
-    const branches = Object.entries(tree);
-    branches.forEach((branch, index) => {
-      const [key, children] = branch;
-      const numChildren = Object.values(children).length;
-      const id = `${key}-${nanoid()}`
-      const position = getPosition({ index, depth, numChildren, parent});
-      elements.push({
-        id,
-        type: "customNode",
-        data: { label: `${key} x: ${position.x} y: ${position.y}` },
-        position,
-      });
-      // Add connector edge
-      if (parent) {
-        elements.push({
-          id: `${parent.id}-${id}`,
-          source: parent.id,
-          target: id,
-          animated: false,
-        });
-      }
-      parseBranches(children, { id, position, numChildren }, depth + 1);
-    });
-  };
-  const numRootChildren = Object.entries(tree).length;
-  const root = { id: "root", position: { x: 0, y: 0}, numChildren: numRootChildren}
-  elements.push({
-    id: root.id,
-    type: "customNode",
-    data: { label: `${root.id} x: ${root.position.x} y: ${root.position.y}` },
-    position: root.position,
-  });
-  parseBranches(tree, root, 1);
-
-  return elements;
+const Leaf = ({ label }: { label: string }) => {
+  return ( 
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <div style={{
+        display: "flex",
+        border: "1px solid #fff",
+        borderRadius: 4,
+        padding: 8,
+        backgroundColor: "#4f3e5c"
+      }}>{label}</div>
+    </div>
+  );
 };
+
+export const treeJsonToNodes = (tree: any, depth: number, settings: ISettings) => {
+  if (depth > settings.depth) return;
+  const branches = filterBranches(tree, settings);
+  return branches.map(([key, children]) => {
+    return <TreeNode label={<Leaf label={key} />}>{treeJsonToNodes(children, depth + 1, settings)}</TreeNode>;
+  });
+}
+
+export const filterBranches = (tree: any, settings: ISettings) => {
+  let branches = Object.entries(tree);
+  if (settings.hideDotDirs) {
+    branches = branches.filter((branch: any, _index: number) => {
+      const [key, _children] = branch;
+      // If name starts with a . return false so it is filtered out
+      return !key.startsWith(".");
+    });
+  }
+  if (settings.hideFiles) {
+    branches = branches.filter((branch: any, _index: number) => {
+      const [key, _children] = branch;
+      // If name endsWith / return true since it is a directory
+      return key.endsWith("/");
+    });
+  }
+  return branches;
+}
 
 export const getNumberOfTabs = (line: string) => {
   return (line.match(/\t/g) || []).length;
