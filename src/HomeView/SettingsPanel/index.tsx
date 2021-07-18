@@ -12,6 +12,7 @@ import { settingsAtom, treeAtom } from "../../store";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { treeJsonToString } from "../../tree";
+import { saveAs } from 'file-saver';
 
 const getMaxDepth = (tree: Object): number => {
   let maxDepth = 0;
@@ -48,11 +49,18 @@ export const SettingsPanel = React.memo(() => {
     if (settings.depth < 0) handleDepthChange(null, newDepth);
   }, [treeState]);
 
+  const handleClick = () => {
+    const treeString = treeJsonToString(treeState, settings)
+    const blob = new Blob([treeString], {type: "text/plain;charset=utf-8"});
+    saveAs(blob, "structure.tree");
+  }
+
   return (
     <div className={classes.settingsContainer}>
       <CopyToClipboard text={treeJsonToString(treeState, settings)}>
         <Button variant="outlined">Copy to clipboard</Button>
       </CopyToClipboard>
+      <Button variant="outlined" onClick={handleClick}>Save to file</Button>
       <Typography id="discrete-slider" gutterBottom>
         Tree depth: ({settings.depth})
       </Typography>

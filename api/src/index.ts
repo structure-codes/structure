@@ -9,7 +9,7 @@ const router = express.Router();
 app.use(express.json());
 admin.initializeApp();
 
-const templatesRepo = "https://raw.githubusercontent.com/alex-oser/structure-templates/main/";
+const templatesRepo = "https://raw.githubusercontent.com/structure-codes/structure-templates/main/";
 router.get("/templates", async (req, res) => {
   const templatesUrl = `${templatesRepo}/templates.json`;
   try {
