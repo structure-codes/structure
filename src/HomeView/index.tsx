@@ -22,7 +22,7 @@ const Divider = ({
         width: direction === "horizontal" ? "100%" : dividerSize,
         height: direction === "horizontal" ? dividerSize : "100%",
         cursor: direction === "horizontal" ? "ns-resize" : "ew-resize",
-        border: `${dividerSize/2}px double #646464`,
+        border: `${dividerSize / 2}px double #646464`,
       }}
       onMouseDown={onMouseDown}
       onMouseUp={onMouseUp}
@@ -41,13 +41,13 @@ export const HomeView = () => {
   useEffect(() => {
     if (!isVerticalDragging || !x) return;
     // subtract half of divider width for fat divider
-    setLeftWidth(x - dividerSize/2);
+    setLeftWidth(x - dividerSize / 2);
   }, [isVerticalDragging, x]);
 
   useEffect(() => {
     if (!isHorizontalDragging || !y) return;
     // subtract half of divider width for fat divider
-    setTopHeight(y - dividerSize/2);
+    setTopHeight(y - dividerSize / 2);
   }, [isHorizontalDragging, y]);
 
   return (

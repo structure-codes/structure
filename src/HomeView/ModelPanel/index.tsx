@@ -3,7 +3,7 @@ import { useRecoilValue } from "recoil";
 import { treeAtom, settingsAtom } from "../../store";
 import { treeJsonToNodes } from "../../tree";
 import { useStyles } from "./style";
-import { Tree, TreeNode } from "react-organizational-chart";
+import { Tree } from "react-organizational-chart";
 
 export const ModelPanel = React.memo(() => {
   const classes = useStyles();

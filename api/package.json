@@ -3,10 +3,7 @@
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
     "build": "tsc",
-    "dev": "nodemon",
-    "emulator": "firebase emulators:start --only functions",
-    "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "dev": "nodemon --watch src -e ts,json --exec tsc"
   },
   "engines": {
     "node": "14"
