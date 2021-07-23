@@ -16,16 +16,28 @@ const Divider = ({
   onMouseDown: any;
   onMouseUp: any;
 }) => {
+  const [isHover, setIsHover] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   return (
     <div
       style={{
         width: direction === "horizontal" ? "100%" : dividerSize,
         height: direction === "horizontal" ? dividerSize : "100%",
         cursor: direction === "horizontal" ? "ns-resize" : "ew-resize",
-        border: `${dividerSize / 2}px double #646464`,
+        border: `${dividerSize / 2}px double ${isHover || isDragging ? "#776089" : "#646464"}`,
       }}
-      onMouseDown={onMouseDown}
-      onMouseUp={onMouseUp}
+      onMouseOver={() => setIsHover(true)}
+      onMouseLeave={() => {
+        setIsHover(false);
+      }}
+      onMouseDown={e => {
+        onMouseDown(e);
+        setIsDragging(true);
+      }}
+      onMouseUp={e => {
+        onMouseUp(e);
+        setIsDragging(false);
+      }}
     />
   );
 };
@@ -51,36 +63,34 @@ export const HomeView = () => {
   }, [isHorizontalDragging, y]);
 
   return (
-    <div className={classes.mainContainer}>
-      <div className={classes.panelContainer} onMouseLeave={() => setIsVerticalDragging(false)}>
-        <div
-          className={classes.leftPanel}
-          style={{ width: leftWidth }}
-          onMouseLeave={() => setIsHorizontalDragging(false)}
-        >
-          <CodePanel height={topHeight} />
-          <Divider
-            direction="horizontal"
-            onMouseDown={(e: any) => {
-              e.preventDefault();
-              setIsHorizontalDragging(true);
-            }}
-            onMouseUp={() => {
-              console.log("onMouseUp");
-              setIsHorizontalDragging(false);
-            }}
-          />
-          <SettingsPanel />
-        </div>
+    <div className={classes.panelContainer} onMouseLeave={() => setIsVerticalDragging(false)}>
+      <div
+        className={classes.leftPanel}
+        style={{ width: leftWidth }}
+        onMouseLeave={() => setIsHorizontalDragging(false)}
+      >
+        <CodePanel height={topHeight} />
         <Divider
-          direction="vertical"
-          onMouseDown={() => setIsVerticalDragging(true)}
-          onMouseUp={() => setIsVerticalDragging(false)}
+          direction="horizontal"
+          onMouseDown={(e: any) => {
+            e.preventDefault();
+            setIsHorizontalDragging(true);
+          }}
+          onMouseUp={() => {
+            console.log("onMouseUp");
+            setIsHorizontalDragging(false);
+          }}
         />
-        <div className={classes.rightPanel}>
-          <Dropdown />
-          <ModelPanel />
-        </div>
+        <SettingsPanel />
+      </div>
+      <Divider
+        direction="vertical"
+        onMouseDown={() => setIsVerticalDragging(true)}
+        onMouseUp={() => setIsVerticalDragging(false)}
+      />
+      <div className={classes.rightPanel}>
+        <Dropdown />
+        <ModelPanel />
       </div>
     </div>
   );

@@ -70,7 +70,7 @@ export const Dropdown = () => {
       <Autocomplete
         id="combo-box-demo"
         options={templatesData.data}
-        getOptionLabel={option => option.name}
+        getOptionLabel={option => option.name.replace(/\.tree$/, "")}
         className={classes.input}
         size="small"
         onChange={handleTemplateChange}
