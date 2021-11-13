@@ -32,7 +32,7 @@ export const languageDef: monaco.languages.IMonarchLanguage = {
 // This config defines the editor"s behavior.
 export const configuration = {
   comments: {
-    lineComment: "#",
+    lineComment: "//",
   },
   brackets: [],
   foldingStrategy: "indentation",

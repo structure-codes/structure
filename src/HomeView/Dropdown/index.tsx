@@ -20,7 +20,7 @@ export const Dropdown = () => {
     const data = await fetch(`/api/template/${selected}`).then(res => res.text());
     const parsedData = data
       .split("\n")
-      .filter(line => !line.startsWith("#"))
+      .filter(line => !line.startsWith("//"))
       .join("\n");
     return parsedData;
   });
