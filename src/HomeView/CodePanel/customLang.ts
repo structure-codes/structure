@@ -12,19 +12,20 @@ export const themeDef: monaco.editor.IStandaloneThemeData = {
 };
 
 // This config defines how the language is displayed in the editor.
+// Test configs live here: https://microsoft.github.io/monaco-editor/monarch.html
 export const languageDef: monaco.languages.IMonarchLanguage = {
   ignoreCase: true,
   defaultToken: "",
-  keywords: ["├", "─", "|", "└"],
   tokenizer: {
     root: [
+      { include: "@tree" },
       { include: "@tags" },
-      [/[A-Za-z][\w\\$]*/, "file"],
-      [/├|─|\||└/, "tree"],
     ],
     tags: [
-      [/\w*\//, "folder"],
-      [/#[a-zA-Z-_]\w*/, "folder"],
+      [/.*/, "folder"],
+    ],
+    tree: [
+      [/^(\t+)?(│|├──|└──|\t)+/, "tree"],
     ],
   },
 };

@@ -47,6 +47,7 @@ export const SettingsPanel = React.memo(() => {
     const newDepth = getMaxDepth(treeState);
     setMaxDepth(newDepth);
     if (settings.depth < 0) handleDepthChange(null, newDepth);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [treeState]);
 
   const handleClick = () => {

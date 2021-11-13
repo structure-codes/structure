@@ -71,8 +71,10 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
     });
 
     editor.onDidChangeCursorPosition(e => {
+      // If selecting text or api moves cursor, no need to reprocess
+      if (e.source === "mouse" || e.source === "api") return;
       const value = editor.getModel()?.getValue() || "";
-      const currentLine = value.split(/\r\n|\r|\n/)[e.position.lineNumber - 1];
+      const currentLine = value.split(/\r?\n/)[e.position.lineNumber - 1];
       const currentPrefix = currentLine.split(" ")[0];
       if (e.position.column < currentPrefix.length + 2) {
         editor.setPosition({
@@ -90,7 +92,6 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
     e: monaco.editor.IModelContentChangedEvent,
     editor: monaco.editor.IStandaloneCodeEditor
   ) => {
-    console.log("Handle editor change")
     const model = editor.getModel();
     if (!model) return;
     const value = model.getValue();
@@ -101,10 +102,7 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
     let prevPrefix = TRUNK;
     let currPrefix = prevPrefix;
 
-    const branchPrefixRegexWithSpaces = new RegExp(
-      `^(${TRUNK}?\t)+${BRANCH} |^(${TRUNK}?\t)+${LAST_BRANCH} |^${LAST_BRANCH} |^${BRANCH} `,
-      "g"
-    );
+    const branchPrefixRegexWithSpaces = /^(\t+)?(│|├──|└──|\t)+ /g;
 
     const branchPrefixRegex = new RegExp(
       `^(${TRUNK}?\t)+${BRANCH}|^(${TRUNK}?\t)+${LAST_BRANCH}|^${LAST_BRANCH}|^${BRANCH}`,
@@ -112,7 +110,7 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
     );
 
     const getUpdatedLines = (lines: string[]) => {
-      const updated: (string | null)[] = lines.map((line, index) => {
+      const updated: (string | null)[] = lines.map(line => {
         prevPrefix = currPrefix;
         const matches = line.match(branchPrefixRegex);
         currPrefix = matches ? matches[0] : BRANCH;
@@ -145,13 +143,23 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
         }
   
         // Handle hitting enter
-        if (!line.match(branchPrefixRegex)) return prevPrefix + " " + line;
-        console.log("WTF JS");
+        if (!line.match(branchPrefixRegex)) {
+          const newLine = prevPrefix + " " + line;
+          const curr = editorRef.current.getPosition();
+          if (curr) {
+            const newPosition = {
+              lineNumber: curr.lineNumber + 1,
+              column: newLine.length,
+            };
+            editorRef.current.setPosition(newPosition);
+          }
+          return prevPrefix + " " + line
+        };
         return line;
       });
       return updated;
     }
-    const lines: string[] = value.split(/\r\n|\r|\n/);
+    const lines: string[] = value.split(/\r?\n/);
     const updated: any = getUpdatedLines(lines).filter((line: string | null) => line !== null);
     const newValue = updated?.join("\n") || getBranchPrefix(0, true);
     if (newValue !== treeRef.current) {

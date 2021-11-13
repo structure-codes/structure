@@ -1,19 +1,19 @@
 import { atom } from "recoil";
 import { treeStringToJson } from "./tree";
 
-const defaultTree: string = `├── api/
-│	└── src/
-├── public/
-└── src/
-	├── AboutView/
-	├── App/
-	│	└── Header/
-	├── HomeView/
-	│	├── CodePanel/
-	│	├── Dropdown/
-	│	├── ModelPanel/
-	│	└── SettingsPanel/
-	└── WelcomeModal/`;
+const defaultTree: string = `├── api
+│	└── src
+├── public
+└── src
+	├── AboutView
+	├── App
+	│	└── Header
+	├── HomeView
+	│	├── CodePanel
+	│	├── Dropdown
+	│	├── ModelPanel
+	│	└── SettingsPanel
+	└── WelcomeModal`;
 
 export interface ISettings {
   depth: number;

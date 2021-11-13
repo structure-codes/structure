@@ -98,7 +98,7 @@ export const treeJsonToNodes = (tree: any, depth: number, settings: ISettings) =
   if (depth > settings.depth) return;
   const branches = filterBranches(tree, settings);
   return branches.map(([key, children]) => {
-    return <TreeNode label={<Leaf label={key} />}>{treeJsonToNodes(children, depth + 1, settings)}</TreeNode>;
+    return <TreeNode key={key} label={<Leaf label={key} />}>{treeJsonToNodes(children, depth + 1, settings)}</TreeNode>;
   });
 }
 
@@ -106,14 +106,14 @@ export const filterBranches = (tree: any, settings: ISettings) => {
   let branches = Object.entries(tree);
   if (settings.hideDotDirs) {
     branches = branches.filter((branch: any, _index: number) => {
-      const [key, _children] = branch;
+      const [key] = branch;
       // If name starts with a . return false so it is filtered out
       return !key.startsWith(".");
     });
   }
   if (settings.hideFiles) {
     branches = branches.filter((branch: any, _index: number) => {
-      const [key, _children] = branch;
+      const [key] = branch;
       // If name endsWith / return true since it is a directory
       return key.endsWith("/");
     });

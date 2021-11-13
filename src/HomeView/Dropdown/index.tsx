@@ -33,6 +33,7 @@ export const Dropdown = () => {
     if (!selectedTemplateData.data) return;
     console.log(selectedTemplateData.data);
     setTreeState(treeStringToJson(selectedTemplateData.data));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTemplateData.data]);
 
   useEffect(() => {
@@ -69,7 +70,7 @@ export const Dropdown = () => {
     <div className={classes.dropdownContainer}>
       <Autocomplete
         id="combo-box-demo"
-        options={templatesData.data}
+        options={templatesData.data || []}
         getOptionLabel={option => option.name.replace(/\.tree$/, "")}
         className={classes.input}
         size="small"
