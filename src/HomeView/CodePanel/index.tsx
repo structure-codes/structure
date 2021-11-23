@@ -9,13 +9,15 @@ import {
   BRANCH,
   LAST_BRANCH,
   TRUNK,
-  treeJsonToString,
-  treeStringToJson,
-  getBranchPrefix,
+  getBranchPrefixAccurate,
   trimTreeLine,
   getNumberOfTabs,
   getNumberOfLeadingTabs,
 } from "../../tree";
+import {
+  treeJsonToString,
+  treeStringToJson,
+} from "@structure-codes/utils";
 
 // import { customTreeFolding } from "./foldProvider";
 declare global {
@@ -42,7 +44,7 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
   const settingsState = useRecoilValue(settingsAtom);
   
   useEffect(() => {
-    const newValue = treeJsonToString(treeState, settingsState);
+    const newValue = treeJsonToString(treeState,  "\t", settingsState).replaceAll("  ", "\t");
     treeRef.current = newValue;
     const currValue = editorRef.current?.getModel()?.getValue();
     if (currValue !== newValue) editorRef.current?.getModel()?.setValue(newValue);
@@ -84,7 +86,7 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
       }
     });
 
-    editor.getModel()?.setValue(treeJsonToString(treeState, settingsState));
+    editor.getModel()?.setValue(treeJsonToString(treeState, "\t", settingsState).replaceAll("  ", "\t"));
     editorRef.current = editor;
   };
 
@@ -95,7 +97,7 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
     const model = editor.getModel();
     if (!model) return;
     const value = model.getValue();
-    if (!value) return model.setValue(getBranchPrefix(0, true));
+    if (!value) return model.setValue(getBranchPrefixAccurate([], true));
     const changes = e.changes[0];
     const isBackspace = changes.text === "" && changes.range.startColumn < changes.range.endColumn;
 
@@ -120,8 +122,8 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
         if (lineContent.match(/^\t/)) {
           const prevNumTabs = getNumberOfTabs(prevPrefix);
           const numTabs = getNumberOfTabs(currPrefix) + getNumberOfLeadingTabs(lineContent);
-          if (numTabs - prevNumTabs > 1) return getBranchPrefix(prevNumTabs + 1, false) + lineContent.replace("\t", "");
-          return getBranchPrefix(numTabs, false) + lineContent.replace("\t", "");
+          if (numTabs - prevNumTabs > 1) return getBranchPrefixAccurate(Array(prevNumTabs + 1).fill(true), false) + lineContent.replace("\t", "");
+          return getBranchPrefixAccurate(Array(numTabs).fill(true), false) + lineContent.replace("\t", "");
         }
   
         // Return current line if the line starts with an acceptable prefix
@@ -134,7 +136,7 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
         if (isBackspace) {
           const tabCount = getNumberOfTabs(currPrefix);
           if (tabCount === 0) return null;
-          const newPrefix = getBranchPrefix(tabCount - 1, false);
+          const newPrefix = getBranchPrefixAccurate(Array(tabCount - 1).fill(true), false);
           editor.setPosition({
             lineNumber: changes.range.endLineNumber,
             column: 1,
@@ -161,17 +163,18 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
     }
     const lines: string[] = value.split(/\r?\n/);
     const updated: any = getUpdatedLines(lines).filter((line: string | null) => line !== null);
-    const newValue = updated?.join("\n") || getBranchPrefix(0, true);
+    const newValue = updated?.join("\n") || getBranchPrefixAccurate([], true);
     if (newValue !== treeRef.current) {
-      const newState: any = treeStringToJson(newValue);
+      console.log(newValue);
+      // const newState: any = treeStringToJson(newValue);
+      const newState: any = treeStringToJson(newValue, false);
       // This logging is kinda useful to debug conversions so leave it for now maybe?
       // console.log(`old value is: \n${value}`)
       // console.log(`before conversion is: \n${newValue}`)
       // console.log(`newState is: \n${JSON.stringify(newState)}`)
       // console.log(`converted is: \n${treeJsonToString(newState)}`)
       // console.log("preconversion === converted => ", newValue === treeJsonToString(newState))
-      setTreeState(newState);
-      model.setValue(treeJsonToString(newState, settingsState));
+      model.setValue(treeJsonToString(newState, "\t", settingsState));
     }
   };
 

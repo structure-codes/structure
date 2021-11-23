@@ -49,12 +49,6 @@ export const treeStringToJson = (tree: string) => {
   return elements;
 };
 
-export const getBranchPrefix = (depth: number, isLastBranch: boolean) => {
-  const base = `${TRUNK}\t`.repeat(depth);
-  if (isLastBranch) return base + LAST_BRANCH + " ";
-  else return base + BRANCH + " ";
-};
-
 export const getBranchPrefixAccurate = (depth: boolean[], isLastBranch: boolean) => {
   let base = "";
   depth.forEach(isLastBranch => (base = base.concat(isLastBranch ? "\t" : `${TRUNK}\t`)));
