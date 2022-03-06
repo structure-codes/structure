@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { treeStringToJson } from "./tree";
+import { treeStringToJson } from "@structure-codes/utils";
 
 const defaultTree: string = `├── api
 │	└── src
