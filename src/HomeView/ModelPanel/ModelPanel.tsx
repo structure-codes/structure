@@ -20,13 +20,8 @@ const renderForeignObjectNode = ({ nodeDatum, toggleNode }: any) => {
       <circle onClick={toggleNode} fill={color} r={15} />
       {/* `foreignObject` requires width & height to be explicitly set. */}
       <text fill="white" strokeWidth="1" stroke="white" x="20">
-        {nodeDatum.name}
+        {nodeDatum.name} {numChildren > 0 && isCollapsed && `(+${numChildren})`}
       </text>
-      {numChildren > 0 && isCollapsed && (
-        <text fill="white" x="20" dy="20" strokeWidth="1" stroke="white">
-          +{numChildren}
-        </text>
-      )}
     </g>
   );
 };

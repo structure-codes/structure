@@ -36,6 +36,19 @@ export const options: IGlobalEditorOptions | IEditorOptions = {
   },
 };
 
+const getLastNode = (branch: TreeType) => {
+  const indexes: Array<number> = [];
+  // Get the last line number that is a child of the given branch
+  const getIndexes = (branch: TreeType) => {
+    if (branch.children.length === 0) indexes.push(branch._index);
+    branch.children.forEach((child) => {
+      getIndexes(child);
+    });
+  };
+  getIndexes(branch);
+  return Math.max(...indexes);
+};
+
 export const CodePanel = React.memo(({ height }: { height: number }) => {
   const classes = useStyles();
   const treeRef = useRef<string | null>(null);
@@ -56,6 +69,7 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
     };
   }, [treeState, settingsState]);
 
+
   const onMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
     // Register a new language
     monaco.languages.register({ id: "tree" });
@@ -69,18 +83,35 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
     editor.onDidChangeModelContent(e => handleEditorChange(e, editor));
 
     // register code folder provider
-    monaco.languages.registerFoldingRangeProvider("customTreeFolding", {
+    monaco.languages.registerFoldingRangeProvider("tree", {
       provideFoldingRanges: function (model, context, token) {
+        const tree: TreeType[] = treeStringToJson(model.getValue());
         const ranges: any = [];
-        // const lines = model.getLinesContent();
+        if (tree.length === 0) return ranges;
+
+        const getRanges = (branch: TreeType) => {
+          const startIndex = branch._index;
+          const endIndex = getLastNode(branch);
+          ranges.push({ start: startIndex + 1, end: endIndex +  1 });
+          branch.children.forEach((leaf) => {
+            getRanges(leaf);
+          });
+        };
+
+        tree.forEach((branch: TreeType) => {
+          getRanges(branch);
+        });
 
         return ranges;
       },
     });
 
     editor.onDidChangeCursorPosition(e => {
-      // If selecting text or api moves cursor, no need to reprocess
-      if (e.source === "mouse" || e.source === "api") return;
+      // If selecting text or api moves cursor, no need to revalidate cursor position
+      const selection = editor.getSelection();
+      const isSelecting = selection?.endColumn !== selection?.startColumn || selection?.endLineNumber !== selection?.startLineNumber;
+      if (e.source === "mouse" && isSelecting) return;
+      if (e.source === "api") return;
       const value = editor.getModel()?.getValue() || "";
       const currentLine = value.split(/\r?\n/)[e.position.lineNumber - 1];
       const currentPrefix = currentLine.split(" ")[0];
