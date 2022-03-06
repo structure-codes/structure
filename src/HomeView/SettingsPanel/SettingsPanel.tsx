@@ -18,9 +18,7 @@ const getMaxDepth = (tree: TreeType[]): number => {
   let maxDepth = 0;
   const descendTree = (tree: TreeType[], depth: number) => {
     tree.forEach(branch => {
-      return branch.children 
-        ? descendTree(branch.children, depth + 1) 
-        : null;
+      return branch.children ? descendTree(branch.children, depth + 1) : null;
     });
     maxDepth = Math.max(depth, maxDepth);
   };
@@ -49,11 +47,11 @@ export const SettingsPanel = React.memo(() => {
     const newDepth = getMaxDepth(treeState);
     setMaxDepth(newDepth);
     if (settings.depth < 0) handleDepthChange(null, newDepth);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [treeState]);
 
   const handleClick = () => {
-    const treeString = treeJsonToString(treeState, "\t", settings);
+    const treeString = treeJsonToString({ tree: treeState, tabChar: "\t", options: settings });
     const blob = new Blob([treeString], { type: "text/plain;charset=utf-8" });
     saveAs(blob, "structure.tree");
   };
@@ -61,7 +59,9 @@ export const SettingsPanel = React.memo(() => {
   return (
     <div className={classes.settingsContainer}>
       <div className={classes.buttons}>
-        <CopyToClipboard text={treeJsonToString(treeState, "\t", settings)}>
+        <CopyToClipboard
+          text={treeJsonToString({ tree: treeState, tabChar: "\t", options: settings })}
+        >
           <Button variant="outlined">Copy to clipboard</Button>
         </CopyToClipboard>
         <Button variant="outlined" onClick={handleClick}>
@@ -96,9 +96,9 @@ export const SettingsPanel = React.memo(() => {
         <FormControlLabel
           control={
             <Checkbox
-              checked={settings.hideDotDirs}
+              checked={settings.hideDots}
               onChange={handleCheckboxChange}
-              name="hideDotDirs"
+              name="hideDots"
               color="secondary"
             />
           }
