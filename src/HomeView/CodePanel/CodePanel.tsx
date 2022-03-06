@@ -14,15 +14,14 @@ import {
   getNumberOfTabs,
   getNumberOfLeadingTabs,
 } from "../../tree";
-import {
-  TreeType,
-  treeJsonToString,
-  treeStringToJson,
-} from "@structure-codes/utils";
+import { TreeType, treeJsonToString, treeStringToJson } from "@structure-codes/utils";
 
 // import { customTreeFolding } from "./foldProvider";
 declare global {
-  interface Window { editor: any; treeStringToJson: any }
+  interface Window {
+    editor: any;
+    treeStringToJson: any;
+  }
 }
 
 type IGlobalEditorOptions = monaco.editor.IGlobalEditorOptions;
@@ -33,8 +32,8 @@ export const options: IGlobalEditorOptions | IEditorOptions = {
   tabSize: 2,
   insertSpaces: false,
   minimap: {
-		enabled: false
-	}
+    enabled: false,
+  },
 };
 
 export const CodePanel = React.memo(({ height }: { height: number }) => {
@@ -43,12 +42,18 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
   const editorRef = useRef<any>(null);
   const [treeState, setTreeState] = useRecoilState(treeAtom);
   const settingsState = useRecoilValue(settingsAtom);
-  
+
   useEffect(() => {
-    const newValue = treeJsonToString(treeState,  "\t", settingsState).replaceAll("  ", "\t");
+    const newValue = treeJsonToString({
+      tree: treeState,
+      tabChar: "\t",
+      options: settingsState,
+    });
     treeRef.current = newValue;
     const currValue = editorRef.current?.getModel()?.getValue();
-    if (currValue !== newValue) editorRef.current?.getModel()?.setValue(newValue);
+    if (currValue !== newValue) {
+      editorRef.current?.getModel()?.setValue(newValue)
+    };
   }, [treeState, settingsState]);
 
   const onMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
@@ -87,7 +92,14 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
       }
     });
 
-    editor.getModel()?.setValue(treeJsonToString(treeState, "\t", settingsState).replaceAll("  ", "\t"));
+    editor
+      .getModel()
+      ?.setValue(
+        treeJsonToString({ tree: treeState, tabChar: "\t", options: settingsState }).replaceAll(
+          "  ",
+          "\t"
+        )
+      );
     editorRef.current = editor;
   };
 
@@ -118,15 +130,22 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
         const matches = line.match(branchPrefixRegex);
         currPrefix = matches ? matches[0] : BRANCH;
         const lineContent = trimTreeLine(line.substr(currPrefix.length));
-  
+
         // Handle moving tree right with tabs
         if (lineContent.match(/^\t/)) {
           const prevNumTabs = getNumberOfTabs(prevPrefix);
           const numTabs = getNumberOfTabs(currPrefix) + getNumberOfLeadingTabs(lineContent);
-          if (numTabs - prevNumTabs > 1) return getBranchPrefixAccurate(Array(prevNumTabs + 1).fill(true), false) + lineContent.replace("\t", "");
-          return getBranchPrefixAccurate(Array(numTabs).fill(true), false) + lineContent.replace("\t", "");
+          if (numTabs - prevNumTabs > 1)
+            return (
+              getBranchPrefixAccurate(Array(prevNumTabs + 1).fill(true), false) +
+              lineContent.replace("\t", "")
+            );
+          return (
+            getBranchPrefixAccurate(Array(numTabs).fill(true), false) +
+            lineContent.replace("\t", "")
+          );
         }
-  
+
         // Return current line if the line starts with an acceptable prefix
         // EX: │\t├──
         if (line.match(branchPrefixRegexWithSpaces)) {
@@ -144,7 +163,7 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
           });
           return newPrefix + lineContent;
         }
-  
+
         // Handle hitting enter
         if (!line.match(branchPrefixRegex)) {
           const newLine = prevPrefix + " " + line;
@@ -156,26 +175,18 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
             };
             editorRef.current.setPosition(newPosition);
           }
-          return prevPrefix + " " + line
-        };
+          return prevPrefix + " " + line;
+        }
         return line;
       });
       return updated;
-    }
+    };
     const lines: string[] = value.split(/\r?\n/);
     const updated: any = getUpdatedLines(lines).filter((line: string | null) => line !== null);
     const newValue = updated?.join("\n") || getBranchPrefixAccurate([], true);
     if (newValue !== treeRef.current) {
-      console.log(newValue);
-      // const newState: any = treeStringToJson(newValue);
       const newState: TreeType[] = treeStringToJson(newValue);
-      // This logging is kinda useful to debug conversions so leave it for now maybe?
-      // console.log(`old value is: \n${value}`)
-      // console.log(`before conversion is: \n${newValue}`)
-      // console.log(`newState is: \n${JSON.stringify(newState)}`)
-      // console.log(`converted is: \n${treeJsonToString(newState)}`)
-      // console.log("preconversion === converted => ", newValue === treeJsonToString(newState))
-      model.setValue(treeJsonToString(newState, "\t", settingsState));
+      setTreeState(newState);
     }
   };
 

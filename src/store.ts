@@ -18,13 +18,13 @@ const defaultTree: string = `├── api
 export interface ISettings {
   depth: number;
   hideFiles: boolean;
-  hideDotDirs: boolean;
+  hideDots: boolean;
 }
 
 const defaultSettings: ISettings = {
-  depth: -1,
+  depth: 0,
   hideFiles: false,
-  hideDotDirs: false,
+  hideDots: false,
 }
 
 export const treeAtom = atom({

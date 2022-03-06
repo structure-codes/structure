@@ -1,5 +1,3 @@
-import { ISettings } from "./store";
-
 export const TRUNK = "│";
 export const BRANCH = "├──";
 export const LAST_BRANCH = "└──";
@@ -26,38 +24,4 @@ export const getNumberOfLeadingTabs = (line: string): number => {
 export const trimTreeLine = (str: string): string => {
   const numTabs = getNumberOfLeadingTabs(str);
   return "\t".repeat(numTabs) + str.trim();
-};
-
-export const treeJsonToD3Tree: any = (tree: any) => {
-  return Object.entries(tree).map(([key, children]) => {
-    const nextChildren = treeJsonToD3Tree(children);
-    if (nextChildren.length) {
-      return {
-        name: key,
-        children: treeJsonToD3Tree(children),
-      };
-    }
-    return {
-      name: key,
-    };
-  });
-};
-
-export const filterBranches = (tree: any, settings: ISettings) => {
-  let branches = Object.entries(tree);
-  if (settings.hideDotDirs) {
-    branches = branches.filter((branch: any, _index: number) => {
-      const [key] = branch;
-      // If name starts with a . return false so it is filtered out
-      return !key.startsWith(".");
-    });
-  }
-  if (settings.hideFiles) {
-    branches = branches.filter((branch: any, _index: number) => {
-      const [key] = branch;
-      // If name endsWith / return true since it is a directory
-      return key.endsWith("/");
-    });
-  }
-  return branches;
 };
