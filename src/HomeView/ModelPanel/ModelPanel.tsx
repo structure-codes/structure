@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useRecoilValue } from "recoil";
 import { treeAtom, settingsAtom } from "../../store";
 import { useStyles } from "./style";

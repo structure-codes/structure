@@ -34,6 +34,7 @@ export const options: IGlobalEditorOptions | IEditorOptions = {
   minimap: {
     enabled: false,
   },
+  readOnly: true,
 };
 
 const getLastNode = (branch: TreeType) => {
@@ -80,15 +81,14 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
     monaco.editor.defineTheme("treeTheme", themeDef);
     monaco.editor.setTheme("treeTheme");
     editor.focus();
-    editor.onDidChangeModelContent(e => handleEditorChange(e, editor));
-
+    
     // register code folder provider
     monaco.languages.registerFoldingRangeProvider("tree", {
       provideFoldingRanges: function (model, context, token) {
         const tree: TreeType[] = treeStringToJson(model.getValue());
         const ranges: any = [];
         if (tree.length === 0) return ranges;
-
+        
         const getRanges = (branch: TreeType) => {
           const startIndex = branch._index;
           const endIndex = getLastNode(branch);
@@ -97,39 +97,44 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
             getRanges(leaf);
           });
         };
-
+        
         tree.forEach((branch: TreeType) => {
           getRanges(branch);
         });
-
+        
         return ranges;
       },
     });
-
-    editor.onDidChangeCursorPosition(e => {
-      // If selecting text or api moves cursor, no need to revalidate cursor position
-      const selection = editor.getSelection();
-      const isSelecting = selection?.endColumn !== selection?.startColumn || selection?.endLineNumber !== selection?.startLineNumber;
-      if (e.source === "mouse" && isSelecting) return;
-      if (e.source === "api") return;
-      const value = editor.getModel()?.getValue() || "";
-      const currentLine = value.split(/\r?\n/)[e.position.lineNumber - 1];
-      const currentPrefix = currentLine.split(" ")[0];
-      if (e.position.column < currentPrefix.length + 2) {
-        editor.setPosition({
-          lineNumber: e.position.lineNumber,
-          column: currentPrefix.length + 2,
-        });
-      }
-    });
+    
+    // editor.onDidChangeModelContent(e => handleEditorChange(e, editor));
+    // editor.onDidChangeCursorPosition(e => {
+    //   console.log(`cursor move source: ${e.source}`);
+    //   console.log(`cursor move position: ${e.position}`);
+    //   // If selecting text or api moves cursor, no need to revalidate cursor position
+    //   const selection = editor.getSelection();
+    //   const isSelecting = selection?.endColumn !== selection?.startColumn || selection?.endLineNumber !== selection?.startLineNumber;
+    //   if (e.source === "mouse" && isSelecting) return;
+    //   if (e.source === "api") return;
+    //   const value = editor.getModel()?.getValue() || "";
+    //   const currentLine = value.split(/\r?\n/)[e.position.lineNumber - 1];
+    //   const currentPrefix = currentLine.split(" ")[0];
+    //   if (e.position.column < currentPrefix.length + 2) {
+    //     editor.setPosition({
+    //       lineNumber: e.position.lineNumber,
+    //       column: currentPrefix.length + 2,
+    //     });
+    //   }
+    // });
 
     editor
       .getModel()
       ?.setValue(
-        treeJsonToString({ tree: treeState, tabChar: "\t", options: settingsState }).replaceAll(
-          "  ",
-          "\t"
-        )
+        treeJsonToString({ 
+          tree: treeState, 
+          tabChar: "\t", 
+          options: settingsState 
+        })
+        .replaceAll("  ","t")
       );
     editorRef.current = editor;
   };
@@ -195,19 +200,20 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
           return newPrefix + lineContent;
         }
 
-        // Handle hitting enter
-        if (!line.match(branchPrefixRegex)) {
-          const newLine = prevPrefix + " " + line;
-          const curr = editorRef.current.getPosition();
-          if (curr) {
-            const newPosition = {
-              lineNumber: curr.lineNumber + 1,
-              column: newLine.length,
-            };
-            editorRef.current.setPosition(newPosition);
-          }
-          return prevPrefix + " " + line;
-        }
+        // // Handle hitting enter
+        // if (!line.match(branchPrefixRegex)) {
+        //   console.log("handleEnter?");
+        //   const newLine = prevPrefix + " " + line;
+        //   const curr = editorRef.current.getPosition();
+        //   if (curr) {
+        //     const newPosition = {
+        //       lineNumber: curr.lineNumber + 1,
+        //       column: 100,
+        //     };
+        //     editorRef.current.setPosition(newPosition);
+        //   }
+        //   return prevPrefix + " " + line;
+        // }
         return line;
       });
       return updated;

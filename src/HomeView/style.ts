@@ -12,10 +12,12 @@ export const useStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
     height: "100%",
+    minWidth: 220,
   },
   rightPanel: {
-    flex: "1 1 0px",
-    overflow: "auto",
+    display: "flex",
+    flexDirection: "column",
+    flexGrow: 1,
   },
   panelContainer: {
     display: "flex",

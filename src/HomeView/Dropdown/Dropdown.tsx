@@ -38,11 +38,16 @@ export const Dropdown = () => {
   useEffect(() => {
     if (!selectedUrl) return;
 
-    const stringRe = "[A-Za-z-_.]+";
+    const stringRe = "[A-Za-z0-9-_.]+";
     const re = new RegExp(
       `https://github.com/(?<owner>${stringRe})/(?<repo>${stringRe})((/tree)?/(?<branch>${stringRe}))?`
     );
-    const { owner, repo, branch }: any = selectedUrl.match(re)?.groups;
+    const groups = selectedUrl.match(re)?.groups;
+    if (!groups) {
+      console.error(`Could not parse URL: ${selectedUrl} with regex: ${re.toString()}`);
+      return;
+    }
+    const { owner, repo, branch }: any = groups;
 
     fetch("/api/github", {
       method: "POST",

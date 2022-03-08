@@ -1,11 +1,13 @@
-export const githubToTree = (data: any) => {
-  const elements: {} = {};
-  let prevFile: string = "";
+import { TreeType } from "@structure-codes/utils";
+
+export const githubToTree = (data: any): TreeType[] => {
+  const elements: TreeType[] = [];
+  let current: TreeType[] = elements;
+  const path: TreeType[] = [];
+  
   let prevDepth: number = 0;
-  const path: Array<string> = [];
 
   data.forEach((file, index) => {
-    // if (file.type === "blob") return;
     const depth = file.path.split("/").length;
     const filename: string =
       file.type === "blob" ? file.path.split("/").pop() : file.path.split("/").pop().concat("/");
@@ -15,15 +17,17 @@ export const githubToTree = (data: any) => {
       .fill("pop")
       .forEach(() => path.pop());
 
-    const current: any = path.reduce(
-      (branch: { [key: string]: {} }, filename: string) => branch[filename],
-      elements
-    );
+    const node: TreeType = {
+      _index: index,
+      name: filename,
+      children: [],
+    };  
 
-    current[filename] = {};
-    prevFile = file.path;
+    // If we are at root, add root node - else add it to previous parent's children
+    current = path.length > 0 ? path[path.length - 1].children : elements;
+    current.push(node);
+    path.push(node);
     prevDepth = depth;
-    path.push(filename);
   });
   return elements;
 };
