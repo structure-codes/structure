@@ -62,6 +62,7 @@ export const Dropdown = () => {
     })
       .then(res => res.json())
       .then(res => {
+        console.log(JSON.stringify(res));
         setTreeState(res);
       });
   }, [selectedUrl, setTreeState]);
