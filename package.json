@@ -5,7 +5,7 @@
   "scripts": {
     "start": "concurrently npm:backend npm:frontend npm:firebase",
     "preview": "vite preview",
-    "frontend": "vite --host",
+    "frontend": "vite",
     "backend": "cd api && npm run build:watch",
     "firebase": "firebase emulators:start --only hosting,functions",
     "build": "concurrently npm:build:client npm:build:api",
