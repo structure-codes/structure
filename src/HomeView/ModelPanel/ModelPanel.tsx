@@ -1,8 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useState } from "react";
 import { useRecoilValue } from "recoil";
-import { treeAtom, settingsAtom } from "../../store";
-import { useStyles } from "./style";
-import { useCenteredTree } from "../hooks";
+import { treeAtom } from "../../store";
 import Tree from "react-d3-tree";
 import "./tree.css";
 
@@ -26,18 +24,40 @@ const renderForeignObjectNode = ({ nodeDatum, toggleNode }: any) => {
   );
 };
 
+const defaultTranslate = { x: 0, y: 0 }
 export const ModelPanel = React.memo(() => {
   const treeState = useRecoilValue(treeAtom);
   const nodes = { name: "root", children: treeState };
-  const [dimensions, translate, containerRef] = useCenteredTree();
+
+  const [translate, setTranslate] = useState(defaultTranslate);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [origin, setOrigin] = useState(defaultTranslate);
+  const containerRef = useCallback((containerElem) => {
+    if (containerElem !== null) {
+      const { width, height } = containerElem.getBoundingClientRect();
+      setOrigin({ x: width / 2, y: height / 2 });
+      setTranslate({ x: width / 2, y: height / 2 });
+      setDimensions({ width, height });
+    }
+  }, []);
+  
+  const handleRecenter = () => {
+    setTranslate(origin);
+  }
+
+  const onUpdate = ({translate: nodeTranslate}: any) => {
+    setTranslate(nodeTranslate);
+  }
 
   return (
     <div style={{ height: "100%", width: "100%" }} ref={containerRef}>
+      <button onClick={handleRecenter}>CLIK {JSON.stringify(translate)}</button>
       <Tree
         data={nodes}
         dimensions={dimensions}
         translate={translate}
         orientation="vertical"
+        onUpdate={onUpdate}
         pathFunc="diagonal"
         pathClassFunc={() => "custom-link"}
         rootNodeClassName="node__root"

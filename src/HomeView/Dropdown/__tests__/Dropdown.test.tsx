@@ -3,7 +3,7 @@ import { rest } from "msw";
 import { setupServer } from "msw/node";
 
 // import react-testing methods
-import { render, fireEvent, waitFor, screen, within, wait, act } from "@testing-library/react";
+import { render, fireEvent, waitFor, screen, within, wait, act, findByText } from "@testing-library/react";
 
 // add custom jest matchers from jest-dom
 import "@testing-library/jest-dom";
@@ -48,15 +48,12 @@ test("sends API request on search", async () => {
   const searchValue = "react-boiler";
   const templateValue = "react-boilerplate";
   autocomplete.focus();
+  // open autocomplete dropdown menu
+  within(autocomplete).getByLabelText("Open").click();
+  const options = await screen.findAllByRole("option");
+  expect(options).toHaveLength(7);
   // assign value to input field
   fireEvent.change(input, { target: { value: searchValue } });
-  // pause for arbitrary amount of time for popup to render
-  await act(async () => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-  });
-  // now we can access the options here
-  const option = screen.getByText("react-boilerplate");
-  // navigate to the first item in the autocomplete box
   fireEvent.keyDown(autocomplete, { key: "ArrowDown" });
   // select the first item
   fireEvent.keyDown(autocomplete, { key: "Enter" });
