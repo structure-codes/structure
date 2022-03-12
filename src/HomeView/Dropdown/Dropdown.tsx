@@ -3,17 +3,20 @@ import { useStyles } from "./style";
 import { Button, Link, TextField, Typography } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useSetRecoilState } from "recoil";
-import { treeAtom } from "../../store";
+import { treeAtom, templateAtom } from "../../store";
 import { treeStringToJson } from "@structure-codes/utils";
 import { useQuery } from "react-query";
 import GitHubIcon from "@material-ui/icons/GitHub";
+import { useHistory } from "react-router-dom";
 
 export const Dropdown = () => {
   const classes = useStyles();
+  const history = useHistory();
   const [url, setUrl] = useState("");
   const [selected, setSelected] = useState<any>();
   const [selectedUrl, setSelectedUrl] = useState("");
   const setTreeState = useSetRecoilState(treeAtom);
+  const setSelectedTemplate = useSetRecoilState(templateAtom);
 
   const selectedTemplateData: any = useQuery(["selectedTemplate", selected], async () => {
     if (!selected) return;
@@ -22,6 +25,7 @@ export const Dropdown = () => {
       .split("\n")
       .filter(line => !line.startsWith("//"))
       .join("\n");
+    setSelectedTemplate(selected);
     return parsedData;
   });
 
@@ -64,6 +68,7 @@ export const Dropdown = () => {
       .then(res => {
         console.log(JSON.stringify(res));
         setTreeState(res);
+        setSelectedTemplate(selectedUrl);
       });
   }, [selectedUrl, setTreeState]);
 
