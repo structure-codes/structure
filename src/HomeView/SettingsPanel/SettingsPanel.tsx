@@ -69,7 +69,6 @@ export const SettingsPanel = React.memo(() => {
           value={settings.depth}
           onChange={handleDepthChange}
           aria-labelledby="continuous-slider"
-          color="secondary"
           className={classes.slider}
         />
       </div>
@@ -80,7 +79,6 @@ export const SettingsPanel = React.memo(() => {
               checked={settings.hideFiles}
               onChange={handleCheckboxChange}
               name="hideFiles"
-              color="secondary"
             />
           }
           label="Hide files"
