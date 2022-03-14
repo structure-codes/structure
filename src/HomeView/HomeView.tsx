@@ -5,7 +5,7 @@ import { SettingsPanel } from "./SettingsPanel";
 import { ModelPanel } from "./ModelPanel";
 import { useStyles } from "./style";
 import { useMousePosition } from "./hooks";
-import { useTheme } from "@material-ui/styles";
+import { useTheme } from "@material-ui/core";
 
 const dividerSize = 6;
 const Divider = ({
