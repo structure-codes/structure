@@ -58,29 +58,20 @@ export const SettingsPanel = React.memo(() => {
 
   return (
     <div className={classes.settingsContainer}>
-      <div className={classes.buttons}>
-        <CopyToClipboard
-          text={treeJsonToString({ tree: treeState, tabChar: "\t", options: settings })}
-        >
-          <Button variant="outlined">Copy to clipboard</Button>
-        </CopyToClipboard>
-        <Button variant="outlined" onClick={handleClick}>
-          Save to file
-        </Button>
+      <div className={classes.sliderContainer}>
+        <Typography id="discrete-slider" gutterBottom>
+          Tree depth: ({settings.depth})
+        </Typography>
+        <Slider
+          min={1}
+          max={maxDepth}
+          defaultValue={maxDepth}
+          value={settings.depth}
+          onChange={handleDepthChange}
+          aria-labelledby="continuous-slider"
+          className={classes.slider}
+        />
       </div>
-      <Typography id="discrete-slider" gutterBottom>
-        Tree depth: ({settings.depth})
-      </Typography>
-      <Slider
-        min={1}
-        max={maxDepth}
-        defaultValue={maxDepth}
-        value={settings.depth}
-        onChange={handleDepthChange}
-        aria-labelledby="continuous-slider"
-        color="secondary"
-        className={classes.slider}
-      />
       <FormGroup>
         <FormControlLabel
           control={
@@ -88,7 +79,6 @@ export const SettingsPanel = React.memo(() => {
               checked={settings.hideFiles}
               onChange={handleCheckboxChange}
               name="hideFiles"
-              color="secondary"
             />
           }
           label="Hide files"
@@ -102,9 +92,19 @@ export const SettingsPanel = React.memo(() => {
               color="secondary"
             />
           }
-          label="Hide dot directories and files"
+          label="Hide dot dirs and files"
         />
       </FormGroup>
+      <div className={classes.buttons}>
+        <CopyToClipboard
+          text={treeJsonToString({ tree: treeState, tabChar: "\t", options: settings })}
+        >
+          <Button variant="outlined" size="small" className={classes.button}>Copy to clipboard</Button>
+        </CopyToClipboard>
+        <Button variant="outlined" size="small" className={classes.button} onClick={handleClick}>
+          Save to file
+        </Button>
+      </div>
     </div>
   );
 });

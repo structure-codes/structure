@@ -1,0 +1,237 @@
+[
+  {
+    "_index": 0,
+    "name": ".editorconfig",
+    "children": []
+  },
+  {
+    "_index": 1,
+    "name": ".eslintrc.js",
+    "children": []
+  },
+  {
+    "_index": 2,
+    "name": ".github/",
+    "children": [
+      {
+        "_index": 3,
+        "name": "release-drafter.yaml",
+        "children": []
+      },
+      {
+        "_index": 4,
+        "name": "workflows/",
+        "children": [
+          {
+            "_index": 5,
+            "name": "main.yaml",
+            "children": []
+          },
+          {
+            "_index": 6,
+            "name": "release-drafter.yaml",
+            "children": []
+          },
+          {
+            "_index": 7,
+            "name": "release-insiders.yaml",
+            "children": []
+          },
+          {
+            "_index": 8,
+            "name": "release.yaml",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "_index": 9,
+    "name": ".gitignore",
+    "children": []
+  },
+  {
+    "_index": 10,
+    "name": ".prettierrc",
+    "children": []
+  },
+  {
+    "_index": 11,
+    "name": ".vscode/",
+    "children": [
+      {
+        "_index": 12,
+        "name": "extensions.json",
+        "children": []
+      },
+      {
+        "_index": 13,
+        "name": "launch.json",
+        "children": []
+      },
+      {
+        "_index": 14,
+        "name": "settings.json",
+        "children": []
+      },
+      {
+        "_index": 15,
+        "name": "tasks.json",
+        "children": []
+      }
+    ]
+  },
+  {
+    "_index": 16,
+    "name": ".vscodeignore",
+    "children": []
+  },
+  {
+    "_index": 17,
+    "name": "LICENSE",
+    "children": []
+  },
+  {
+    "_index": 18,
+    "name": "README.md",
+    "children": []
+  },
+  {
+    "_index": 19,
+    "name": "images/",
+    "children": [
+      {
+        "_index": 20,
+        "name": "icon.png",
+        "children": []
+      }
+    ]
+  },
+  {
+    "_index": 21,
+    "name": "jest.config.ts",
+    "children": []
+  },
+  {
+    "_index": 22,
+    "name": "language-configuration.json",
+    "children": []
+  },
+  {
+    "_index": 23,
+    "name": "package-lock.json",
+    "children": []
+  },
+  {
+    "_index": 24,
+    "name": "package.json",
+    "children": []
+  },
+  {
+    "_index": 25,
+    "name": "scripts/",
+    "children": [
+      {
+        "_index": 26,
+        "name": "applyInsidersPatch.js",
+        "children": []
+      }
+    ]
+  },
+  {
+    "_index": 27,
+    "name": "src/",
+    "children": [
+      {
+        "_index": 28,
+        "name": "__tests__/",
+        "children": [
+          {
+            "_index": 29,
+            "name": "tree.test.ts",
+            "children": []
+          },
+          {
+            "_index": 30,
+            "name": "trees/",
+            "children": [
+              {
+                "_index": 31,
+                "name": "tab-crlf.tree",
+                "children": []
+              },
+              {
+                "_index": 32,
+                "name": "tab-lf.tree",
+                "children": []
+              },
+              {
+                "_index": 33,
+                "name": "three-space-lf.tree",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "_index": 34,
+        "name": "extension.ts",
+        "children": []
+      },
+      {
+        "_index": 35,
+        "name": "providers/",
+        "children": [
+          {
+            "_index": 36,
+            "name": "completionItemsProvider.ts",
+            "children": []
+          },
+          {
+            "_index": 37,
+            "name": "editProvider.ts",
+            "children": []
+          },
+          {
+            "_index": 38,
+            "name": "foldingRangeProvider.ts",
+            "children": []
+          },
+          {
+            "_index": 39,
+            "name": "formattingEditProvider.ts",
+            "children": []
+          },
+          {
+            "_index": 40,
+            "name": "textDocumentChangeProvider.ts",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "_index": 41,
+    "name": "syntaxes/",
+    "children": [
+      {
+        "_index": 42,
+        "name": "tree.tmLanguage.json",
+        "children": []
+      }
+    ]
+  },
+  {
+    "_index": 43,
+    "name": "tsconfig.json",
+    "children": []
+  },
+  {
+    "_index": 44,
+    "name": "webpack.config.js",
+    "children": []
+  }
+]

@@ -128,14 +128,7 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
 
     editor
       .getModel()
-      ?.setValue(
-        treeJsonToString({ 
-          tree: treeState, 
-          tabChar: "\t", 
-          options: settingsState 
-        })
-        .replaceAll("  ","t")
-      );
+      ?.setValue(treeRef.current || "");
     editorRef.current = editor;
   };
 

@@ -5,6 +5,7 @@ import { SettingsPanel } from "./SettingsPanel";
 import { ModelPanel } from "./ModelPanel";
 import { useStyles } from "./style";
 import { useMousePosition } from "./hooks";
+import { useTheme } from "@material-ui/styles";
 
 const dividerSize = 6;
 const Divider = ({
@@ -18,13 +19,27 @@ const Divider = ({
 }) => {
   const [isHover, setIsHover] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const theme = useTheme();
+
+  // handle the case where the mouse goes up and we miss it on the element event
+  useEffect(() => {
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => window.removeEventListener("mouseup", handleMouseUp);
+  }, []);
+
   return (
     <div
       style={{
         width: direction === "horizontal" ? "100%" : dividerSize,
         height: direction === "horizontal" ? dividerSize : "100%",
         cursor: direction === "horizontal" ? "ns-resize" : "ew-resize",
-        border: `${dividerSize / 2}px double ${isHover || isDragging ? "#776089" : "#646464"}`,
+        background: `${isHover || isDragging ? theme.palette.primary.main : "rgba(0,0,0,0)"}`,
+        borderTop: direction === "horizontal" ? "1px solid #646464" : "none",
+        borderLeft: direction === "vertical" ? "1px solid #646464" : "none",
       }}
       onMouseOver={() => setIsHover(true)}
       onMouseLeave={() => {
@@ -62,6 +77,17 @@ export const HomeView = () => {
     setTopHeight(y - dividerSize / 2);
   }, [isHorizontalDragging, y]);
 
+  // handle the case where the mouse goes up and we miss it on the element event handler
+  useEffect(() => {
+    const handleMouseUp = () => {
+      setIsVerticalDragging(false);
+      setIsHorizontalDragging(false);
+    };
+
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => window.removeEventListener("mouseup", handleMouseUp);
+  }, []);
+
   return (
     <div className={classes.panelContainer} onMouseLeave={() => setIsVerticalDragging(false)}>
       <div
@@ -77,7 +103,6 @@ export const HomeView = () => {
             setIsHorizontalDragging(true);
           }}
           onMouseUp={() => {
-            console.log("onMouseUp");
             setIsHorizontalDragging(false);
           }}
         />

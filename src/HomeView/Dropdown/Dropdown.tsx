@@ -1,54 +1,97 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useStyles } from "./style";
 import { Button, Link, TextField, Typography } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useSetRecoilState } from "recoil";
-import { treeAtom } from "../../store";
+import { treeAtom, baseTreeAtom } from "../../store";
 import { treeStringToJson } from "@structure-codes/utils";
 import { useQuery } from "react-query";
+import { useNavigate, useSearchParams, useParams } from "react-router-dom";
 import GitHubIcon from "@material-ui/icons/GitHub";
 
 export const Dropdown = () => {
   const classes = useStyles();
+  const navigate = useNavigate();
+  const params = useParams();
+  const [searchParams]: any = useSearchParams();
   const [url, setUrl] = useState("");
-  const [selected, setSelected] = useState<any>();
-  const [selectedUrl, setSelectedUrl] = useState("");
-  const setTreeState = useSetRecoilState(treeAtom);
+  const [template, setTemplate] = useState(null);
+  const setTreeState= useSetRecoilState(treeAtom);
+  const setBaseTree = useSetRecoilState(baseTreeAtom);
 
-  const selectedTemplateData: any = useQuery(["selectedTemplate", selected], async () => {
-    if (!selected) return;
-    const data = await fetch(`/api/template/${selected}`).then(res => res.text());
-    const parsedData = data
-      .split("\n")
-      .filter(line => !line.startsWith("//"))
-      .join("\n");
-    return parsedData;
-  });
+  // On initial load get details from URL if present
+  useEffect(() => {
+    const { template: searchTemplate } = params;
+    if (!searchTemplate) return;
+    if (searchTemplate === "github") {
+      const owner = searchParams.get("owner");
+      const repo = searchParams.get("repo");
+      const branch = searchParams.get("branch");
+      const branchString = branch ? `/tree/${branch}` : "";
+      const searchUrl = `https://github.com/${owner}/${repo}${branchString}`;
+      setUrl(searchUrl);
+      handleGo(null, searchUrl);
+    } else {
+      handleTemplateChange(null, searchTemplate);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const templatesData = useQuery("templatesData", () =>
+  // Fetch the tree string data for the given template or repository
+  useQuery(
+    ["selectedTemplate", template],
+    async () => {
+      const data = await fetch(`/api/template/${template}`).then(res => res.text());
+      const parsedData = data
+        .split("\n")
+        .filter(line => !line.startsWith("//"))
+        .join("\n");
+      setTreeState(treeStringToJson(parsedData));
+      setBaseTree(template || "");
+      return parsedData;
+    },
+    {
+      enabled: !!template,
+    }
+  );
+
+  // Fetch list of all available templates
+  const { data: templates } = useQuery("templatesData", () =>
     fetch("/api/templates").then(res => res.json())
   );
 
-  useEffect(() => {
-    if (!selectedTemplateData.data) return;
-    setTreeState(treeStringToJson(selectedTemplateData.data));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTemplateData.data]);
+  // Immediately pulls in new template data
+  const handleTemplateChange = (e: any, template: any) => {
+    if (template) {
+      navigate(`/template/${template}`);
+    } else {
+      navigate("/");
+    }
+    // setTemplate tells us which template is selected and to load data for it from backend
+    setTemplate(template);
+    // setBaseTree tells us that the selected source of tree data has changed
+    setBaseTree(template);
+  };
 
-  useEffect(() => {
-    if (!selectedUrl) return;
+  // Handles changes to input value
+  const handleUrlChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    setUrl(e.target.value);
+  };
 
+  // Pulls from github api on click of button
+  const handleGo = (e: any, urlFromParams: string | null = null) => {
+    // Either get URL passed in OR use the current state value
+    const searchUrl = urlFromParams || url;
     const stringRe = "[A-Za-z0-9-_.]+";
     const re = new RegExp(
       `https://github.com/(?<owner>${stringRe})/(?<repo>${stringRe})((/tree)?/(?<branch>${stringRe}))?`
     );
-    const groups = selectedUrl.match(re)?.groups;
+    const groups = searchUrl.match(re)?.groups;
     if (!groups) {
-      console.error(`Could not parse URL: ${selectedUrl} with regex: ${re.toString()}`);
+      console.error(`Could not parse URL: ${searchUrl} with regex: ${re.toString()}`);
       return;
     }
-    const { owner, repo, branch }: any = groups;
-
+    const { owner, repo, branch }: Record<string, string> = groups;
     fetch("/api/github", {
       method: "POST",
       body: JSON.stringify({
@@ -63,19 +106,17 @@ export const Dropdown = () => {
       .then(res => res.json())
       .then(res => {
         setTreeState(res);
+        setBaseTree(searchUrl);
+        navigate(`/template/github?owner=${owner}&repo=${repo}${ branch ? `&branch=${branch}` : ""}`);
       });
-  }, [selectedUrl, setTreeState]);
-
-  const handleTemplateChange = (e: any, template: any) => {
-    setSelected(template.name);
   };
 
   return (
     <div className={classes.dropdownContainer}>
       <Autocomplete
         id="combo-box-demo"
-        options={templatesData.data || []}
-        getOptionLabel={option => option.name.replace(/\.tree$/, "")}
+        options={templates || []}
+        value={template}
         className={classes.input}
         size="small"
         onChange={handleTemplateChange}
@@ -87,18 +128,23 @@ export const Dropdown = () => {
       <TextField
         size="small"
         className={classes.input}
-        label="Link to repository"
+        label="Link to GitHub repository"
         variant="outlined"
         value={url}
-        onChange={e => setUrl(e.target.value)}
+        onChange={handleUrlChange}
       />
       <div className={classes.go}>
-        <Button style={{ height: "100%" }} variant="outlined" onClick={() => setSelectedUrl(url)}>
+        <Button style={{ height: "100%" }} variant="outlined" onClick={handleGo}>
           GO
         </Button>
       </div>
-      <div className={classes.icon} >
-        <Link color="secondary" target="_blank" href="https://github.com/structure-codes/structure" rel="noopener">
+      <div className={classes.icon}>
+        <Link
+          color="secondary"
+          target="_blank"
+          href="https://github.com/structure-codes/structure"
+          rel="noopener"
+        >
           <GitHubIcon />
         </Link>
       </div>

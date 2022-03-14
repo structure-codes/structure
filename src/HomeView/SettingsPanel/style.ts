@@ -12,7 +12,13 @@ export const useStyles = makeStyles(theme => ({
       margin: `0 ${theme.spacing(1)}px ${theme.spacing(1)}px 0`
     }
   },
+  button: {
+    width: 200,
+  },
   slider: {
     maxWidth: 300,
+  },
+  sliderContainer: {
+    marginRight: theme.spacing(1),
   }
 }))

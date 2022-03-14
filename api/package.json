@@ -3,7 +3,7 @@
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
     "build": "tsc",
-    "dev": "nodemon --watch src -e ts,json --exec tsc"
+    "build:watch": "nodemon --watch src -e ts,json --exec tsc"
   },
   "engines": {
     "node": "14"

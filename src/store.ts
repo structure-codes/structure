@@ -25,7 +25,9 @@ const defaultSettings: ISettings = {
   depth: 0,
   hideFiles: false,
   hideDots: false,
-}
+};
+
+const defaultBaseTree: string = "";
 
 export const treeAtom = atom({
   key: "tree",
@@ -35,4 +37,9 @@ export const treeAtom = atom({
 export const settingsAtom = atom({
   key: "settings",
   default: defaultSettings,
-})
+});
+
+export const baseTreeAtom = atom({
+  key: "baseTree",
+  default: defaultBaseTree,
+});

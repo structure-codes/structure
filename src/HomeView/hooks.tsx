@@ -18,27 +18,3 @@ export const useMousePosition = (isDragging: boolean) => {
 
   return mousePosition;
 };
-
-type DimensionsType = {
-  width: number,
-  height: number,
-}
-
-type TranslateType = {
-  x: number,
-  y: number,
-}
-
-export const useCenteredTree = (defaultTranslate = { x: 0, y: 0 }): [DimensionsType, TranslateType, any] => {
-  const [translate, setTranslate] = useState(defaultTranslate);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  
-  const containerRef = useCallback((containerElem) => {
-    if (containerElem !== null) {
-      const { width, height } = containerElem.getBoundingClientRect();
-      setTranslate({ x: width / 2, y: height / 2 });
-      setDimensions({ width, height });
-    }
-  }, []);
-  return [dimensions, translate, containerRef];
-};
