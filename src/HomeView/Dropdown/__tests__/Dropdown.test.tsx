@@ -3,7 +3,7 @@ import { rest } from "msw";
 import { setupServer } from "msw/node";
 
 // import react-testing methods
-import { render, fireEvent, waitFor, screen, within, wait, act, findByText } from "@testing-library/react";
+import { render, fireEvent, screen, within } from "@testing-library/react";
 
 // add custom jest matchers from jest-dom
 import "@testing-library/jest-dom";
@@ -13,6 +13,8 @@ import tree from "./sampleTree.json";
 import templates from "./sampleTemplates.json";
 // required libraries
 import { QueryClient, QueryClientProvider } from "react-query";
+import { MemoryRouter } from "react-router-dom";
+import { RecoilRoot } from "recoil";
 
 // declare which API requests to mock
 const server = setupServer(
@@ -37,9 +39,13 @@ test("sends API request on search", async () => {
   const queryClient = new QueryClient();
   // arrange
   render(
-    <QueryClientProvider client={queryClient}>
-      <Dropdown />
-    </QueryClientProvider>
+    <RecoilRoot>
+      <MemoryRouter>
+        <QueryClientProvider client={queryClient}>
+          <Dropdown />
+        </QueryClientProvider>
+      </MemoryRouter>
+    </RecoilRoot>
   );
   // act
   const autocomplete = screen.getByRole("combobox");

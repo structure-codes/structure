@@ -27,7 +27,7 @@ const defaultSettings: ISettings = {
   hideDots: false,
 };
 
-const defaultTemplate: string = "";
+const defaultBaseTree: string = "";
 
 export const treeAtom = atom({
   key: "tree",
@@ -39,7 +39,7 @@ export const settingsAtom = atom({
   default: defaultSettings,
 });
 
-export const templateAtom = atom({
-  key: "template",
-  default: defaultTemplate,
+export const baseTreeAtom = atom({
+  key: "baseTree",
+  default: defaultBaseTree,
 });

@@ -9,12 +9,19 @@ const router = express.Router();
 app.use(express.json());
 admin.initializeApp();
 
+interface ITemplates {
+  name: string;
+  url: string;
+  tags: string[];
+}
+
 const templatesRepo = "https://raw.githubusercontent.com/structure-codes/structure-templates/main/";
 router.get("/templates", async (req, res) => {
   const templatesUrl = `${templatesRepo}/templates.json`;
   try {
-    const data = await got(templatesUrl).json();
-    res.send(data);
+    const data: ITemplates[] = await got(templatesUrl).json();
+    const parsed: string[] = data.map((template) => template.name.replace(/\.tree$/, ""));
+    res.send(parsed);
   } catch (e) {
     console.error("Error retrieving templates from:", templatesUrl);
   }
@@ -22,7 +29,7 @@ router.get("/templates", async (req, res) => {
 
 router.get("/template/:template", async (req, res) => {
   const { template } = req.params;
-  const templateUrl = `${templatesRepo}/templates/${template}`;
+  const templateUrl = `${templatesRepo}/templates/${template}.tree`;
   try {
     const data = await got(templateUrl).then(res => res.body);
     res.send(data);

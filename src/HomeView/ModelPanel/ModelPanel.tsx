@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
-import { treeAtom, templateAtom } from "../../store";
+import { treeAtom, baseTreeAtom } from "../../store";
 import Tree from "react-d3-tree";
 import "./tree.css";
 
@@ -27,7 +27,7 @@ const renderForeignObjectNode = ({ nodeDatum, toggleNode }: any) => {
 const defaultTranslate = { x: 0, y: 0 }
 export const ModelPanel = React.memo(() => {
   const treeState = useRecoilValue(treeAtom);
-  const selectedTemplate = useRecoilValue(templateAtom);
+  const baseTree = useRecoilValue(baseTreeAtom);
   const nodes = { name: "root", children: treeState };
 
   const [translate, setTranslate] = useState(defaultTranslate);
@@ -45,7 +45,7 @@ export const ModelPanel = React.memo(() => {
   
   useEffect(() => {
     setTranslate(origin);
-  }, [selectedTemplate, setTranslate, origin]);
+  }, [baseTree, setTranslate, origin]);
 
   const onUpdate = ({translate: nodeTranslate, zoom}: any) => {
     setTranslate(nodeTranslate);
