@@ -4,10 +4,18 @@ export const useStyles = makeStyles(theme => ({
   dropdownContainer: {
     margin: theme.spacing(1),
     display: "flex",
-    alignItems: "center",
+    flexDirection: "column",
+    [theme.breakpoints.up("sm")]: {
+      flexDirection: "row",
+    },
+    alignItems: "left",
+  },
+  githubContainer: {
+    display: "flex",
   },
   input: {
-    width: 300,
+    width: "100%",
+    maxWidth: 300,
   },
   go: {
     marginLeft: theme.spacing(1),
@@ -19,5 +27,5 @@ export const useStyles = makeStyles(theme => ({
   },
   icon: {
     marginLeft: "auto",
-  }
-}))
+  },
+}));

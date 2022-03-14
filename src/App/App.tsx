@@ -1,11 +1,11 @@
 import { HomeView } from "../HomeView";
-import { useStyles } from "./style";
+import { GitHubLink } from "./GitHubLink";
 
 export const App = () => {
-  useStyles();
   return (
     <>
       <HomeView />
+      <GitHubLink />
     </>
   );
 }

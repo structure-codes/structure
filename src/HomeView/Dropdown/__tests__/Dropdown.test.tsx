@@ -42,7 +42,7 @@ test("sends API request on search", async () => {
     <RecoilRoot>
       <MemoryRouter>
         <QueryClientProvider client={queryClient}>
-          <Dropdown />
+          <Dropdown ref={null} wrap={false} />
         </QueryClientProvider>
       </MemoryRouter>
     </RecoilRoot>

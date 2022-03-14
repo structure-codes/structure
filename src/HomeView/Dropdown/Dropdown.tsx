@@ -1,22 +1,23 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useStyles } from "./style";
-import { Button, Link, TextField, Typography } from "@material-ui/core";
+import { Button, TextField, Typography } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useSetRecoilState } from "recoil";
 import { treeAtom, baseTreeAtom } from "../../store";
 import { treeStringToJson } from "@structure-codes/utils";
 import { useQuery } from "react-query";
 import { useNavigate, useSearchParams, useParams } from "react-router-dom";
-import GitHubIcon from "@material-ui/icons/GitHub";
+import clsx from "clsx";
+import { theme } from "../../theme";
 
-export const Dropdown = () => {
+export const Dropdown = ({ ref, wrap }: { ref: any; wrap: boolean }) => {
   const classes = useStyles();
   const navigate = useNavigate();
   const params = useParams();
   const [searchParams]: any = useSearchParams();
   const [url, setUrl] = useState("");
   const [template, setTemplate] = useState(null);
-  const setTreeState= useSetRecoilState(treeAtom);
+  const setTreeState = useSetRecoilState(treeAtom);
   const setBaseTree = useSetRecoilState(baseTreeAtom);
 
   // On initial load get details from URL if present
@@ -34,7 +35,7 @@ export const Dropdown = () => {
     } else {
       handleTemplateChange(null, searchTemplate);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Fetch the tree string data for the given template or repository
@@ -107,46 +108,47 @@ export const Dropdown = () => {
       .then(res => {
         setTreeState(res);
         setBaseTree(searchUrl);
-        navigate(`/template/github?owner=${owner}&repo=${repo}${ branch ? `&branch=${branch}` : ""}`);
+        navigate(
+          `/template/github?owner=${owner}&repo=${repo}${branch ? `&branch=${branch}` : ""}`
+        );
       });
   };
 
   return (
-    <div className={classes.dropdownContainer}>
+    <div
+      className={classes.dropdownContainer}
+      ref={ref}
+      style={{
+        flexDirection: wrap ? "column" : "row",
+      }}
+    >
       <Autocomplete
         id="combo-box-demo"
         options={templates || []}
         value={template}
         className={classes.input}
+        style={wrap ? { marginBottom: theme.spacing(1) } : { marginBottom: 0 }}
         size="small"
         onChange={handleTemplateChange}
         renderInput={params => (
           <TextField {...params} label="Select a template" variant="outlined" />
         )}
       />
-      <Typography className={classes.or}>or</Typography>
-      <TextField
-        size="small"
-        className={classes.input}
-        label="Link to GitHub repository"
-        variant="outlined"
-        value={url}
-        onChange={handleUrlChange}
-      />
-      <div className={classes.go}>
-        <Button style={{ height: "100%" }} variant="outlined" onClick={handleGo}>
-          GO
-        </Button>
-      </div>
-      <div className={classes.icon}>
-        <Link
-          color="secondary"
-          target="_blank"
-          href="https://github.com/structure-codes/structure"
-          rel="noopener"
-        >
-          <GitHubIcon />
-        </Link>
+      {!wrap && <Typography className={classes.or}>or</Typography>}
+      <div className={classes.githubContainer}>
+        <TextField
+          size="small"
+          className={classes.input}
+          label="Link to GitHub repository"
+          variant="outlined"
+          value={url}
+          onChange={handleUrlChange}
+        />
+        <div className={classes.go}>
+          <Button style={{ height: "100%" }} variant="outlined" onClick={handleGo}>
+            GO
+          </Button>
+        </div>
       </div>
     </div>
   );

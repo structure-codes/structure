@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Dropdown } from "./Dropdown";
 import { CodePanel } from "./CodePanel";
 import { SettingsPanel } from "./SettingsPanel";
 import { ModelPanel } from "./ModelPanel";
 import { useStyles } from "./style";
 import { useMousePosition } from "./hooks";
-import { useTheme } from "@material-ui/core";
+import { useMediaQuery, useTheme } from "@material-ui/core";
 
 const dividerSize = 6;
 const Divider = ({
@@ -31,6 +31,23 @@ const Divider = ({
     return () => window.removeEventListener("mouseup", handleMouseUp);
   }, []);
 
+  const handleMouseOver = useCallback(() => setIsHover(true), []);
+  const handleMouseLeave = useCallback(() => setIsHover(false), []);
+  const handleMouseDown = useCallback(
+    e => {
+      onMouseDown(e);
+      setIsDragging(true);
+    },
+    [onMouseDown]
+  );
+  const handleMouseUp = useCallback(
+    e => {
+      onMouseUp(e);
+      setIsDragging(false);
+    },
+    [onMouseUp]
+  );
+
   return (
     <div
       style={{
@@ -41,18 +58,10 @@ const Divider = ({
         borderTop: direction === "horizontal" ? "1px solid #646464" : "none",
         borderLeft: direction === "vertical" ? "1px solid #646464" : "none",
       }}
-      onMouseOver={() => setIsHover(true)}
-      onMouseLeave={() => {
-        setIsHover(false);
-      }}
-      onMouseDown={e => {
-        onMouseDown(e);
-        setIsDragging(true);
-      }}
-      onMouseUp={e => {
-        onMouseUp(e);
-        setIsDragging(false);
-      }}
+      onMouseOver={handleMouseOver}
+      onMouseLeave={handleMouseLeave}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
     />
   );
 };
@@ -64,59 +73,74 @@ export const HomeView = () => {
   const [isVerticalDragging, setIsVerticalDragging] = useState(false);
   const [isHorizontalDragging, setIsHorizontalDragging] = useState(false);
   const { x, y } = useMousePosition(isVerticalDragging || isHorizontalDragging);
-
+  const dropdownRef: any = useRef(null);
+  const theme = useTheme();
+  const showModel = useMediaQuery(theme.breakpoints.up("sm"));
+  
   useEffect(() => {
     if (!isVerticalDragging || !x) return;
     // subtract half of divider width for fat divider
     setLeftWidth(x - dividerSize / 2);
   }, [isVerticalDragging, x]);
-
+  
   useEffect(() => {
     if (!isHorizontalDragging || !y) return;
     // subtract half of divider width for fat divider
-    setTopHeight(y - dividerSize / 2);
+    const dropdownHeight = dropdownRef.current?.clientHeight || 0;
+    // TODO: FIX THIS BS WITH A REF
+    setTopHeight(y - dividerSize / 2 - (shouldWrap ? 104 : 56));
   }, [isHorizontalDragging, y]);
-
+  
   // handle the case where the mouse goes up and we miss it on the element event handler
   useEffect(() => {
     const handleMouseUp = () => {
       setIsVerticalDragging(false);
       setIsHorizontalDragging(false);
     };
-
+    
     window.addEventListener("mouseup", handleMouseUp);
     return () => window.removeEventListener("mouseup", handleMouseUp);
   }, []);
+  
+  const onMouseDownVertical = useCallback(() => setIsVerticalDragging(true), []);
+  const onMouseUpVertical = useCallback(() => setIsVerticalDragging(false), []);
+  const onMouseLeaveVertical = useCallback(() => setIsVerticalDragging(false), []);
+  
+  const onMouseDownHorizontal = useCallback(() => setIsHorizontalDragging(true), []);
+  const onMouseUpHorizontal = useCallback(() => setIsHorizontalDragging(false), []);
+  const onMouseLeaveHorizontal = useCallback(() => setIsHorizontalDragging(false), []);
+  
+  // TODO: Get's kinda wrekt on instant window resize (changing in dev tools to phone size)
+  const shouldWrap = leftWidth < 700;
 
   return (
-    <div className={classes.panelContainer} onMouseLeave={() => setIsVerticalDragging(false)}>
+    <div className={classes.panelContainer} onMouseLeave={onMouseLeaveVertical}>
       <div
         className={classes.leftPanel}
-        style={{ width: leftWidth }}
-        onMouseLeave={() => setIsHorizontalDragging(false)}
+        style={{ width: showModel ? leftWidth : "100%" }}
+        onMouseLeave={onMouseLeaveHorizontal}
       >
+        <Dropdown ref={dropdownRef} wrap={shouldWrap} />
         <CodePanel height={topHeight} />
         <Divider
           direction="horizontal"
-          onMouseDown={(e: any) => {
-            e.preventDefault();
-            setIsHorizontalDragging(true);
-          }}
-          onMouseUp={() => {
-            setIsHorizontalDragging(false);
-          }}
+          onMouseDown={onMouseDownHorizontal}
+          onMouseUp={onMouseUpHorizontal}
         />
         <SettingsPanel />
       </div>
-      <Divider
-        direction="vertical"
-        onMouseDown={() => setIsVerticalDragging(true)}
-        onMouseUp={() => setIsVerticalDragging(false)}
-      />
-      <div className={classes.rightPanel}>
-        <Dropdown />
-        <ModelPanel />
-      </div>
+      {showModel && (
+        <>
+          <Divider
+            direction="vertical"
+            onMouseDown={onMouseDownVertical}
+            onMouseUp={onMouseUpVertical}
+          />
+          <div className={classes.rightPanel}>
+            <ModelPanel />
+          </div>
+        </>
+      )}
     </div>
   );
 };
