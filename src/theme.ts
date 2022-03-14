@@ -6,7 +6,7 @@ export const theme = createTheme({
     background: {
       default: "#212121"
     },
-    secondary: {
+    primary: {
       main: "#776089",
     }
   },

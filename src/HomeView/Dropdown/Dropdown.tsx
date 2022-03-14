@@ -7,11 +7,10 @@ import { treeAtom, templateAtom } from "../../store";
 import { treeStringToJson } from "@structure-codes/utils";
 import { useQuery } from "react-query";
 import GitHubIcon from "@material-ui/icons/GitHub";
-import { useHistory } from "react-router-dom";
 
 export const Dropdown = () => {
   const classes = useStyles();
-  const history = useHistory();
+
   const [url, setUrl] = useState("");
   const [selected, setSelected] = useState<any>();
   const [selectedUrl, setSelectedUrl] = useState("");
