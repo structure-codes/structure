@@ -3,8 +3,8 @@ import got from "got";
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import { githubToTree } from "./tree";
-
-const app = express();
+import { getErrorMessage } from "./errorHandler";
+export const app = express();
 const router = express.Router();
 app.use(express.json());
 admin.initializeApp();
@@ -23,7 +23,7 @@ router.get("/templates", async (req, res) => {
     const parsed: string[] = data.map((template) => template.name.replace(/\.tree$/, ""));
     res.send(parsed);
   } catch (e) {
-    console.error("Error retrieving templates from:", templatesUrl);
+    console.error("Error retrieving templates from:", templatesUrl, "\n", getErrorMessage(e));
   }
 });
 
@@ -34,24 +34,28 @@ router.get("/template/:template", async (req, res) => {
     const data = await got(templateUrl).then(res => res.body);
     res.send(data);
   } catch (e) {
-    console.error("Error retrieving templates from:", templateUrl);
+    console.error("Error retrieving template from:", templateUrl, "\n", getErrorMessage(e));
   }
 });
 
 router.post("/github", async (req, res) => {
   const { owner, repo, branch } = req.body;
   let data;
+  let url = `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch || "main"}?recursive=1`;
   try {
-    data = await got(
-      `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch || "main"}?recursive=1`
-    ).json();
+    data = await got(url).json();
   } catch {
-    data = await got(
-      `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch || "master"}?recursive=1`
-    ).json();
+    try {
+      url = `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch || "master"}?recursive=1`;
+      data = await got(url).json();
+    } catch (e) {
+      const errMsg = `Error retrieving GitHub data from: ${url}\n${getErrorMessage(e)}`;
+      console.error(errMsg);
+      return res.status(404).send({error: errMsg});
+    }
   }
   const tree = githubToTree(data.tree);
-  res.send(tree);
+  return res.send(tree);
 });
 
 app.use("/api", router);

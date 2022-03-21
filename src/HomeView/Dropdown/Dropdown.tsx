@@ -139,7 +139,7 @@ export const Dropdown = ({ ref, wrap }: { ref: any; wrap: boolean }) => {
         <TextField
           size="small"
           className={classes.input}
-          label="Link to GitHub repository"
+          label="Link to GitHub"
           variant="outlined"
           value={url}
           onChange={handleUrlChange}
