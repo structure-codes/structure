@@ -1,13 +1,10 @@
 import express from "express";
 import got from "got";
-import * as functions from "firebase-functions";
-import admin from "firebase-admin";
 import { githubToTree } from "./tree";
 import { getErrorMessage } from "./errorHandler";
 export const app = express();
 const router = express.Router();
 app.use(express.json());
-admin.initializeApp();
 
 interface ITemplates {
   name: string;
@@ -59,5 +56,3 @@ router.post("/github", async (req, res) => {
 });
 
 app.use("/api", router);
-
-exports.api = functions.https.onRequest(app);

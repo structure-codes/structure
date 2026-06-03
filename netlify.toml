@@ -1,0 +1,27 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[functions]
+  # Bundle the TypeScript function (and the Express app it imports) with esbuild.
+  node_bundler = "esbuild"
+
+[dev]
+  # `netlify dev` runs Vite as the framework dev server and proxies it,
+  # serving functions and applying the redirects below on the same origin.
+  command = "npm run frontend"
+  targetPort = 3000
+  port = 8888
+
+# Route API calls to the serverless Express app.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+# SPA fallback: serve index.html for all other routes.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

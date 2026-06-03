@@ -3,11 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "concurrently npm:backend npm:frontend npm:firebase",
+    "start": "netlify dev",
     "preview": "vite preview",
     "frontend": "vite",
     "backend": "cd api && npm run build:watch",
-    "firebase": "firebase emulators:start --only hosting,functions",
     "build": "concurrently npm:build:client npm:build:api",
     "build:client": "tsc && vite build",
     "build:api": "cd api && npm run build",
@@ -64,10 +63,12 @@
     "react-router-dom": "^6.2.2",
     "react-scripts": "4.0.3",
     "recoil": "^0.6.1",
+    "serverless-http": "^3.2.0",
     "typescript": "^4.1.2",
     "web-vitals": "^1.0.1"
   },
   "devDependencies": {
+    "@netlify/functions": "^2.8.2",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -80,6 +81,7 @@
     "concurrently": "^6.2.0",
     "http-proxy-middleware": "^2.0.1",
     "msw": "^0.39.1",
+    "netlify-cli": "^17.36.4",
     "vite": "^2.8.6"
   }
 }

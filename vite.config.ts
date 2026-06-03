@@ -5,12 +5,8 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   server: {
-    open: "http://localhost:3000",
-    proxy: {
-      "/api": {
-        target: "http://localhost:5000",
-        changeOrigin: true,
-      },
-    },
+    // Run the app with `netlify dev` (serves the API redirects + functions on
+    // port 8888). Vite is proxied by the Netlify CLI, so no /api proxy here.
+    port: 3000,
   },
 });
