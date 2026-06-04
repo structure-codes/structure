@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prestart": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "start": "netlify dev",
     "preview": "vite preview",
     "frontend": "vite",
