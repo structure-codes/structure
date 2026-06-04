@@ -18,8 +18,8 @@ import { RecoilRoot } from "recoil";
 const server = setupServer(
   http.post("/api/github", () => HttpResponse.json(tree)),
   http.get("/api/templates", () => HttpResponse.json(templates)),
-  // Selecting a template fetches its .tree text; the body is irrelevant here.
-  http.get("/api/template/:template", () => HttpResponse.text(""))
+  // Selecting a template fetches its .tree text; return a valid (parseable) tree.
+  http.get("/api/template/:template", () => HttpResponse.text("└── root\n  └── child"))
 );
 
 // establish API mocking before all tests; fail on any unmocked request so the
