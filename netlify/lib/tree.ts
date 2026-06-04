@@ -4,7 +4,7 @@ export const githubToTree = (data: any): TreeType[] => {
   const elements: TreeType[] = [];
   let current: TreeType[] = elements;
   const path: TreeType[] = [];
-  
+
   let prevDepth: number = 0;
 
   data.forEach((file, index) => {
@@ -21,7 +21,7 @@ export const githubToTree = (data: any): TreeType[] => {
       _index: index,
       name: filename,
       children: [],
-    };  
+    };
 
     // If we are at root, add root node - else add it to previous parent's children
     current = path.length > 0 ? path[path.length - 1].children : elements;

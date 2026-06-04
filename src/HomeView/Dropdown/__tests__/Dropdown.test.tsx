@@ -1,12 +1,10 @@
 // import API mocking utilities from Mock Service Worker
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 
 // import react-testing methods
 import { render, fireEvent, screen, within } from "@testing-library/react";
 
-// add custom jest matchers from jest-dom
-import "@testing-library/jest-dom";
 // the component to test
 import { Dropdown } from "../index";
 import tree from "./sampleTree.json";
@@ -18,17 +16,15 @@ import { RecoilRoot } from "recoil";
 
 // declare which API requests to mock
 const server = setupServer(
-  rest.post("/api/github", (req, res, ctx) => {
-    // respond using a mocked JSON body
-    return res(ctx.json(tree));
-  }),
-  rest.get("/api/templates", (req, res, ctx) => {
-    return res(ctx.json(templates));
-  })
+  http.post("/api/github", () => HttpResponse.json(tree)),
+  http.get("/api/templates", () => HttpResponse.json(templates)),
+  // Selecting a template fetches its .tree text; return a valid (parseable) tree.
+  http.get("/api/template/:template", () => HttpResponse.text("└── root\n  └── child"))
 );
 
-// establish API mocking before all tests
-beforeAll(() => server.listen());
+// establish API mocking before all tests; fail on any unmocked request so the
+// test stays hermetic instead of hitting the real network.
+beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 // reset any request handlers that are declared as a part of our tests
 // (i.e. for testing one-time error scenarios)
 afterEach(() => server.resetHandlers());
