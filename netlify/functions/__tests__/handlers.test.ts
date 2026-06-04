@@ -49,7 +49,7 @@ describe("GET /api/templates (mocked fetch)", () => {
   });
 
   it("parses template names from the upstream JSON", async () => {
-    global.fetch = jest.fn().mockResolvedValue({
+    global.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: () => Promise.resolve(templateJson),
     }) as unknown as typeof fetch;
