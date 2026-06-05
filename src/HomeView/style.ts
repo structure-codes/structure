@@ -13,15 +13,19 @@ export const useStyles = makeStyles(theme => ({
     flexDirection: "column",
     height: "100%",
     minWidth: 220,
+    background: "var(--panel)",
+    borderRight: "1px solid var(--border-soft)",
   },
   rightPanel: {
     display: "flex",
     flexDirection: "column",
     flexGrow: 1,
+    background: "var(--canvas)",
   },
   panelContainer: {
     display: "flex",
     height: "100%",
     width: "100%",
+    background: "var(--bg)",
   },
 }));

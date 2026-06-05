@@ -1,10 +1,12 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useMemo } from "react";
 import { useStyles } from "./style";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { languageDef, themeDef, configuration } from "./customLang";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { treeAtom, settingsAtom } from "../../store";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { treeAtom, settingsAtom, hoveredNodeAtom, selectedNodeAtom } from "../../store";
+import { toRawTree, codeLineIds } from "../ModelPanel/layout";
+import "./codePanel.css";
 import {
   BRANCH,
   LAST_BRANCH,
@@ -35,6 +37,22 @@ export const options: IGlobalEditorOptions | IEditorOptions = {
     enabled: false,
   },
   readOnly: true,
+  fontFamily: '"IBM Plex Mono", ui-monospace, monospace',
+  fontSize: 13,
+  lineHeight: 24, // ~1.85 × 13px
+  lineNumbersMinChars: 3,
+  scrollBeyondLastLine: false,
+  overviewRulerLanes: 0,
+  // Stop the cursor from blinking
+  cursorBlinking: "blink",
+  // Shrink the width to nothing
+  cursorWidth: 0,
+  // Turn off line highlight modifications
+  renderLineHighlight: "none",
+  // Prevent the overview ruler from showing cursor indicators
+  hideCursorInOverviewRuler: true,
+  occurrencesHighlight: false,
+  selectionHighlight: false,
 };
 
 const getLastNode = (branch: TreeType) => {
@@ -42,7 +60,7 @@ const getLastNode = (branch: TreeType) => {
   // Get the last line number that is a child of the given branch
   const getIndexes = (branch: TreeType) => {
     if (branch.children.length === 0) indexes.push(branch._index);
-    branch.children.forEach((child) => {
+    branch.children.forEach(child => {
       getIndexes(child);
     });
   };
@@ -57,6 +75,56 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
   const [treeState, setTreeState] = useRecoilState(treeAtom);
   const settingsState = useRecoilValue(settingsAtom);
 
+  // ---- cross-pane hover-link (see store.ts / ModelPanel) ----
+  const hoveredId = useRecoilValue(hoveredNodeAtom);
+  const selectedId = useRecoilValue(selectedNodeAtom);
+  const setHoveredId = useSetRecoilState(hoveredNodeAtom);
+  const setSelectedId = useSetRecoilState(selectedNodeAtom);
+
+  // line number (1-based) -> node id, matching the editor's rendered lines
+  const lineIds = useMemo(
+    () =>
+      codeLineIds(toRawTree(treeState, ""), {
+        hideFiles: settingsState.hideFiles,
+        hideDots: settingsState.hideDots,
+        depthLimit: settingsState.depth,
+      }),
+    [treeState, settingsState]
+  );
+  const idToLine = useMemo(() => {
+    const m = new Map<string, number>();
+    lineIds.forEach((id, i) => m.set(id, i + 1));
+    return m;
+  }, [lineIds]);
+
+  // refs so the once-registered Monaco mouse handlers read current values
+  const lineIdsRef = useRef<string[]>(lineIds);
+  lineIdsRef.current = lineIds;
+  const lastHoverRef = useRef<string | null>(null);
+  const decorationsRef = useRef<string[]>([]);
+
+  // apply hover/select decorations when either changes
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    const selLine = selectedId ? idToLine.get(selectedId) : undefined;
+    const hovLine = hoveredId ? idToLine.get(hoveredId) : undefined;
+    const decos: monaco.editor.IModelDeltaDecoration[] = [];
+    if (hovLine && hovLine !== selLine) {
+      decos.push({
+        range: new monaco.Range(hovLine, 1, hovLine, 1),
+        options: { isWholeLine: true, className: "tree-line-hover" },
+      });
+    }
+    if (selLine) {
+      decos.push({
+        range: new monaco.Range(selLine, 1, selLine, 1),
+        options: { isWholeLine: true, className: "tree-line-selected" },
+      });
+    }
+    decorationsRef.current = editor.deltaDecorations(decorationsRef.current, decos);
+  }, [hoveredId, selectedId, idToLine]);
+
   useEffect(() => {
     const newValue = treeJsonToString({
       tree: treeState,
@@ -66,10 +134,9 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
     treeRef.current = newValue;
     const currValue = editorRef.current?.getModel()?.getValue();
     if (currValue !== newValue) {
-      editorRef.current?.getModel()?.setValue(newValue)
-    };
+      editorRef.current?.getModel()?.setValue(newValue);
+    }
   }, [treeState, settingsState]);
-
 
   const onMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
     // Register a new language
@@ -81,31 +148,31 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
     monaco.editor.defineTheme("treeTheme", themeDef);
     monaco.editor.setTheme("treeTheme");
     editor.focus();
-    
+
     // register code folder provider
     monaco.languages.registerFoldingRangeProvider("tree", {
       provideFoldingRanges: function (model, context, token) {
         const tree: TreeType[] = treeStringToJson(model.getValue());
         const ranges: any = [];
         if (tree.length === 0) return ranges;
-        
+
         const getRanges = (branch: TreeType) => {
           const startIndex = branch._index;
           const endIndex = getLastNode(branch);
-          ranges.push({ start: startIndex + 1, end: endIndex +  1 });
-          branch.children.forEach((leaf) => {
+          ranges.push({ start: startIndex + 1, end: endIndex + 1 });
+          branch.children.forEach(leaf => {
             getRanges(leaf);
           });
         };
-        
+
         tree.forEach((branch: TreeType) => {
           getRanges(branch);
         });
-        
+
         return ranges;
       },
     });
-    
+
     // editor.onDidChangeModelContent(e => handleEditorChange(e, editor));
     // editor.onDidChangeCursorPosition(e => {
     //   console.log(`cursor move source: ${e.source}`);
@@ -126,9 +193,27 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
     //   }
     // });
 
-    editor
-      .getModel()
-      ?.setValue(treeRef.current || "");
+    // ---- cross-pane hover-link: map editor mouse position -> node id ----
+    const idAtLine = (ln?: number) => (ln && ln >= 1 ? (lineIdsRef.current[ln - 1] ?? null) : null);
+    editor.onMouseMove((e: monaco.editor.IEditorMouseEvent) => {
+      const id = idAtLine(e.target?.position?.lineNumber);
+      if (id !== lastHoverRef.current) {
+        lastHoverRef.current = id;
+        setHoveredId(id);
+      }
+    });
+    editor.onMouseLeave(() => {
+      if (lastHoverRef.current !== null) {
+        lastHoverRef.current = null;
+        setHoveredId(null);
+      }
+    });
+    editor.onMouseDown((e: monaco.editor.IEditorMouseEvent) => {
+      const id = idAtLine(e.target?.position?.lineNumber);
+      if (id) setSelectedId(id);
+    });
+
+    editor.getModel()?.setValue(treeRef.current || "");
     editorRef.current = editor;
   };
 

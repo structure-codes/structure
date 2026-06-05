@@ -55,8 +55,8 @@ const Divider = ({
         height: direction === "horizontal" ? dividerSize : "100%",
         cursor: direction === "horizontal" ? "ns-resize" : "ew-resize",
         background: `${isHover || isDragging ? theme.palette.primary.main : "rgba(0,0,0,0)"}`,
-        borderTop: direction === "horizontal" ? "1px solid #646464" : "none",
-        borderLeft: direction === "vertical" ? "1px solid #646464" : "none",
+        borderTop: direction === "horizontal" ? "1px solid var(--border-soft)" : "none",
+        borderLeft: direction === "vertical" ? "1px solid var(--border-soft)" : "none",
       }}
       onMouseOver={handleMouseOver}
       onMouseLeave={handleMouseLeave}

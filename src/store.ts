@@ -43,3 +43,16 @@ export const baseTreeAtom = atom({
   key: "baseTree",
   default: defaultBaseTree,
 });
+
+// Transient cross-pane link state: a node's stable path id (see layout.ts).
+// Shared by ModelPanel (graph) and CodePanel (Monaco) so hovering/selecting in
+// one pane highlights the matching entry in the other. Not persisted.
+export const hoveredNodeAtom = atom<string | null>({
+  key: "hoveredNode",
+  default: null,
+});
+
+export const selectedNodeAtom = atom<string | null>({
+  key: "selectedNode",
+  default: null,
+});

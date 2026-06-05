@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { useStyles } from "./style";
-import { Button, TextField, Typography } from "@material-ui/core";
+import { Button, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useSetRecoilState } from "recoil";
 import { treeAtom, baseTreeAtom } from "../../store";
 import { treeStringToJson } from "@structure-codes/utils";
 import { useQuery } from "react-query";
 import { useNavigate, useSearchParams, useParams } from "react-router-dom";
-import clsx from "clsx";
-import { theme } from "../../theme";
+import { GitHubMark } from "../../components/GitHubMark";
 
 export const Dropdown = ({ ref, wrap }: { ref: any; wrap: boolean }) => {
   const classes = useStyles();
@@ -115,40 +114,37 @@ export const Dropdown = ({ ref, wrap }: { ref: any; wrap: boolean }) => {
   };
 
   return (
-    <div
-      className={classes.dropdownContainer}
-      ref={ref}
-      style={{
-        flexDirection: wrap ? "column" : "row",
-      }}
-    >
+    <div className={classes.dropdownContainer} ref={ref}>
       <Autocomplete
         id="combo-box-demo"
-        options={templates || []}
+        options={Array.isArray(templates) ? templates.map((t: { name: string }) => t.name) : []}
         value={template}
-        className={classes.input}
-        style={wrap ? { marginBottom: theme.spacing(1) } : { marginBottom: 0 }}
+        className={classes.field}
         size="small"
         onChange={handleTemplateChange}
         renderInput={params => (
           <TextField {...params} label="Select a template" variant="outlined" />
         )}
       />
-      {!wrap && <Typography className={classes.or}>or</Typography>}
       <div className={classes.githubContainer}>
         <TextField
           size="small"
-          className={classes.input}
+          className={classes.field}
           label="Link to GitHub"
           variant="outlined"
           value={url}
           onChange={handleUrlChange}
+          InputProps={{
+            startAdornment: (
+              <span className={classes.ghMark}>
+                <GitHubMark size={15} />
+              </span>
+            ),
+          }}
         />
-        <div className={classes.go}>
-          <Button style={{ height: "100%" }} variant="outlined" onClick={handleGo}>
-            GO
-          </Button>
-        </div>
+        <Button variant="contained" className={classes.goButton} onClick={handleGo}>
+          GO
+        </Button>
       </div>
     </div>
   );
