@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 export const useMousePosition = (isDragging: boolean) => {
   const [mousePosition, setMousePosition] = useState<{ x: number | null; y: number | null }>({

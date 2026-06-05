@@ -44,12 +44,16 @@ export const useStyles = makeStyles(theme => ({
     flexShrink: 0,
     minWidth: 56,
     padding: "0 18px",
-    background: "var(--accent)",
-    color: "#0c0a14",
     fontWeight: 600,
     fontSize: 13,
     letterSpacing: "0.03em",
     borderRadius: 9,
+    // `&&` doubles specificity so the accent fill/color beat MUI v4's
+    // `.MuiButton-contained` defaults (which are injected after makeStyles).
+    "&&": {
+      background: "var(--accent)",
+      color: "#0c0a14",
+    },
     "&:hover": { background: "var(--accent)", filter: "brightness(1.08)" },
     "&:active": { transform: "translateY(1px)" },
   },

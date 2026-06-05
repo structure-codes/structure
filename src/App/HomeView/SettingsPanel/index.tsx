@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useStyles } from "./style";
 import { Button, Checkbox, FormGroup, FormControlLabel, Slider } from "@material-ui/core";
-import { baseTreeAtom, settingsAtom, treeAtom } from "../../store";
+import { baseTreeAtom, settingsAtom, treeAtom } from "../../../store";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { TreeType, treeJsonToString } from "@structure-codes/utils";

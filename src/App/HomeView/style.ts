@@ -8,6 +8,11 @@ export const useStyles = makeStyles(theme => ({
   dropdown: {
     display: "inline-block",
   },
+  icon: {
+    position: "absolute",
+    top: 16,
+    right: 16,
+  },
   leftPanel: {
     display: "flex",
     flexDirection: "column",

@@ -7,7 +7,7 @@ import {
   baseTreeAtom,
   hoveredNodeAtom,
   selectedNodeAtom,
-} from "../../store";
+} from "../../../store";
 import {
   toRawTree,
   buildVisibleTree,
@@ -18,7 +18,7 @@ import {
 } from "./layout";
 import { depthColor, DEFAULT_ACCENT_HUE } from "./depthColor";
 import { useStyles } from "./style";
-import { GitHubMark } from "../../components/GitHubMark";
+import { GitHubMark } from "../../../components/GitHubMark";
 import "./tree.css";
 
 // View options — these live as local defaults in Phase 1. Phase 3 lifts them to a

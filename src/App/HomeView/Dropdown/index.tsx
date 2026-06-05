@@ -3,11 +3,11 @@ import { useStyles } from "./style";
 import { Button, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useSetRecoilState } from "recoil";
-import { treeAtom, baseTreeAtom } from "../../store";
+import { treeAtom, baseTreeAtom } from "../../../store";
 import { treeStringToJson } from "@structure-codes/utils";
 import { useQuery } from "react-query";
 import { useNavigate, useSearchParams, useParams } from "react-router-dom";
-import { GitHubMark } from "../../components/GitHubMark";
+import { GitHubMark } from "../../../components/GitHubMark";
 
 export const Dropdown = ({ ref, wrap }: { ref: any; wrap: boolean }) => {
   const classes = useStyles();

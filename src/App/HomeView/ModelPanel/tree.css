@@ -98,15 +98,6 @@
   font-size: 13px;
   color: var(--text);
 }
-.viz-repochip .repo-link {
-  display: inline-flex;
-  align-items: center;
-  color: var(--muted);
-  transition: color 0.12s;
-}
-.viz-repochip .repo-link:hover {
-  color: var(--accent);
-}
 .viz-repochip .repo-meta {
   font-size: 12px;
   color: var(--muted);

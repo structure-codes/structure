@@ -1,5 +1,5 @@
 /*
- * Design tokens for the Structure facelift (see design_handoff_structure_facelift/README.md).
+ * Design tokens for the Structure facelift.
  * All UI colors are oklch for tonal consistency. --accent is defaulted here but overridden at
  * runtime from viewOptionsAtom (document.documentElement.style.setProperty('--accent', …)).
  */
@@ -37,4 +37,15 @@ body {
   margin: 0;
   display: flex;
   flex-flow: column;
+}
+
+/* GitHub mark link — shared base so every instance matches the repo chip in ModelPanel. */
+.repo-link {
+  display: inline-flex;
+  align-items: center;
+  color: var(--muted);
+  transition: color 0.12s;
+}
+.repo-link:hover {
+  color: var(--accent);
 }

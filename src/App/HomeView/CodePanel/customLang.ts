@@ -35,16 +35,9 @@ export const languageDef: monaco.languages.IMonarchLanguage = {
   ignoreCase: true,
   defaultToken: "",
   tokenizer: {
-    root: [
-      { include: "@tree" },
-      { include: "@tags" },
-    ],
-    tags: [
-      [/.*/, "folder"],
-    ],
-    tree: [
-      [/^(\t+)?(│|├──|└──|\t)+/, "tree"],
-    ],
+    root: [{ include: "@tree" }, { include: "@tags" }],
+    tags: [[/.*/, "folder"]],
+    tree: [[/^(\t+)?(│|├──|└──|\t)+/, "tree"]],
   },
 };
 

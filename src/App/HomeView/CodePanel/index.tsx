@@ -4,7 +4,7 @@ import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { languageDef, themeDef, configuration } from "./customLang";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { treeAtom, settingsAtom, hoveredNodeAtom, selectedNodeAtom } from "../../store";
+import { treeAtom, settingsAtom, hoveredNodeAtom, selectedNodeAtom } from "../../../store";
 import { toRawTree, codeLineIds } from "../ModelPanel/layout";
 import "./codePanel.css";
 import {
@@ -15,10 +15,9 @@ import {
   trimTreeLine,
   getNumberOfTabs,
   getNumberOfLeadingTabs,
-} from "../../tree";
+} from "./treeHelper";
 import { TreeType, treeJsonToString, treeStringToJson } from "@structure-codes/utils";
 
-// import { customTreeFolding } from "./foldProvider";
 declare global {
   interface Window {
     editor: any;
