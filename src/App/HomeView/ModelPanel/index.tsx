@@ -405,7 +405,6 @@ export const ModelPanel = React.memo(() => {
                           textAnchor="middle"
                           dominantBaseline="middle"
                           fill="rgba(10,10,14,0.8)"
-                          style={{ fontSize: 10, fontWeight: 700 }}
                         >
                           +
                         </text>
@@ -413,9 +412,9 @@ export const ModelPanel = React.memo(() => {
                     )}
                     {canToggle && (
                       <circle
+                        className="viz-toggle"
                         r={r + 12}
                         fill="transparent"
-                        style={{ cursor: "pointer" }}
                         onClick={e => {
                           e.stopPropagation();
                           toggle(n.id);

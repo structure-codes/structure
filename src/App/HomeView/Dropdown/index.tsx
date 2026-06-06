@@ -9,7 +9,12 @@ import { useQuery } from "react-query";
 import { useNavigate, useSearchParams, useParams } from "react-router-dom";
 import { GitHubMark } from "../../../components/GitHubMark";
 
-export const Dropdown = ({ ref, wrap }: { ref: any; wrap: boolean }) => {
+const stringRe = "[A-Za-z0-9-_.]+";
+const githubUrlRe = new RegExp(
+  `https://github.com/(?<owner>${stringRe})/(?<repo>${stringRe})((/tree)?/(?<branch>${stringRe}))?`
+);
+
+export const Dropdown = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const params = useParams();
@@ -82,13 +87,9 @@ export const Dropdown = ({ ref, wrap }: { ref: any; wrap: boolean }) => {
   const handleGo = (e: any, urlFromParams: string | null = null) => {
     // Either get URL passed in OR use the current state value
     const searchUrl = urlFromParams || url;
-    const stringRe = "[A-Za-z0-9-_.]+";
-    const re = new RegExp(
-      `https://github.com/(?<owner>${stringRe})/(?<repo>${stringRe})((/tree)?/(?<branch>${stringRe}))?`
-    );
-    const groups = searchUrl.match(re)?.groups;
+    const groups = searchUrl.match(githubUrlRe)?.groups;
     if (!groups) {
-      console.error(`Could not parse URL: ${searchUrl} with regex: ${re.toString()}`);
+      console.error(`Could not parse URL: ${searchUrl} with regex: ${githubUrlRe.toString()}`);
       return;
     }
     const { owner, repo, branch }: Record<string, string> = groups;
@@ -114,7 +115,7 @@ export const Dropdown = ({ ref, wrap }: { ref: any; wrap: boolean }) => {
   };
 
   return (
-    <div className={classes.dropdownContainer} ref={ref}>
+    <div className={classes.dropdownContainer}>
       <Autocomplete
         id="combo-box-demo"
         options={Array.isArray(templates) ? templates.map((t: { name: string }) => t.name) : []}
@@ -142,7 +143,12 @@ export const Dropdown = ({ ref, wrap }: { ref: any; wrap: boolean }) => {
             ),
           }}
         />
-        <Button variant="contained" className={classes.goButton} onClick={handleGo}>
+        <Button
+          variant="contained"
+          className={classes.goButton}
+          onClick={handleGo}
+          disabled={!githubUrlRe.test(url)}
+        >
           GO
         </Button>
       </div>

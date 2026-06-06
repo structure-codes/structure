@@ -38,14 +38,16 @@ test("sends API request on search", async () => {
     <RecoilRoot>
       <MemoryRouter>
         <QueryClientProvider client={queryClient}>
-          <Dropdown ref={null} wrap={false} />
+          <Dropdown />
         </QueryClientProvider>
       </MemoryRouter>
     </RecoilRoot>
   );
   // act
   const autocomplete = screen.getByRole("combobox");
-  const input: HTMLInputElement = within(autocomplete).getByLabelText("Select a template") as HTMLInputElement;
+  const input: HTMLInputElement = within(autocomplete).getByLabelText(
+    "Select a template"
+  ) as HTMLInputElement;
 
   const searchValue = "react-boiler";
   const templateValue = "react-boilerplate";

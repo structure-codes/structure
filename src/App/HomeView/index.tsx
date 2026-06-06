@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Dropdown } from "./Dropdown";
 import { CodePanel } from "./CodePanel";
 import { SettingsPanel } from "./SettingsPanel";
@@ -74,9 +74,10 @@ export const HomeView = () => {
   const [isVerticalDragging, setIsVerticalDragging] = useState(false);
   const [isHorizontalDragging, setIsHorizontalDragging] = useState(false);
   const { x, y } = useMousePosition(isVerticalDragging || isHorizontalDragging);
-  const dropdownRef: any = useRef(null);
   const theme = useTheme();
   const showModel = useMediaQuery(theme.breakpoints.up("sm"));
+  // TODO: Get's kinda wrekt on instant window resize (changing in dev tools to phone size)
+  const shouldWrap = leftWidth < 700;
 
   useEffect(() => {
     if (!isVerticalDragging || !x) return;
@@ -87,10 +88,9 @@ export const HomeView = () => {
   useEffect(() => {
     if (!isHorizontalDragging || !y) return;
     // subtract half of divider width for fat divider
-    const dropdownHeight = dropdownRef.current?.clientHeight || 0;
     // TODO: FIX THIS BS WITH A REF
     setTopHeight(y - dividerSize / 2 - (shouldWrap ? 104 : 56));
-  }, [isHorizontalDragging, y]);
+  }, [isHorizontalDragging, shouldWrap, y]);
 
   // handle the case where the mouse goes up and we miss it on the element event handler
   useEffect(() => {
@@ -111,9 +111,6 @@ export const HomeView = () => {
   const onMouseUpHorizontal = useCallback(() => setIsHorizontalDragging(false), []);
   const onMouseLeaveHorizontal = useCallback(() => setIsHorizontalDragging(false), []);
 
-  // TODO: Get's kinda wrekt on instant window resize (changing in dev tools to phone size)
-  const shouldWrap = leftWidth < 700;
-
   return (
     <>
       <div className={classes.panelContainer} onMouseLeave={onMouseLeaveVertical}>
@@ -122,7 +119,7 @@ export const HomeView = () => {
           style={{ width: showModel ? leftWidth : "100%" }}
           onMouseLeave={onMouseLeaveHorizontal}
         >
-          <Dropdown ref={dropdownRef} wrap={shouldWrap} />
+          <Dropdown />
           <CodePanel height={topHeight} />
           <Divider
             direction="horizontal"

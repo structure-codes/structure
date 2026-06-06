@@ -6,6 +6,7 @@
     "prestart": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "start": "netlify dev",
     "build": "tsc && vite build",
+    "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:functions": "vitest run netlify"
@@ -48,6 +49,7 @@
     "typescript": "^5.6.3"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
     "@netlify/functions": "^2.8.2",
     "@testing-library/jest-dom": "^6.4.8",
     "@testing-library/react": "^11.1.0",
@@ -58,9 +60,14 @@
     "@types/react-copy-to-clipboard": "^5.0.1",
     "@types/react-syntax-highlighter": "^13.5.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.39.4",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
     "jsdom": "^25.0.1",
     "msw": "^2.14.6",
     "netlify-cli": "^17.36.4",
+    "typescript-eslint": "^8.60.1",
     "vite": "^5.4.11",
     "vitest": "^2.1.9"
   }

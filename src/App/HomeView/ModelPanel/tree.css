@@ -64,6 +64,11 @@
 .viz-plus {
   pointer-events: none;
   user-select: none;
+  font-size: 10px;
+  font-weight: 700;
+}
+.viz-toggle {
+  cursor: pointer;
 }
 
 /* ---- Overlays (chip / legend / zoom) ---- */

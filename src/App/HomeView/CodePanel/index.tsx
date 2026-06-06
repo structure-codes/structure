@@ -29,7 +29,7 @@ type IGlobalEditorOptions = monaco.editor.IGlobalEditorOptions;
 type IEditorOptions = monaco.editor.IEditorOptions;
 type Monaco = typeof monaco;
 
-export const options: IGlobalEditorOptions | IEditorOptions = {
+const options: IGlobalEditorOptions | IEditorOptions = {
   tabSize: 2,
   insertSpaces: false,
   minimap: {
@@ -150,7 +150,7 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
 
     // register code folder provider
     monaco.languages.registerFoldingRangeProvider("tree", {
-      provideFoldingRanges: function (model, context, token) {
+      provideFoldingRanges: function (model, _context, _token) {
         const tree: TreeType[] = treeStringToJson(model.getValue());
         const ranges: any = [];
         if (tree.length === 0) return ranges;
@@ -216,6 +216,9 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
     editorRef.current = editor;
   };
 
+  // Disabled WIP: live tree-prefix auto-formatting. Re-enabled via the
+  // commented-out editor.onDidChangeModelContent handler in handleEditorDidMount.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleEditorChange = (
     e: monaco.editor.IModelContentChangedEvent,
     editor: monaco.editor.IStandaloneCodeEditor

@@ -26,7 +26,7 @@ export const SettingsPanel = React.memo(() => {
   const treeState = useRecoilValue(treeAtom);
   const [maxDepth, setMaxDepth] = useState(0);
 
-  const handleDepthChange = (event: React.ChangeEvent<{}> | null, value: any) => {
+  const handleDepthChange = (event: React.ChangeEvent<object> | null, value: any) => {
     setSettings({
       ...settings,
       depth: value,
