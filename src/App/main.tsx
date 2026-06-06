@@ -4,9 +4,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HomeView } from "./HomeView";
 import { CssBaseline, ThemeProvider } from "@material-ui/core";
 import { theme } from "./theme";
+import { applyTokens } from "./tokens";
 import "./index.css";
 import { RecoilRoot } from "recoil";
 import { QueryClient, QueryClientProvider } from "react-query";
+
+// Inject the design tokens onto :root before first paint (see tokens.ts).
+applyTokens();
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -3,6 +3,7 @@
 // cream, and descending depths walk a cohesive ramp whose hue rotates with the
 // chosen accent. Chroma is held constant so depth reads via hue + slight lightness,
 // not saturation. See design_handoff_structure_facelift/README.md → Depth color scale.
+import { ACCENT } from "../../tokens";
 
 export interface Accent {
   hex: string;
@@ -11,7 +12,7 @@ export interface Accent {
 }
 
 export const ACCENTS: Accent[] = [
-  { hex: "#8b78f0", hue: 285 }, // violet (default)
+  { hex: ACCENT, hue: 285 }, // violet (default)
   { hex: "#4f9ff0", hue: 245 }, // blue
   { hex: "#34c9b2", hue: 185 }, // teal
   { hex: "#e0a23e", hue: 80 }, // amber

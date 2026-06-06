@@ -1,9 +1,9 @@
 [
-  "AmruthPillai-Reactive-Resume",
-  "alex-oser-portfolio",
-  "chrome-ext-js",
-  "cra-redux",
-  "react-boilerplate",
-  "structure-codes-structure",
-  "structure-codes-vscode-tree-language"
+  { "name": "AmruthPillai-Reactive-Resume", "url": "https://github.com/AmruthPillai/Reactive-Resume" },
+  { "name": "alex-oser-portfolio", "url": "https://github.com/alex-oser/portfolio" },
+  { "name": "chrome-ext-js", "url": "https://github.com/structure-codes/chrome-ext-js" },
+  { "name": "cra-redux", "url": "https://github.com/structure-codes/cra-redux" },
+  { "name": "react-boilerplate", "url": "https://github.com/react-boilerplate/react-boilerplate" },
+  { "name": "structure-codes-structure", "url": "https://github.com/structure-codes/structure" },
+  { "name": "structure-codes-vscode-tree-language", "url": "https://github.com/structure-codes/vscode-tree-language" }
 ]

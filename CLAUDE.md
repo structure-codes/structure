@@ -87,6 +87,7 @@ Templates and `.tree` files are **not** in this repo — they live in `structure
 ## Conventions
 
 - **Routing/dev:** `netlify dev` on `:8888` is the real entry point; Vite is the proxied framework server.
-- **MUI v4:** styling is MUI v4 `makeStyles`/`useStyles` (each component has a sibling `style.ts`), plus CSS variables (`--text`, `--muted`, `--border-soft`, …) defined in the theme/global CSS for the newer viz UI. This is mid-facelift, so both styling idioms coexist.
+- **MUI v4:** styling is MUI v4 `makeStyles`/`useStyles` (each component has a sibling `style.ts`), plus CSS variables (`--text`, `--muted`, `--border-soft`, …) for the newer viz UI. This is mid-facelift, so both styling idioms coexist.
+- **Design tokens:** the color scale is authored once, in oklch, in [src/app/tokens.ts](src/app/tokens.ts). `applyTokens()` (called in `main.tsx` before render) injects it onto `:root` as CSS vars; the `tokens` hex mirror is *derived* via [oklch.ts](src/app/oklch.ts) for the consumers that can't read CSS vars / parse `oklch()` — the MUI theme ([theme.ts](src/app/theme.ts)) and Monaco ([customLang.ts](src/app/HomeView/CodePanel/customLang.ts)). `--accent` is the one accent definition (also feeds `depthColor.ts`). Don't reintroduce a hand-maintained hex table.
 - **Lint:** flat ESLint config. `@typescript-eslint/no-explicit-any` is **off** by design (API payloads + MUI handlers lean on `any`); unused vars are an error but `_`-prefixed names are ignored. The React Compiler hook ruleset is intentionally not enabled — only classic rules-of-hooks + exhaustive-deps (as a warning).
 - React 17, `react-jsx` runtime, TS `strict`, `noEmit` (Vite/esbuild does the transpile; `tsc` is type-check only).

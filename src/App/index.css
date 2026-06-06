@@ -1,24 +1,12 @@
 /*
  * Design tokens for the Structure facelift.
- * All UI colors are oklch for tonal consistency. --accent is defaulted here but overridden at
- * runtime from viewOptionsAtom (document.documentElement.style.setProperty('--accent', …)).
+ * The color scale (--accent + the oklch surfaces/text vars) is the single source
+ * of truth in src/app/tokens.ts and is injected onto :root by applyTokens() at
+ * startup. --accent may be further overridden at runtime
+ * (document.documentElement.style.setProperty('--accent', …)).
+ * Only the derived, non-color tokens that depend on those vars live here.
  */
 :root {
-  --accent: #8b78f0;               /* violet (default); maps to MUI primary.main */
-  --bg: oklch(0.158 0.008 274);    /* app background */
-  --canvas: oklch(0.142 0.008 274);/* right pane */
-  --panel: oklch(0.188 0.009 274); /* left panel */
-  --panel-2: oklch(0.222 0.010 274);/* inputs / cards */
-  --panel-3: oklch(0.262 0.011 274);/* hover surfaces */
-  --border: oklch(0.300 0.012 274);/* control borders */
-  --border-soft: oklch(0.252 0.010 274);/* dividers */
-  --text: oklch(0.945 0.004 274);  /* primary text */
-  --muted: oklch(0.660 0.012 274); /* secondary text */
-  --faint: oklch(0.480 0.012 274); /* tertiary / prefixes */
-  --line-num: oklch(0.420 0.012 274);/* gutter numbers */
-  --folder: oklch(0.760 0.105 248);/* directory names */
-  --file: oklch(0.640 0.010 274);  /* file names */
-
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 28px rgba(0, 0, 0, 0.35);
   --focus-ring: 0 0 0 3px color-mix(in oklab, var(--accent) 18%, transparent);
 }

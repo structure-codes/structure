@@ -1,5 +1,5 @@
 /* Visualization styles for the new ModelPanel (Structure facelift).
-   Colors come from the design tokens declared in src/index.css. */
+   Colors come from the design tokens injected onto :root by src/app/tokens.ts. */
 
 .viz-wrap {
   position: relative;
