@@ -36,6 +36,7 @@ const scale = {
   "line-num": "oklch(0.420 0.012 274)",
   folder: "oklch(0.760 0.105 248)",
   file: "oklch(0.640 0.010 274)",
+  danger: "oklch(0.637 0.205 25)",
 } as const;
 
 /** Inject --accent, the fonts, and the oklch scale onto :root. Call once before first render. */
@@ -64,4 +65,5 @@ export const tokens = {
   lineNum: oklchToHex(scale["line-num"]),
   folder: oklchToHex(scale.folder),
   file: oklchToHex(scale.file),
+  danger: oklchToHex(scale.danger),
 } as const;

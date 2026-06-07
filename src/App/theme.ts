@@ -11,6 +11,9 @@ export const theme = createTheme({
     primary: {
       main: tokens.accent,
     },
+    error: {
+      main: tokens.danger,
+    },
     text: {
       primary: tokens.text,
       secondary: tokens.muted,

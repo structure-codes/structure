@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import classes from "./style.module.css";
-import { Button, TextField } from "@mui/material";
+import { Button, TextField, Tooltip } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import { useSetAtom } from "jotai";
 import { treeAtom, baseTreeAtom } from "../../../store";
@@ -19,6 +19,7 @@ export const Dropdown = () => {
   const params = useParams();
   const [searchParams]: any = useSearchParams();
   const [url, setUrl] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [template, setTemplate] = useState(null);
   const setTreeState = useSetAtom(treeAtom);
   const setBaseTree = useSetAtom(baseTreeAtom);
@@ -79,38 +80,44 @@ export const Dropdown = () => {
   // Handles changes to input value
   const handleUrlChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     setUrl(e.target.value);
+    if (error) setError(null);
   };
 
   // Pulls from github api on click of button
-  const handleGo = (e: any, urlFromParams: string | null = null) => {
+  const handleGo = async (e: any, urlFromParams: string | null = null) => {
     // Either get URL passed in OR use the current state value
     const searchUrl = urlFromParams || url;
     const groups = searchUrl.match(githubUrlRe)?.groups;
     if (!groups) {
-      console.error(`Could not parse URL: ${searchUrl} with regex: ${githubUrlRe.toString()}`);
+      setError("That doesn't look like a GitHub repo URL.");
       return;
     }
     const { owner, repo, branch }: Record<string, string> = groups;
-    fetch("/api/github", {
-      method: "POST",
-      body: JSON.stringify({
-        owner,
-        repo,
-        branch,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then(res => res.json())
-      .then(res => {
-        setTreeState(res);
-        setBaseTree(searchUrl);
-        navigate(
-          `/template/github?owner=${owner}&repo=${repo}${branch ? `&branch=${branch}` : ""}`
-        );
+    try {
+      const res = await fetch("/api/github", {
+        method: "POST",
+        body: JSON.stringify({ owner, repo, branch }),
+        headers: { "Content-Type": "application/json" },
       });
+      // The proxy returns a non-OK status (e.g. 404 for a missing/private repo)
+      // with an `{ error }` body. Surface it instead of feeding the error object
+      // into treeAtom, which would crash both panes.
+      const data = res.ok ? await res.json() : null;
+      if (!res.ok || !Array.isArray(data)) {
+        setError("Unable to locate repository.");
+        return;
+      }
+      setError(null);
+      setTreeState(data);
+      setBaseTree(searchUrl);
+      navigate(`/template/github?owner=${owner}&repo=${repo}${branch ? `&branch=${branch}` : ""}`);
+    } catch {
+      setError("Something went wrong reaching GitHub. Please try again.");
+    }
   };
+
+  // GO is only actionable once the input parses as a GitHub repo URL.
+  const isValidUrl = githubUrlRe.test(url);
 
   return (
     <div className={classes.dropdownContainer}>
@@ -133,6 +140,9 @@ export const Dropdown = () => {
           variant="outlined"
           value={url}
           onChange={handleUrlChange}
+          placeholder="https://github.com/{owner}/{repo}"
+          error={!!error}
+          helperText={error}
           slotProps={{
             input: {
               startAdornment: (
@@ -143,14 +153,20 @@ export const Dropdown = () => {
             },
           }}
         />
-        <Button
-          variant="contained"
-          className={classes.goButton}
-          onClick={handleGo}
-          disabled={!githubUrlRe.test(url)}
-        >
-          GO
-        </Button>
+        {/* A disabled button emits no hover events, so the Tooltip is driven off
+            the wrapping span (which stays interactive) to explain why it's off. */}
+        <Tooltip title={isValidUrl ? "" : "Enter a valid GitHub repo URL"}>
+          <span className={classes.goButtonWrap}>
+            <Button
+              variant="contained"
+              className={classes.goButton}
+              onClick={handleGo}
+              disabled={!isValidUrl}
+            >
+              GO
+            </Button>
+          </span>
+        </Tooltip>
       </div>
     </div>
   );
