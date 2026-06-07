@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import classes from "./style.module.css";
 import { Button, Checkbox, FormGroup, FormControlLabel, Slider } from "@mui/material";
 import { baseTreeAtom, settingsAtom, treeAtom } from "../../../store";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+import { useAtom, useAtomValue } from "jotai";
 import { TreeType, treeJsonToString } from "@structure-codes/utils";
 import { saveAs } from "file-saver";
 
@@ -20,9 +19,9 @@ const getMaxDepth = (tree: TreeType[]): number => {
 };
 
 export const SettingsPanel = React.memo(() => {
-  const [settings, setSettings] = useRecoilState(settingsAtom);
-  const baseTree = useRecoilValue(baseTreeAtom);
-  const treeState = useRecoilValue(treeAtom);
+  const [settings, setSettings] = useAtom(settingsAtom);
+  const baseTree = useAtomValue(baseTreeAtom);
+  const treeState = useAtomValue(treeAtom);
   const [maxDepth, setMaxDepth] = useState(0);
 
   const handleDepthChange = (event: Event | null, value: any) => {
@@ -42,6 +41,12 @@ export const SettingsPanel = React.memo(() => {
     if (settings.depth < 0) handleDepthChange(null, newDepth);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [treeState]);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(
+      treeJsonToString({ tree: treeState, tabChar: "\t", options: settings })
+    );
+  };
 
   const handleSave = () => {
     const treeString = treeJsonToString({ tree: treeState, tabChar: "\t", options: settings });
@@ -95,23 +100,19 @@ export const SettingsPanel = React.memo(() => {
         />
       </FormGroup>
       <div className={classes.buttons}>
-        <CopyToClipboard
-          text={treeJsonToString({ tree: treeState, tabChar: "\t", options: settings })}
-        >
-          <Button size="small" className={classes.button}>
-            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
-              <path
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9 9V5.5A1.5 1.5 0 0110.5 4h8A1.5 1.5 0 0120 5.5v8a1.5 1.5 0 01-1.5 1.5H15M4 10.5A1.5 1.5 0 015.5 9h8A1.5 1.5 0 0115 10.5v8A1.5 1.5 0 0113.5 20h-8A1.5 1.5 0 014 18.5z"
-              />
-            </svg>
-            Copy
-          </Button>
-        </CopyToClipboard>
+        <Button size="small" className={classes.button} onClick={handleCopy}>
+          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+            <path
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M9 9V5.5A1.5 1.5 0 0110.5 4h8A1.5 1.5 0 0120 5.5v8a1.5 1.5 0 01-1.5 1.5H15M4 10.5A1.5 1.5 0 015.5 9h8A1.5 1.5 0 0115 10.5v8A1.5 1.5 0 0113.5 20h-8A1.5 1.5 0 014 18.5z"
+            />
+          </svg>
+          Copy
+        </Button>
         <Button size="small" className={classes.button} onClick={handleSave}>
           <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
             <path

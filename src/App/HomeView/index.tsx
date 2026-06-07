@@ -35,14 +35,14 @@ const Divider = ({
   const handleMouseOver = useCallback(() => setIsHover(true), []);
   const handleMouseLeave = useCallback(() => setIsHover(false), []);
   const handleMouseDown = useCallback(
-    e => {
+    (e: any) => {
       onMouseDown(e);
       setIsDragging(true);
     },
     [onMouseDown]
   );
   const handleMouseUp = useCallback(
-    e => {
+    (e: any) => {
       onMouseUp(e);
       setIsDragging(false);
     },

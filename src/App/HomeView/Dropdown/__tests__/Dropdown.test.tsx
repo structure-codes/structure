@@ -12,7 +12,7 @@ import templates from "./sampleTemplates.json";
 // required libraries
 import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter } from "react-router-dom";
-import { RecoilRoot } from "recoil";
+import { Provider } from "jotai";
 
 // declare which API requests to mock
 const server = setupServer(
@@ -35,13 +35,13 @@ test("sends API request on search", async () => {
   const queryClient = new QueryClient();
   // arrange
   render(
-    <RecoilRoot>
+    <Provider>
       <MemoryRouter>
         <QueryClientProvider client={queryClient}>
           <Dropdown />
         </QueryClientProvider>
       </MemoryRouter>
-    </RecoilRoot>
+    </Provider>
   );
   // act
   // In MUI v5+ Autocomplete the `combobox` role lives on the <input> itself

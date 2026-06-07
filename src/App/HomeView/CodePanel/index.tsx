@@ -3,7 +3,7 @@ import classes from "./style.module.css";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { languageDef, themeDef, configuration } from "./customLang";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { treeAtom, settingsAtom, hoveredNodeAtom, selectedNodeAtom } from "../../../store";
 import { toRawTree, codeLineIds } from "../ModelPanel/layout";
 import "./codePanel.css";
@@ -71,14 +71,14 @@ const getLastNode = (branch: TreeType) => {
 export const CodePanel = React.memo(({ height }: { height: number }) => {
   const treeRef = useRef<string | null>(null);
   const editorRef = useRef<any>(null);
-  const [treeState, setTreeState] = useRecoilState(treeAtom);
-  const settingsState = useRecoilValue(settingsAtom);
+  const [treeState, setTreeState] = useAtom(treeAtom);
+  const settingsState = useAtomValue(settingsAtom);
 
   // ---- cross-pane hover-link (see store.ts / ModelPanel) ----
-  const hoveredId = useRecoilValue(hoveredNodeAtom);
-  const selectedId = useRecoilValue(selectedNodeAtom);
-  const setHoveredId = useSetRecoilState(hoveredNodeAtom);
-  const setSelectedId = useSetRecoilState(selectedNodeAtom);
+  const hoveredId = useAtomValue(hoveredNodeAtom);
+  const selectedId = useAtomValue(selectedNodeAtom);
+  const setHoveredId = useSetAtom(hoveredNodeAtom);
+  const setSelectedId = useSetAtom(selectedNodeAtom);
 
   // line number (1-based) -> node id, matching the editor's rendered lines
   const lineIds = useMemo(

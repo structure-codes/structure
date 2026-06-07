@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import classes from "./style.module.css";
 import { Button, TextField } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
-import { useSetRecoilState } from "recoil";
+import { useSetAtom } from "jotai";
 import { treeAtom, baseTreeAtom } from "../../../store";
 import { treeStringToJson } from "@structure-codes/utils";
 import { useQuery } from "react-query";
@@ -20,8 +20,8 @@ export const Dropdown = () => {
   const [searchParams]: any = useSearchParams();
   const [url, setUrl] = useState("");
   const [template, setTemplate] = useState(null);
-  const setTreeState = useSetRecoilState(treeAtom);
-  const setBaseTree = useSetRecoilState(baseTreeAtom);
+  const setTreeState = useSetAtom(treeAtom);
+  const setBaseTree = useSetAtom(baseTreeAtom);
 
   // On initial load get details from URL if present
   useEffect(() => {

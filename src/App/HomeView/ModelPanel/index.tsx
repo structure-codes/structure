@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "react-query";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useAtomValue, useSetAtom } from "jotai";
 import {
   treeAtom,
   settingsAtom,
@@ -58,9 +58,9 @@ interface TemplateMeta {
 const ANIM_MS = 520;
 
 export const ModelPanel = React.memo(() => {
-  const treeState = useRecoilValue(treeAtom);
-  const settings = useRecoilValue(settingsAtom);
-  const baseTree = useRecoilValue(baseTreeAtom);
+  const treeState = useAtomValue(treeAtom);
+  const settings = useAtomValue(settingsAtom);
+  const baseTree = useAtomValue(baseTreeAtom);
 
   const view = DEFAULT_VIEW;
   const repoName = deriveRepoName(baseTree);
@@ -87,10 +87,10 @@ export const ModelPanel = React.memo(() => {
   const movedRef = useRef(false);
 
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
-  const hoveredId = useRecoilValue(hoveredNodeAtom);
-  const selectedId = useRecoilValue(selectedNodeAtom);
-  const setHoveredId = useSetRecoilState(hoveredNodeAtom);
-  const setSelectedId = useSetRecoilState(selectedNodeAtom);
+  const hoveredId = useAtomValue(hoveredNodeAtom);
+  const selectedId = useAtomValue(selectedNodeAtom);
+  const setHoveredId = useSetAtom(hoveredNodeAtom);
+  const setSelectedId = useSetAtom(selectedNodeAtom);
 
   // measure container
   useLayoutEffect(() => {
