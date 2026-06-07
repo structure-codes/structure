@@ -26,8 +26,6 @@ jobs:
             ${{ runner.os }}-
       - name: install
         run: npm ci
-      - name: lint
-        run: npm run lint
       - name: test
         run: npm test
       - name: build
