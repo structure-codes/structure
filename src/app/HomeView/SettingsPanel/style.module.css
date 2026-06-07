@@ -1,0 +1,113 @@
+.settingsContainer {
+  width: 100%;
+  background: var(--panel);
+  border-top: 1px solid var(--border-soft);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sliderContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.sliderHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--space-1);
+}
+
+.sliderLabel {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.sliderValue {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+/* Local classes targeting MUI internals are doubled (.x.x) as a specificity
+   safety margin over MUI's base classes — see Dropdown/style.module.css. */
+.slider.slider {
+  color: var(--accent);
+  padding: 8px 0;
+}
+.slider.slider :global(.MuiSlider-rail) {
+  height: 4px;
+  border-radius: 4px;
+  background-color: var(--panel-3);
+  opacity: 1;
+}
+.slider.slider :global(.MuiSlider-track) {
+  height: 4px;
+  border-radius: 4px;
+}
+.slider.slider :global(.MuiSlider-thumb) {
+  width: 15px;
+  height: 15px;
+  background-color: var(--accent);
+  border: 3px solid var(--panel);
+  box-shadow: 0 0 0 1px var(--accent);
+  transition: transform var(--dur-fast);
+}
+.slider.slider :global(.MuiSlider-thumb):hover,
+.slider.slider :global(.MuiSlider-thumb.Mui-focusVisible) {
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.slider.slider :global(.MuiSlider-thumb.Mui-active) {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.checks {
+  gap: var(--space-1);
+}
+
+.check.check {
+  margin: 0;
+}
+.check.check :global(.MuiFormControlLabel-label) {
+  color: var(--muted);
+  font-size: 13.5px;
+  white-space: nowrap;
+}
+.check.check:hover :global(.MuiFormControlLabel-label) {
+  color: var(--text);
+}
+.check.check :global(.MuiCheckbox-root) {
+  color: var(--border);
+  padding: 6px;
+}
+.check.check :global(.MuiCheckbox-root.Mui-checked) {
+  color: var(--accent);
+}
+
+.buttons {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+/* v5+ Button has no .MuiButton-label wrapper; the root is the flex container,
+   so icon/text spacing goes on the root via gap. */
+.button.button {
+  flex: 1;
+  gap: 6px;
+  color: var(--muted);
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 12.5px;
+  font-weight: 500;
+  text-transform: none;
+  padding: 7px 10px;
+}
+.button.button:hover {
+  background: var(--panel-3);
+  border-color: var(--panel-3);
+  color: var(--text);
+}

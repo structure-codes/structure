@@ -1,0 +1,101 @@
+.dropdownContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: var(--space-4) var(--space-4) 14px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+/* Shared MUI outlined-input restyle for the template select + GitHub field.
+   The local class is doubled (.field.field) as a specificity safety margin over
+   MUI's base classes; StyledEngineProvider injectFirst (main.tsx) also makes
+   emotion inject first so these modules win the cascade on order. */
+.field.field {
+  width: 100%;
+}
+.field.field :global(.MuiOutlinedInput-root) {
+  background-color: var(--panel-2);
+  border-radius: var(--radius);
+  font-size: 13.5px;
+  color: var(--text);
+}
+/* The :not(.Mui-error) scoping lets MUI's built-in error mode (driven by the
+   TextField `error` prop, themed via palette.error → --danger) paint the outline
+   and label red instead of these token overrides winning the cascade. */
+.field.field :global(.MuiOutlinedInput-root:not(.Mui-error)) fieldset {
+  border-color: var(--border);
+  transition: border-color var(--dur-fast);
+}
+.field.field :global(.MuiOutlinedInput-root:not(.Mui-error)):hover fieldset {
+  border-color: var(--panel-3);
+}
+.field.field :global(.MuiOutlinedInput-root.Mui-focused:not(.Mui-error)) fieldset {
+  border-color: var(--accent);
+  border-width: 1px;
+  box-shadow: var(--focus-ring);
+}
+.field.field :global(.MuiInputLabel-root) {
+  font-size: 13.5px;
+}
+.field.field :global(.MuiInputLabel-root:not(.Mui-error)) {
+  color: var(--muted);
+}
+.field.field :global(.MuiInputLabel-root.Mui-focused:not(.Mui-error)) {
+  color: var(--accent);
+}
+.field.field :global(.MuiAutocomplete-popupIndicator) {
+  color: var(--muted);
+}
+.field.field :global(.MuiAutocomplete-clearIndicator) {
+  color: var(--muted);
+}
+
+.githubContainer {
+  display: flex;
+  gap: var(--space-2);
+  /* Top-align so the GO button keeps its height when the field grows an error
+     helper text below it (instead of stretching to match). */
+  align-items: flex-start;
+}
+
+.ghMark {
+  display: flex;
+  align-items: center;
+  color: var(--muted);
+  margin-right: 6px;
+}
+
+/* The Tooltip wraps the button in this span (so a disabled button can still show
+   a hover hint); it's the flex item now, so keep it from shrinking. */
+.goButtonWrap {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+/* Doubled (.goButton.goButton) to outweigh MUI's .MuiButton-contained defaults. */
+.goButton.goButton {
+  flex-shrink: 0;
+  min-width: 56px;
+  height: 40px;
+  padding: 0 18px;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.goButton.goButton:hover:not(:disabled) {
+  background: var(--accent);
+  filter: brightness(1.08);
+}
+.goButton.goButton:active:not(:disabled) {
+  transform: translateY(1px);
+}
+/* Our accent background overrides MUI's disabled styling, so dim it explicitly
+   when the URL isn't a valid repo (the Tooltip explains why). */
+.goButton.goButton:disabled {
+  background: var(--panel-3);
+  color: var(--faint);
+}

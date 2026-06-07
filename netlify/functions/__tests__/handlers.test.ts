@@ -24,13 +24,14 @@ afterEach(() => {
 });
 
 describe("GET /api/templates", () => {
-  it("returns template names with the .tree suffix stripped", async () => {
+  it("returns template names (suffix stripped) paired with their source url", async () => {
     global.fetch = vi.fn().mockResolvedValue(ok({ json: templateJson })) as unknown as typeof fetch;
     const res = await templates();
     expect(res.headers.get("content-type")).toMatch(/json/);
     const body = await res.json();
-    expect(body).toContain("react-boilerplate");
-    expect(body.every((name: string) => !name.endsWith(".tree"))).toBe(true);
+    expect(body.map((t: { name: string }) => t.name)).toContain("react-boilerplate");
+    expect(body.every((t: { name: string }) => !t.name.endsWith(".tree"))).toBe(true);
+    expect(body.every((t: { url: string }) => typeof t.url === "string")).toBe(true);
   });
 
   it("sends a User-Agent (GitHub rejects requests without one)", async () => {

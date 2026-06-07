@@ -1,0 +1,14 @@
+/* Cross-pane hover-link decorations applied to Monaco lines (see CodePanel.tsx).
+   Classes are attached via editor.deltaDecorations with isWholeLine. */
+.monaco-editor .tree-line-hover {
+  background-color: color-mix(in oklab, var(--accent) 11%, transparent);
+}
+.monaco-editor .tree-line-selected {
+  background-color: color-mix(in oklab, var(--accent) 16%, transparent);
+  box-shadow: inset 2px 0 0 0 var(--accent);
+}
+
+/* Hide the text cursor completely */
+.monaco-editor .cursors-layer .cursor {
+    display: none !important;
+}

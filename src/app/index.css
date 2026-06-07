@@ -1,0 +1,67 @@
+/*
+ * Design tokens for the Structure facelift.
+ * The color scale (--accent + the oklch surfaces/text vars) is the single source
+ * of truth in src/app/tokens.ts and is injected onto :root by applyTokens() at
+ * startup. --accent may be further overridden at runtime
+ * (document.documentElement.style.setProperty('--accent', …)).
+ * Only the derived, non-color tokens that depend on those vars live here.
+ * (--accent, --font-ui and --font-mono are injected by applyTokens; the color
+ * scale too. The structural scales below are static and CSS-only.)
+ */
+:root {
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 28px rgba(0, 0, 0, 0.35);
+  --focus-ring: 0 0 0 3px color-mix(in oklab, var(--accent) 18%, transparent);
+  --on-accent: #0c0a14; /* near-black ink for text/glyphs on an accent fill */
+
+  /* radii */
+  --radius: 9px;       /* controls: inputs, buttons */
+  --radius-lg: 10px;   /* surfaces: overlays, glass */
+
+  /* transitions */
+  --dur-fast: 0.12s;
+  --dur: 0.15s;
+
+  /* spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-ui);
+}
+
+/* Frosted-glass surface for floating overlays (repo chip, legend, zoom). Opt in
+   by adding the `glass` class alongside the element's own positioning class. */
+.glass {
+  background: color-mix(in oklab, var(--panel) 78%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+#root {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-flow: column;
+}
+
+/* GitHub mark link — shared base so every instance matches the repo chip in ModelPanel. */
+.repo-link {
+  display: inline-flex;
+  align-items: center;
+  color: var(--muted);
+  transition: color var(--dur-fast);
+}
+.repo-link:hover {
+  color: var(--accent);
+}

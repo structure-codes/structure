@@ -16,7 +16,10 @@ export default async (): Promise<Response> => {
     const res = await fetch(templatesUrl, { headers: { "User-Agent": USER_AGENT } });
     if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
     const data: ITemplates[] = await res.json();
-    const parsed: string[] = data.map((template) => template.name.replace(/\.tree$/, ""));
+    const parsed = data.map((template) => ({
+      name: template.name.replace(/\.tree$/, ""),
+      url: template.url,
+    }));
     return json(parsed);
   } catch (e) {
     const errMsg = getErrorMessage(e);
