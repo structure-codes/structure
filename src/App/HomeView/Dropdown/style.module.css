@@ -1,0 +1,78 @@
+.dropdownContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: var(--space-4) var(--space-4) 14px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+/* Shared MUI outlined-input restyle for the template select + GitHub field.
+   The local class is doubled (.field.field) to outweigh MUI v4's runtime-injected
+   defaults — a static stylesheet would otherwise tie and lose the cascade. */
+.field.field {
+  width: 100%;
+}
+.field.field :global(.MuiOutlinedInput-root) {
+  background-color: var(--panel-2);
+  border-radius: var(--radius);
+  font-size: 13.5px;
+  color: var(--text);
+}
+.field.field :global(.MuiOutlinedInput-root) fieldset {
+  border-color: var(--border);
+  transition: border-color var(--dur-fast);
+}
+.field.field :global(.MuiOutlinedInput-root):hover fieldset {
+  border-color: var(--panel-3);
+}
+.field.field :global(.MuiOutlinedInput-root.Mui-focused) fieldset {
+  border-color: var(--accent);
+  border-width: 1px;
+  box-shadow: var(--focus-ring);
+}
+.field.field :global(.MuiInputLabel-root) {
+  color: var(--muted);
+  font-size: 13.5px;
+}
+.field.field :global(.MuiInputLabel-root.Mui-focused) {
+  color: var(--accent);
+}
+.field.field :global(.MuiAutocomplete-popupIndicator) {
+  color: var(--muted);
+}
+.field.field :global(.MuiAutocomplete-clearIndicator) {
+  color: var(--muted);
+}
+
+.githubContainer {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.ghMark {
+  display: flex;
+  align-items: center;
+  color: var(--muted);
+  margin-right: 6px;
+}
+
+/* Doubled to beat MUI's .MuiButton-contained defaults (the old `&&` hack). */
+.goButton.goButton {
+  flex-shrink: 0;
+  min-width: 56px;
+  padding: 0 18px;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.goButton.goButton:hover {
+  background: var(--accent);
+  filter: brightness(1.08);
+}
+.goButton.goButton:active {
+  transform: translateY(1px);
+}

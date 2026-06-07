@@ -15,6 +15,12 @@ import { oklchToHex } from "./oklch";
 // depth-color ramp (ModelPanel/depthColor.ts) all derive from it.
 export const ACCENT = "#8b78f0";
 
+// Font stacks. Defined here (and injected as --font-ui / --font-mono) so CSS uses
+// var(--font-mono) while the JS-only consumers that need a literal string — the
+// MUI theme (theme.ts) and Monaco's editor options (CodePanel) — import these.
+export const FONT_UI = '"IBM Plex Sans", system-ui, -apple-system, sans-serif';
+export const FONT_MONO = '"IBM Plex Mono", ui-monospace, monospace';
+
 // Keys are the CSS custom-property names without the leading "--".
 const scale = {
   bg: "oklch(0.158 0.008 274)",
@@ -32,9 +38,11 @@ const scale = {
   file: "oklch(0.640 0.010 274)",
 } as const;
 
-/** Inject --accent + the oklch scale onto :root. Call once before first render. */
+/** Inject --accent, the fonts, and the oklch scale onto :root. Call once before first render. */
 export function applyTokens(root: HTMLElement = document.documentElement): void {
   root.style.setProperty("--accent", ACCENT);
+  root.style.setProperty("--font-ui", FONT_UI);
+  root.style.setProperty("--font-mono", FONT_MONO);
   for (const [name, value] of Object.entries(scale)) {
     root.style.setProperty(`--${name}`, value);
   }

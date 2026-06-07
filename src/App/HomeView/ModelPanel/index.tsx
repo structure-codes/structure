@@ -17,7 +17,7 @@ import {
   PlacedNode,
 } from "./layout";
 import { depthColor, DEFAULT_ACCENT_HUE } from "./depthColor";
-import { useStyles } from "./style";
+import classes from "./style.module.css";
 import { GitHubMark } from "../../../components/GitHubMark";
 import "./tree.css";
 
@@ -58,7 +58,6 @@ interface TemplateMeta {
 const ANIM_MS = 520;
 
 export const ModelPanel = React.memo(() => {
-  const classes = useStyles();
   const treeState = useRecoilValue(treeAtom);
   const settings = useRecoilValue(settingsAtom);
   const baseTree = useRecoilValue(baseTreeAtom);
@@ -453,7 +452,7 @@ export const ModelPanel = React.memo(() => {
         </svg>
 
         {/* repo chip (top-left) */}
-        <div className="viz-overlay viz-repochip">
+        <div className="glass viz-overlay viz-repochip">
           <span className="repo-dot" />
           <span className="repo-name">{repoName}</span>
           {repoUrl && <GitHubMark size={14} url={repoUrl} />}
@@ -461,7 +460,7 @@ export const ModelPanel = React.memo(() => {
         </div>
 
         {/* depth legend (bottom-left) */}
-        <div className="viz-overlay viz-legend">
+        <div className="glass viz-overlay viz-legend">
           <div className="legend-title">Depth</div>
           <div className="legend-swatches">
             {Array.from({ length: legendCount }).map((_, d) => (
@@ -478,17 +477,27 @@ export const ModelPanel = React.memo(() => {
 
         {/* zoom cluster (bottom-right) */}
         <div className="viz-zoom">
-          <button onPointerDown={() => zoomBy(1.25)} title="Zoom in" aria-label="Zoom in">
+          <button
+            className="glass"
+            onPointerDown={() => zoomBy(1.25)}
+            title="Zoom in"
+            aria-label="Zoom in"
+          >
             +
           </button>
-          <button onPointerDown={() => zoomBy(0.8)} title="Zoom out" aria-label="Zoom out">
+          <button
+            className="glass"
+            onPointerDown={() => zoomBy(0.8)}
+            title="Zoom out"
+            aria-label="Zoom out"
+          >
             &minus;
           </button>
           <button
             onPointerDown={fit}
             title="Fit to view"
             aria-label="Fit to view"
-            className="zoom-fit"
+            className="glass zoom-fit"
           >
             ⤢
           </button>

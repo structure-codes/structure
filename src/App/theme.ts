@@ -1,5 +1,5 @@
 import { createTheme } from "@material-ui/core";
-import { tokens } from "./tokens";
+import { tokens, FONT_UI } from "./tokens";
 
 export const theme = createTheme({
   palette: {
@@ -18,6 +18,6 @@ export const theme = createTheme({
     divider: tokens.borderSoft,
   },
   typography: {
-    fontFamily: '"IBM Plex Sans", system-ui, -apple-system, sans-serif',
+    fontFamily: FONT_UI,
   },
 });

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useStyles } from "./style";
+import classes from "./style.module.css";
 import { Button, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useSetRecoilState } from "recoil";
@@ -15,7 +15,6 @@ const githubUrlRe = new RegExp(
 );
 
 export const Dropdown = () => {
-  const classes = useStyles();
   const navigate = useNavigate();
   const params = useParams();
   const [searchParams]: any = useSearchParams();

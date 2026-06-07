@@ -1,0 +1,28 @@
+.panelContainer {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  background: var(--bg);
+}
+
+.leftPanel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 220px;
+  background: var(--panel);
+  border-right: 1px solid var(--border-soft);
+}
+
+.rightPanel {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background: var(--canvas);
+}
+
+.icon {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+}

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useMemo } from "react";
-import { useStyles } from "./style";
+import classes from "./style.module.css";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { languageDef, themeDef, configuration } from "./customLang";
@@ -17,6 +17,7 @@ import {
   getNumberOfLeadingTabs,
 } from "./treeHelper";
 import { TreeType, treeJsonToString, treeStringToJson } from "@structure-codes/utils";
+import { FONT_MONO } from "../../tokens";
 
 declare global {
   interface Window {
@@ -36,7 +37,7 @@ const options: IGlobalEditorOptions | IEditorOptions = {
     enabled: false,
   },
   readOnly: true,
-  fontFamily: '"IBM Plex Mono", ui-monospace, monospace',
+  fontFamily: FONT_MONO,
   fontSize: 13,
   lineHeight: 24, // ~1.85 × 13px
   lineNumbersMinChars: 3,
@@ -68,7 +69,6 @@ const getLastNode = (branch: TreeType) => {
 };
 
 export const CodePanel = React.memo(({ height }: { height: number }) => {
-  const classes = useStyles();
   const treeRef = useRef<string | null>(null);
   const editorRef = useRef<any>(null);
   const [treeState, setTreeState] = useRecoilState(treeAtom);

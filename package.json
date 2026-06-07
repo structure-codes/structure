@@ -6,7 +6,8 @@
     "prestart": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "start": "netlify dev",
     "build": "tsc && vite build",
-    "lint": "eslint .",
+    "lint": "eslint . && node scripts/check-tokens.mjs",
+    "lint:tokens": "node scripts/check-tokens.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:functions": "vitest run netlify"

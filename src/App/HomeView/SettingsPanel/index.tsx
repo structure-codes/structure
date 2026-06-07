@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useStyles } from "./style";
+import classes from "./style.module.css";
 import { Button, Checkbox, FormGroup, FormControlLabel, Slider } from "@material-ui/core";
 import { baseTreeAtom, settingsAtom, treeAtom } from "../../../store";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -20,7 +20,6 @@ const getMaxDepth = (tree: TreeType[]): number => {
 };
 
 export const SettingsPanel = React.memo(() => {
-  const classes = useStyles();
   const [settings, setSettings] = useRecoilState(settingsAtom);
   const baseTree = useRecoilValue(baseTreeAtom);
   const treeState = useRecoilValue(treeAtom);

@@ -3,7 +3,7 @@ import { Dropdown } from "./Dropdown";
 import { CodePanel } from "./CodePanel";
 import { SettingsPanel } from "./SettingsPanel";
 import { ModelPanel } from "./ModelPanel";
-import { useStyles } from "./style";
+import classes from "./style.module.css";
 import { useMousePosition } from "../../hooks";
 import { useMediaQuery, useTheme } from "@material-ui/core";
 import { GitHubMark } from "../../components/GitHubMark";
@@ -68,7 +68,6 @@ const Divider = ({
 };
 
 export const HomeView = () => {
-  const classes = useStyles();
   const [leftWidth, setLeftWidth] = useState(0.25 * window.innerWidth);
   const [topHeight, setTopHeight] = useState(0.75 * window.innerHeight);
   const [isVerticalDragging, setIsVerticalDragging] = useState(false);
