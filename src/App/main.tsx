@@ -7,7 +7,7 @@ import { theme } from "./theme";
 import { applyTokens } from "./tokens";
 import "./index.css";
 import { Provider } from "jotai";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Inject the design tokens onto :root before first paint (see tokens.ts).
 applyTokens();

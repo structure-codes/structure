@@ -10,7 +10,7 @@ import { Dropdown } from "../index";
 import tree from "./sampleTree.json";
 import templates from "./sampleTemplates.json";
 // required libraries
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import { Provider } from "jotai";
 

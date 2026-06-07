@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
   treeAtom,
@@ -69,9 +69,10 @@ export const ModelPanel = React.memo(() => {
   // templates manifest, so resolve the GitHub link from there. Shares react-query's
   // cache with the Dropdown (same key), and resolves reactively to cover deep links
   // where the manifest loads after the tree.
-  const { data: templates } = useQuery<TemplateMeta[]>("templatesData", () =>
-    fetch("/api/templates").then(res => res.json())
-  );
+  const { data: templates } = useQuery<TemplateMeta[]>({
+    queryKey: ["templatesData"],
+    queryFn: () => fetch("/api/templates").then(res => res.json()),
+  });
   const repoUrl = useMemo(() => {
     const direct = deriveRepoUrl(baseTree);
     if (direct) return direct;

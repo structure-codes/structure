@@ -5,7 +5,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { useSetAtom } from "jotai";
 import { treeAtom, baseTreeAtom } from "../../../store";
 import { treeStringToJson } from "@structure-codes/utils";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useSearchParams, useParams } from "react-router-dom";
 import { GitHubMark } from "../../../components/GitHubMark";
 
@@ -42,9 +42,9 @@ export const Dropdown = () => {
   }, []);
 
   // Fetch the tree string data for the given template or repository
-  useQuery(
-    ["selectedTemplate", template],
-    async () => {
+  useQuery({
+    queryKey: ["selectedTemplate", template],
+    queryFn: async () => {
       const data = await fetch(`/api/template/${template}`).then(res => res.text());
       const parsedData = data
         .split("\n")
@@ -54,15 +54,14 @@ export const Dropdown = () => {
       setBaseTree(template || "");
       return parsedData;
     },
-    {
-      enabled: !!template,
-    }
-  );
+    enabled: !!template,
+  });
 
   // Fetch list of all available templates
-  const { data: templates } = useQuery("templatesData", () =>
-    fetch("/api/templates").then(res => res.json())
-  );
+  const { data: templates } = useQuery({
+    queryKey: ["templatesData"],
+    queryFn: () => fetch("/api/templates").then(res => res.json()),
+  });
 
   // Immediately pulls in new template data
   const handleTemplateChange = (e: any, template: any) => {
