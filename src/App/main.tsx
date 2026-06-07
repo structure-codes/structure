@@ -2,7 +2,7 @@ import React from "react";
 import { render } from "react-dom";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HomeView } from "./HomeView";
-import { CssBaseline, ThemeProvider } from "@material-ui/core";
+import { CssBaseline, ThemeProvider, StyledEngineProvider } from "@mui/material";
 import { theme } from "./theme";
 import { applyTokens } from "./tokens";
 import "./index.css";
@@ -23,17 +23,19 @@ const queryClient = new QueryClient({
 render(
   <React.StrictMode>
     <RecoilRoot>
-      <ThemeProvider theme={theme}>
-        <QueryClientProvider client={queryClient}>
-          <CssBaseline />
-          <BrowserRouter>
-            <Routes>
-              <Route key="Home" path={"*"} element={<HomeView />} />
-              <Route key="Home" path={"/template/:template"} element={<HomeView />} />
-            </Routes>
-          </BrowserRouter>
-        </QueryClientProvider>
-      </ThemeProvider>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <QueryClientProvider client={queryClient}>
+            <CssBaseline />
+            <BrowserRouter>
+              <Routes>
+                <Route key="Home" path={"*"} element={<HomeView />} />
+                <Route key="Home" path={"/template/:template"} element={<HomeView />} />
+              </Routes>
+            </BrowserRouter>
+          </QueryClientProvider>
+        </ThemeProvider>
+      </StyledEngineProvider>
     </RecoilRoot>
   </React.StrictMode>,
   document.getElementById("root")

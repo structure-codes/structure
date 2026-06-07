@@ -5,7 +5,7 @@ import { SettingsPanel } from "./SettingsPanel";
 import { ModelPanel } from "./ModelPanel";
 import classes from "./style.module.css";
 import { useMousePosition } from "../../hooks";
-import { useMediaQuery, useTheme } from "@material-ui/core";
+import { useMediaQuery, useTheme } from "@mui/material";
 import { GitHubMark } from "../../components/GitHubMark";
 
 const dividerSize = 6;

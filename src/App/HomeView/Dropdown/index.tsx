@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import classes from "./style.module.css";
-import { Button, TextField } from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import { Button, TextField } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
 import { useSetRecoilState } from "recoil";
 import { treeAtom, baseTreeAtom } from "../../../store";
 import { treeStringToJson } from "@structure-codes/utils";
@@ -134,12 +134,14 @@ export const Dropdown = () => {
           variant="outlined"
           value={url}
           onChange={handleUrlChange}
-          InputProps={{
-            startAdornment: (
-              <span className={classes.ghMark}>
-                <GitHubMark size={15} />
-              </span>
-            ),
+          slotProps={{
+            input: {
+              startAdornment: (
+                <span className={classes.ghMark}>
+                  <GitHubMark size={15} />
+                </span>
+              ),
+            },
           }}
         />
         <Button

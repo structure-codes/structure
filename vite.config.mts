@@ -19,5 +19,13 @@ export default defineConfig({
     environmentOptions: { jsdom: { url: "http://localhost:3000/" } },
     environmentMatchGlobs: [["netlify/**", "node"]],
     setupFiles: ["./src/setupTests.ts"],
+    // MUI v5+ ships native ESM that bare-imports `react/jsx-runtime`, which
+    // React 17 doesn't expose via an exports map. Inline @mui/@emotion so Vite's
+    // resolver transforms them (and resolves the extensionless import).
+    server: {
+      deps: {
+        inline: [/@mui\//, /@emotion\//],
+      },
+    },
   },
 });

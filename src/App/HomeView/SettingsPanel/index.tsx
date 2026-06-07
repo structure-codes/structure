@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import classes from "./style.module.css";
-import { Button, Checkbox, FormGroup, FormControlLabel, Slider } from "@material-ui/core";
+import { Button, Checkbox, FormGroup, FormControlLabel, Slider } from "@mui/material";
 import { baseTreeAtom, settingsAtom, treeAtom } from "../../../store";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -25,7 +25,7 @@ export const SettingsPanel = React.memo(() => {
   const treeState = useRecoilValue(treeAtom);
   const [maxDepth, setMaxDepth] = useState(0);
 
-  const handleDepthChange = (event: React.ChangeEvent<object> | null, value: any) => {
+  const handleDepthChange = (event: Event | null, value: any) => {
     setSettings({
       ...settings,
       depth: value,

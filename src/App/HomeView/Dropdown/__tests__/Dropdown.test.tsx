@@ -3,7 +3,7 @@ import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 
 // import react-testing methods
-import { render, fireEvent, screen, within } from "@testing-library/react";
+import { render, fireEvent, screen } from "@testing-library/react";
 
 // the component to test
 import { Dropdown } from "../index";
@@ -44,23 +44,22 @@ test("sends API request on search", async () => {
     </RecoilRoot>
   );
   // act
-  const autocomplete = screen.getByRole("combobox");
-  const input: HTMLInputElement = within(autocomplete).getByLabelText(
-    "Select a template"
-  ) as HTMLInputElement;
+  // In MUI v5+ Autocomplete the `combobox` role lives on the <input> itself
+  // (ARIA 1.2), and the open button is a sibling at the root level.
+  const input = screen.getByRole("combobox") as HTMLInputElement;
 
   const searchValue = "react-boiler";
   const templateValue = "react-boilerplate";
-  autocomplete.focus();
+  input.focus();
   // open autocomplete dropdown menu
-  within(autocomplete).getByLabelText("Open").click();
+  screen.getByLabelText("Open").click();
   const options = await screen.findAllByRole("option");
   expect(options).toHaveLength(7);
   // assign value to input field
   fireEvent.change(input, { target: { value: searchValue } });
-  fireEvent.keyDown(autocomplete, { key: "ArrowDown" });
+  fireEvent.keyDown(input, { key: "ArrowDown" });
   // select the first item
-  fireEvent.keyDown(autocomplete, { key: "Enter" });
+  fireEvent.keyDown(input, { key: "Enter" });
   // check the new value of the input field
   expect(input.value).toEqual(templateValue);
   // fireEvent.change(screen.getByLabelText("Link to repository"), {

@@ -1,9 +1,9 @@
-import { createTheme } from "@material-ui/core";
+import { createTheme } from "@mui/material";
 import { tokens, FONT_UI } from "./tokens";
 
 export const theme = createTheme({
   palette: {
-    type: "dark",
+    mode: "dark",
     background: {
       default: tokens.bg,
       paper: tokens.panel,

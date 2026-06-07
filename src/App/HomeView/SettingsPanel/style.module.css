@@ -31,8 +31,8 @@
   font-size: 12px;
 }
 
-/* Local classes targeting MUI internals are doubled (.x.x) to outweigh MUI v4's
-   runtime-injected defaults — see Dropdown/style.module.css. */
+/* Local classes targeting MUI internals are doubled (.x.x) as a specificity
+   safety margin over MUI's base classes — see Dropdown/style.module.css. */
 .slider.slider {
   color: var(--accent);
   padding: 8px 0;
@@ -50,7 +50,6 @@
 .slider.slider :global(.MuiSlider-thumb) {
   width: 15px;
   height: 15px;
-  margin-top: -5.5px;
   background-color: var(--accent);
   border: 3px solid var(--panel);
   box-shadow: 0 0 0 1px var(--accent);
@@ -59,10 +58,9 @@
 .slider.slider :global(.MuiSlider-thumb):hover,
 .slider.slider :global(.MuiSlider-thumb.Mui-focusVisible) {
   box-shadow: 0 0 0 1px var(--accent);
-  transform: scale(1.15);
 }
-.slider.slider :global(.MuiSlider-thumb.MuiSlider-active) {
-  box-shadow: 0 0 0 1px var(--accent);
+.slider.slider :global(.MuiSlider-thumb.Mui-active) {
+  box-shadow: 0 0 0 2px var(--accent);
 }
 
 .checks {
@@ -94,8 +92,11 @@
   margin-top: var(--space-1);
 }
 
+/* v5+ Button has no .MuiButton-label wrapper; the root is the flex container,
+   so icon/text spacing goes on the root via gap. */
 .button.button {
   flex: 1;
+  gap: 6px;
   color: var(--muted);
   background: var(--panel-2);
   border: 1px solid var(--border);
@@ -104,11 +105,6 @@
   font-weight: 500;
   text-transform: none;
   padding: 7px 10px;
-}
-.button.button :global(.MuiButton-label) {
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 .button.button:hover {
   background: var(--panel-3);

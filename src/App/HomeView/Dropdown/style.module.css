@@ -8,8 +8,9 @@
 }
 
 /* Shared MUI outlined-input restyle for the template select + GitHub field.
-   The local class is doubled (.field.field) to outweigh MUI v4's runtime-injected
-   defaults — a static stylesheet would otherwise tie and lose the cascade. */
+   The local class is doubled (.field.field) as a specificity safety margin over
+   MUI's base classes; StyledEngineProvider injectFirst (main.tsx) also makes
+   emotion inject first so these modules win the cascade on order. */
 .field.field {
   width: 100%;
 }
@@ -57,7 +58,7 @@
   margin-right: 6px;
 }
 
-/* Doubled to beat MUI's .MuiButton-contained defaults (the old `&&` hack). */
+/* Doubled (.goButton.goButton) to outweigh MUI's .MuiButton-contained defaults. */
 .goButton.goButton {
   flex-shrink: 0;
   min-width: 56px;
