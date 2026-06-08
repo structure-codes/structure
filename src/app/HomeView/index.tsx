@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Dropdown } from "./Dropdown";
 import { CodePanel } from "./CodePanel";
 import { SettingsPanel } from "./SettingsPanel";
@@ -75,8 +75,7 @@ export const HomeView = () => {
   const { x, y } = useMousePosition(isVerticalDragging || isHorizontalDragging);
   const theme = useTheme();
   const showModel = useMediaQuery(theme.breakpoints.up("sm"));
-  // TODO: Get's kinda wrekt on instant window resize (changing in dev tools to phone size)
-  const shouldWrap = leftWidth < 700;
+  const codePanelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isVerticalDragging || !x) return;
@@ -86,10 +85,12 @@ export const HomeView = () => {
 
   useEffect(() => {
     if (!isHorizontalDragging || !y) return;
-    // subtract half of divider width for fat divider
-    // TODO: FIX THIS BS WITH A REF
-    setTopHeight(y - dividerSize / 2 - (shouldWrap ? 104 : 56));
-  }, [isHorizontalDragging, shouldWrap, y]);
+    // CodePanel height = mouse Y minus the panel's own top in the viewport (so the
+    // divider tracks the cursor), minus half the fat divider. Measuring the top live
+    // adapts to whatever's stacked above (e.g. the dropdown header wrapping).
+    const panelTop = codePanelRef.current?.getBoundingClientRect().top ?? 0;
+    setTopHeight(y - dividerSize / 2 - panelTop);
+  }, [isHorizontalDragging, y]);
 
   // handle the case where the mouse goes up and we miss it on the element event handler
   useEffect(() => {
@@ -119,7 +120,7 @@ export const HomeView = () => {
           onMouseLeave={onMouseLeaveHorizontal}
         >
           <Dropdown />
-          <CodePanel height={topHeight} />
+          <CodePanel ref={codePanelRef} height={topHeight} />
           <Divider
             direction="horizontal"
             onMouseDown={onMouseDownHorizontal}
