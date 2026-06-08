@@ -8,14 +8,19 @@
   overflow: hidden;
   background: var(--canvas);
   /* faint accent radial glow top-center + subtle dot-grid */
-  background-image: radial-gradient(
+  background-image:
+    radial-gradient(
       circle at 50% -10%,
       color-mix(in oklab, var(--accent) 14%, transparent),
       transparent 55%
     ),
     radial-gradient(circle, var(--border-soft) 1px, transparent 1px);
-  background-size: 100% 100%, 30px 30px;
-  background-position: 0 0, 0 0;
+  background-size:
+    100% 100%,
+    30px 30px;
+  background-position:
+    0 0,
+    0 0;
   cursor: grab;
   touch-action: none;
 }
@@ -36,7 +41,9 @@
 }
 
 .viz-links path {
-  transition: stroke-opacity 0.15s, stroke-width 0.15s;
+  transition:
+    stroke-opacity 0.15s,
+    stroke-width 0.15s;
 }
 
 .viz-node {
@@ -166,7 +173,9 @@
   line-height: 1;
   color: var(--muted);
   cursor: pointer;
-  transition: color var(--dur-fast), border-color var(--dur-fast);
+  transition:
+    color var(--dur-fast),
+    border-color var(--dur-fast);
 }
 .viz-zoom button:hover {
   color: var(--accent);

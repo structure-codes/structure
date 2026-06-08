@@ -14,8 +14,8 @@
   --on-accent: #0c0a14; /* near-black ink for text/glyphs on an accent fill */
 
   /* radii */
-  --radius: 9px;       /* controls: inputs, buttons */
-  --radius-lg: 10px;   /* surfaces: overlays, glass */
+  --radius: 9px; /* controls: inputs, buttons */
+  --radius-lg: 10px; /* surfaces: overlays, glass */
 
   /* transitions */
   --dur-fast: 0.12s;
@@ -28,7 +28,8 @@
   --space-4: 16px;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
 }

@@ -33,5 +33,5 @@ export function depthColor(depth: number, accentHue: number = DEFAULT_ACCENT_HUE
 
 /** Resolve a stored accent hex to its ramp hue, falling back to the default. */
 export function accentHueFor(hex: string): number {
-  return (ACCENTS.find((a) => a.hex === hex) || ACCENTS[0]).hue;
+  return (ACCENTS.find(a => a.hex === hex) || ACCENTS[0]).hue;
 }

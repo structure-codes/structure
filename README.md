@@ -11,7 +11,7 @@ Structure aims to help developers rapidly prototype their code and pick the stru
 Structure provides an E2E set of tools for designing repository structure which are all in the Structure GitHub organization.
 
 - [Website](https://structure.codes)
-- [Templates](https://github.com/structure-codes/templates)
+- [Templates](https://github.com/structure-codes/structure-templates)
 - [VSCode extension](https://github.com/structure-codes/vscode-tree-language)
 - [CLI tool](https://github.com/structure-codes/cli)
 

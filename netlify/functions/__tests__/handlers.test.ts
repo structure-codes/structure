@@ -6,7 +6,7 @@ import github from "../github";
 import templateJson from "./templates.json";
 
 // Minimal Context stub — the handlers only read `params`.
-const ctx = (params: Record<string, string> = {}) => ({ params } as unknown as Context);
+const ctx = (params: Record<string, string> = {}) => ({ params }) as unknown as Context;
 
 // Fake `fetch` responses (handlers only use ok / status / json() / text()).
 const ok = (body: { json?: unknown; text?: string }) => ({
@@ -52,7 +52,9 @@ describe("GET /api/templates", () => {
 
 describe("GET /api/template/:template", () => {
   it("returns the raw .tree text", async () => {
-    global.fetch = vi.fn().mockResolvedValue(ok({ text: "root/\n\tchild" })) as unknown as typeof fetch;
+    global.fetch = vi
+      .fn()
+      .mockResolvedValue(ok({ text: "root/\n\tchild" })) as unknown as typeof fetch;
     const res = await template(new Request("https://x/api/template/foo"), ctx({ template: "foo" }));
     expect(res.headers.get("content-type")).toMatch(/text/);
     expect(await res.text()).toBe("root/\n\tchild");

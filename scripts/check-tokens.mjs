@@ -31,8 +31,11 @@ const PATTERNS = [/#[0-9a-fA-F]{3,8}\b/, /oklch\(/i];
 function walk(dir, out = []) {
   for (const entry of readdirSync(dir)) {
     const full = join(dir, entry);
-    if (statSync(full).isDirectory()) walk(full, out);
-    else if (EXTS.has(extname(full))) out.push(full);
+    if (statSync(full).isDirectory()) {
+      // Tests legitimately assert on raw color values (e.g. oklch→hex output).
+      if (entry === "__tests__") continue;
+      walk(full, out);
+    } else if (EXTS.has(extname(full))) out.push(full);
   }
   return out;
 }
@@ -51,9 +54,7 @@ for (const file of walk(SCAN_DIR)) {
 }
 
 if (violations.length) {
-  console.error(
-    `\n✗ Raw color literals found in component styles (use a --token var instead):\n`
-  );
+  console.error(`\n✗ Raw color literals found in component styles (use a --token var instead):\n`);
   for (const v of violations) console.error("  " + v);
   console.error(
     `\nIf a literal is genuinely unavoidable, add the file to ALLOW in scripts/check-tokens.mjs.\n`

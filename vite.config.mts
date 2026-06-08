@@ -27,5 +27,12 @@ export default defineConfig({
         inline: [/@mui\//, /@emotion\//],
       },
     },
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html"],
+      // Only measure the code we author and can meaningfully test.
+      include: ["src/**/*.{ts,tsx}", "netlify/**/*.ts"],
+      exclude: ["**/__tests__/**", "src/setupTests.ts", "src/vite-env.d.ts", "src/app/main.tsx"],
+    },
   },
 });

@@ -10,5 +10,5 @@
 
 /* Hide the text cursor completely */
 .monaco-editor .cursors-layer .cursor {
-    display: none !important;
+  display: none !important;
 }

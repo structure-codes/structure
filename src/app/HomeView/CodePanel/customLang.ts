@@ -1,4 +1,4 @@
-import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
+import type * as monaco from "monaco-editor";
 import { tokens } from "../../tokens";
 
 // Monaco can't parse oklch(), so colors come from the hex token mirror in theme.ts.

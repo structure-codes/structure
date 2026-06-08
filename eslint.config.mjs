@@ -6,7 +6,7 @@ import reactRefresh from "eslint-plugin-react-refresh";
 
 export default tseslint.config(
   {
-    ignores: ["dist", "node_modules", ".netlify", "public"],
+    ignores: ["dist", "node_modules", ".netlify", "public", "coverage"],
   },
   {
     files: ["**/*.{ts,tsx}"],
@@ -24,10 +24,7 @@ export default tseslint.config(
       // `recommended` is too noisy for this codebase.
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
-      "react-refresh/only-export-components": [
-        "warn",
-        { allowConstantExport: true },
-      ],
+      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       // Catching unused references is the primary reason we lint here.
       "@typescript-eslint/no-unused-vars": [
         "error",

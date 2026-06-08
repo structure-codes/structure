@@ -5,8 +5,7 @@
 
 const cube = (x: number) => x * x * x;
 
-const gamma = (c: number) =>
-  c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055;
+const gamma = (c: number) => (c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055);
 
 const toByte = (c: number) =>
   Math.round(Math.min(1, Math.max(0, c)) * 255)

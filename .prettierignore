@@ -1,0 +1,9 @@
+node_modules
+dist
+build
+coverage
+.netlify
+public
+package-lock.json
+design_handoff_structure_facelift
+*.md

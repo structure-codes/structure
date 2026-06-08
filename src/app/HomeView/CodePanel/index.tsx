@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useMemo } from "react";
 import classes from "./style.module.css";
 import Editor from "@monaco-editor/react";
-import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
+import type * as monaco from "monaco-editor";
 import { languageDef, themeDef, configuration } from "./customLang";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { treeAtom, settingsAtom, hoveredNodeAtom, selectedNodeAtom } from "../../../store";
@@ -51,7 +51,7 @@ const options: IGlobalEditorOptions | IEditorOptions = {
   renderLineHighlight: "none",
   // Prevent the overview ruler from showing cursor indicators
   hideCursorInOverviewRuler: true,
-  occurrencesHighlight: false,
+  occurrencesHighlight: "off",
   selectionHighlight: false,
 };
 
@@ -71,6 +71,9 @@ const getLastNode = (branch: TreeType) => {
 export const CodePanel = React.memo(({ height }: { height: number }) => {
   const treeRef = useRef<string | null>(null);
   const editorRef = useRef<any>(null);
+  // The monaco instance from onMount (the @monaco-editor/react loader's copy),
+  // kept so the decorations effect can construct `Range` without bundling monaco.
+  const monacoRef = useRef<Monaco | null>(null);
   const [treeState, setTreeState] = useAtom(treeAtom);
   const settingsState = useAtomValue(settingsAtom);
 
@@ -105,7 +108,8 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
   // apply hover/select decorations when either changes
   useEffect(() => {
     const editor = editorRef.current;
-    if (!editor) return;
+    const monaco = monacoRef.current;
+    if (!editor || !monaco) return;
     const selLine = selectedId ? idToLine.get(selectedId) : undefined;
     const hovLine = hoveredId ? idToLine.get(hoveredId) : undefined;
     const decos: monaco.editor.IModelDeltaDecoration[] = [];
@@ -138,6 +142,7 @@ export const CodePanel = React.memo(({ height }: { height: number }) => {
   }, [treeState, settingsState]);
 
   const onMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
+    monacoRef.current = monaco;
     // Register a new language
     monaco.languages.register({ id: "tree" });
     // Register a tokens provider for the language
