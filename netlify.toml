@@ -1,7 +1,14 @@
+# Netlify owns deploys: production on merge to main, Deploy Previews on PRs.
+# The lint/build quality gate runs in GitHub Actions on the PR (see .github/workflows/ci.yaml),
+# so the build command here is just the build — it's used for both production and previews.
 [build]
   command = "npm run build"
   publish = "dist"
   functions = "netlify/functions"
+
+[build.environment]
+  # Match .nvmrc so the Netlify build uses the same Node major as local/dev.
+  NODE_VERSION = "20"
 
 [functions]
   # Bundle the TypeScript functions with esbuild.
